@@ -1,5 +1,5 @@
 {
-  "name": "lib-base",
+  "name": "win-with-logs",
   "version": "0.0.2",
   "description": "",
   "main": "index.js",
@@ -10,14 +10,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:webinverters/lib-base.git"
+    "url": "git@github.com:webinverters/win-with-logs.git"
   },
   "author": "Justin Mooser",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/webinverters/lib-base/issues"
+    "url": "https://github.com/webinverters/win-with-logs/issues"
   },
-  "homepage": "https://github.com/webinverters/lib-base",
+  "homepage": "https://github.com/webinverters/win-with-logs",
   "devDependencies": {
     "assert-plus": "^0.1.5",
     "chai": "^1.x.x",
