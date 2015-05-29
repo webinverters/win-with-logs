@@ -9,4 +9,11 @@
  * @license Apache-2.0
  */
 
-require('./src/node-quickstart.js');
+
+module.exports = function construct(config) {
+  var m = {};
+  config = config ? config : {};
+  config = _.defaults(config, {});
+
+  return require('./src/log')(config);
+};

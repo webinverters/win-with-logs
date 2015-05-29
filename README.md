@@ -16,11 +16,17 @@ Provide code examples and explanations of how to get the project.
 
 ## API Reference
 
-Depending on the size of the project, if it is small and simple enough the reference docs can be added to the README. For medium size to larger projects it is important to at least provide a link to where the API reference docs live.
+logger.log('$EventLabel') // broadcasts an event and records tracked event.
+logger.log('@EventLabel', details); // records a tracked event
+logger.log('Something happened.', details)   // regular log.
+logger.map('@EventLabel', { key: 'index1' });  // instead of making the user do this, attempt to do it automatically using fuzzy logic and then let them correct issues in their control panel.
+
+// see if you can generate a new IAM user for each customer (and use the access keys in your API) and
+// to funnel incoming data into the right account for display purposes.
 
 ## Tests
 
-Describe and show how to run the tests with code examples.
+npm install -g kinesalite
 
 ## Contributors
 
