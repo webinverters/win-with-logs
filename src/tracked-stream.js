@@ -22,7 +22,7 @@ module.exports = function construct(config, sewer) {
   config = config ? config : {};
   config = _.defaults(config, {});
 
-  sewer = sewer || kinesis.stream('Sewer');
+  sewer = sewer || kinesis.stream(config.streamName);
 
 
   var Writable = require('stream').Writable,
@@ -36,7 +36,7 @@ module.exports = function construct(config, sewer) {
     var eventLabel = extractEventLabel(chunk.msg);
     if (eventLabel[0] == '@' || eventLabel[0] == '$') {
       // console.log('TrackedEvent:', eventLabel);
-      chunk.eventLabel = eventLabel;
+      chunk.eventLabel = eventLabel.substr(1);
       sewer.write(new Buffer(JSON.stringify(chunk)));
     }
 

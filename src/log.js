@@ -28,6 +28,7 @@ module.exports = function construct(config, logProvider) {
       username: "bot"
     },
     enableTrackedEvents: true,
+    streamName: 'Sewer',  // for tracked events, this will the be the kinesis stream name.
     streams: []
   });
 
@@ -44,7 +45,7 @@ module.exports = function construct(config, logProvider) {
     bunyanConf.streams.push({
       level: 'info',
       type: 'raw',
-      stream: new TrackedStream()
+      stream: TrackedStream(config)
     });
   }
 
@@ -97,6 +98,10 @@ module.exports = function construct(config, logProvider) {
   log.on('error', function (err, stream) {
     console.error('Log Stream Error:', err, stream);
   });
+
+  if (config.env) {
+    log = log.child({env: config.env});
+  }
 
   /**
    * Often you may be using external log rotation utilities like logrotate on Linux

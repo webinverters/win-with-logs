@@ -14,6 +14,8 @@
 require('./config');
 
 var logger = require('../index')({
+  name: 'wwl-test',
+  env: 'test',
   enableTrackedEvents: true,
   enableEventBroadcaster: true,
   winWithLogsKey: '',

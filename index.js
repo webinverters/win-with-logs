@@ -9,7 +9,7 @@
  * @license Apache-2.0
  */
 
-
+var _ = require('lodash');
 module.exports = function construct(config) {
   var m = {};
   config = config ? config : {};
