@@ -9,12 +9,9 @@
  * @license Apache-2.0
  */
 'use strict';
-var bunyan = require('bunyan');
 var _ = require('lodash');
-var PrettyStream = require('bunyan-prettystream');
-var TrackedStream = require('./tracked-stream');
 
-module.exports = function construct(config, logProvider) {
+module.exports = function construct(config, logProvider, bunyan, PrettyStream, TrackedStream) {
   config = config || {};
   config = _.defaults(config, {
     name: 'DefaultLog',
@@ -94,7 +91,7 @@ module.exports = function construct(config, logProvider) {
     });
   }
 
-  var log = logProvider || bunyan.createLogger(bunyanConf);
+  var log = (logProvider && logProvider(bunyanConf)) || bunyan.createLogger(bunyanConf);
   log.on('error', function (err, stream) {
     console.error('Log Stream Error:', err, stream);
   });
