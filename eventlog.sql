@@ -11,4 +11,5 @@ app varchar(10) NOT NULL,
 "version" varchar(9),
 component varchar(18) NOT NULL,
 "host" varchar(60),
+"url" varchar(130),
 PRIMARY KEY ("timestamp", local_ts, "label", env, app, component))

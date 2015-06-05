@@ -34,11 +34,10 @@ module.exports = function construct(config, storage, longTermStorage) {
     })
     .then(function(eventrow) {
       eventRow = eventrow;
-      console.log('EVENTROW', eventrow);
       return saveToLongTermStorage(eventRow, eventPayload);
     })
     .then(function(longTermStorageUrl) {
-        console.log('Done saving long term');
+      console.log('Saved to', longTermStorageUrl);
         // the database only allows 100 characters.
       if (eventRow.details.length && eventRow.details.length > 100) {
         eventRow.details = eventRow.details.substr(0, 99);
@@ -70,7 +69,7 @@ module.exports = function construct(config, storage, longTermStorage) {
         details: details,
         local_ts: Math.floor(Date.parse(eventPayload.time)/1000),
         component: eventPayload.name,
-        host: eventPayload.host,
+        host: eventPayload.hostname,
         label: eventPayload.eventLabel,
         env: eventPayload.env,
         pid: eventPayload.pid,
