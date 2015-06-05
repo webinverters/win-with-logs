@@ -86,6 +86,7 @@ module.exports = function construct(config, storage, longTermStorage) {
   function fixJSON(str) {
     var json = str.replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:/g, '"$2": ');
     json = json.replace(/\'/g, '"');
+    return json;
   }
 
   function extractDetailsObject(eventPayload) {
