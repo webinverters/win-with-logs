@@ -73,7 +73,7 @@ module.exports = function construct(config, storage, longTermStorage) {
         label: eventPayload.eventLabel,
         env: eventPayload.env,
         pid: eventPayload.pid,
-        app: eventPayload.app || 'Unknown App',
+        app: eventPayload.app || 'UnknownApp',
         version: eventType,
         level: eventPayload.level
       };
