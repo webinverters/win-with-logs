@@ -38,6 +38,7 @@ module.exports = function construct(config, storage, longTermStorage) {
       return saveToLongTermStorage(eventRow, eventPayload);
     })
     .then(function(longTermStorageUrl) {
+        console.log('Done saving long term');
         // the database only allows 100 characters.
       if (eventRow.details.length && eventRow.details.length > 100) {
         eventRow.details = eventRow.details.substr(0, 99);
@@ -82,17 +83,29 @@ module.exports = function construct(config, storage, longTermStorage) {
     }
   }
 
+  function fixJSON(str) {
+    var json = str.replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:/g, '"$2": ');
+    json = json.replace(/\'/g, '"');
+  }
+
   function extractDetailsObject(eventPayload) {
     var msg = eventPayload.msg;
-    console.log('MESSAGE=', msg);
+
     var detailsObjectStart = msg.indexOf('{');
+    var parse = false;
     if (detailsObjectStart>=0) {
-      return JSON.parse(msg.substr(detailsObjectStart));
+      parse = true;
     }
-    detailsObjectStart = msg.indexOf('[');
-    if (detailsObjectStart >= 0) {
-      return JSON.parse(msg.substr(detailsObjectStart));
+    else {
+      detailsObjectStart = msg.indexOf('[');
+      if (detailsObjectStart >= 0) parse = true;
     }
+
+    if (parse) {
+      var json = fixJSON(msg.substr(detailsObjectStart));
+      return JSON.parse(json);
+    }
+
     return { details: msg.substr(eventPayload.eventLabel.length+1) };
   }
 
