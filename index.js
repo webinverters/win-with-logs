@@ -17,9 +17,11 @@ var PrettyStream = require('bunyan-prettystream');
 var TrackedStream = require('./src/tracked-stream');
 
 module.exports = function construct(config) {
-  var m = {};
   config = config ? config : {};
   config = _.defaults(config, {});
 
-  return require('./src/log')(config, null, bunyan, PrettyStream, TrackedStream);
+  var winlogger = require('./src/log')(config, null, bunyan, PrettyStream, TrackedStream);
+
+  winlogger.EventProcessor = require('./src/event-processor');
+  return winlogger;
 };
