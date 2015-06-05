@@ -19,7 +19,6 @@ module.exports = function construct(config, logProvider, bunyan, PrettyStream, T
     logFile: '',
     debug: false,
     app: 'DefaultApp',
-    component: 'DefaultComponent',
     slackLoggingEnabled: false,
     slackConfig: {
       webhook_url: "",
@@ -99,7 +98,7 @@ module.exports = function construct(config, logProvider, bunyan, PrettyStream, T
   });
 
   if (config.env) {
-    log = log.child({env: config.env, component: config.component, app: config.app});
+    log = log.child({env: config.env, app: config.app});
   }
 
   /**

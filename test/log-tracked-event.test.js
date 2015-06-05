@@ -14,17 +14,14 @@
 require('./config');
 
 var logger = require('../index')({
-  name: 'wwl-test',
-  env: 'test',
-  enableTrackedEvents: true,
-  enableEventBroadcaster: true,
-  winWithLogsKey: '',
-  winWithLogsSecret: ''
+  name: 'webservice',
+  env: 'dev',
+  app: 'test-app'
+  //enableTrackedEvents: false
 });
+// TODO: include event broadcaster
 
-logger.log('@TrackedEvent', {superdate: 'sumptuous'});
+logger.log('@USAGE_LEVEL', {superdate: 'sumptuous', valueInt: 10, valueStr: 'whatever'});
 logger.log('Here is a logged message');
-logger.log('@This is a tracked message.');
+logger.error('@FAILED_TO_SEND_EMAIL', {info: 'additional info'});
 //logger.log('@STARTING', 12, 24);
-
-
