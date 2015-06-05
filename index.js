@@ -24,6 +24,7 @@ module.exports = function construct(config) {
     env: 'local',
     errorFile: '',
     logFile: '',
+    useLoggingGlobals: true,
     debug: false,
     slackLoggingEnabled: false,
     slackConfig: {
@@ -43,5 +44,14 @@ module.exports = function construct(config) {
   var winlogger = require('./src/log')(config, null, bunyan, PrettyStream, TrackedStream);
 
   winlogger.EventProcessor = require('./src/event-processor');
+
+  if (config.useLoggingGlobals) {
+    global.log = winlogger.log.bind(winlogger);
+    global.logError = winlogger.error.bind(winlogger);
+    global.debug = winlogger.debug.bind(winlogger);
+    global.logWarn = winlogger.warn.bind(winlogger);
+    global.fatal = winlogger.fatal.bind(winlogger);
+  }
+
   return winlogger;
 };
