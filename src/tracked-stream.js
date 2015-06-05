@@ -20,7 +20,6 @@ var fs = require('fs'),
 
 module.exports = function construct(config, sewer) {
   config = config ? config : {};
-  config = _.defaults(config, {});
 
   sewer = sewer || kinesis.stream(config.streamName);
 

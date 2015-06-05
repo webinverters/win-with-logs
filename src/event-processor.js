@@ -34,7 +34,7 @@ module.exports = function construct(config, storage, longTermStorage) {
     })
     .then(function(eventrow) {
       eventRow = eventrow;
-        console.log('EVENTROW', eventrow);
+      console.log('EVENTROW', eventrow);
       return saveToLongTermStorage(eventRow, eventPayload);
     })
     .then(function(longTermStorageUrl) {
