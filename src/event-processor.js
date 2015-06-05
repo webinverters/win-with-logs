@@ -84,6 +84,7 @@ module.exports = function construct(config, storage, longTermStorage) {
 
   function extractDetailsObject(eventPayload) {
     var msg = eventPayload.msg;
+    console.log('MESSAGE=', msg);
     var detailsObjectStart = msg.indexOf('{');
     if (detailsObjectStart>=0) {
       return JSON.parse(msg.substr(detailsObjectStart));
