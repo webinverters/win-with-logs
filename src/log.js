@@ -13,22 +13,7 @@ var _ = require('lodash');
 
 module.exports = function construct(config, logProvider, bunyan, PrettyStream, TrackedStream) {
   config = config || {};
-  config = _.defaults(config, {
-    name: 'DefaultLog',
-    errorFile: '',
-    logFile: '',
-    debug: false,
-    app: 'DefaultApp',
-    slackLoggingEnabled: false,
-    slackConfig: {
-      webhook_url: "",
-      channel: "",
-      username: "bot"
-    },
-    enableTrackedEvents: true,
-    streamName: 'Sewer',  // for tracked events, this will the be the kinesis stream name.
-    streams: []
-  });
+  //config = _.defaults(config, );
 
   var bunyanConf = {
     src: config.debug,
