@@ -4,7 +4,21 @@ At the top of the file there should be a short introduction and/ or overview tha
 
 ## Code Example
 
-Show what the library does as concisely as possible, developers should be able to figure out **how** your project solves their problem by looking at the code example. Make sure the API you are showing off is obvious, and that your code is short and concise.
+var logger = require('win-with-logs')({
+  name: 'webservice',
+  env: 'dev',
+  app: 'test-app'
+  enableTrackedEvents: true  // default is true
+});
+
+// log a tracked event (that you can query by, and view centrally)
+logger.log('@USAGE_LEVEL', {superdate: 'sumptuous', valueInt: 10, valueStr: 'whatever'});
+
+// log a local event (untracked):
+logger.log('Something happened...', {superdate: 'sumptuous', valueInt: 10, valueStr: 'whatever'});
+
+// log a tracked error event:
+logger.error('@MESSAGE_CORRUPTED', {messageId: 'topgun'});
 
 ## Motivation
 
@@ -19,7 +33,9 @@ Provide code examples and explanations of how to get the project.
 logger.log('$EventLabel') // broadcasts an event and records tracked event.
 logger.log('@EventLabel', details); // records a tracked event
 logger.log('Something happened.', details)   // regular log.
-logger.map('@EventLabel', { key: 'index1' });  // instead of making the user do this, attempt to do it automatically using fuzzy logic and then let them correct issues in their control panel.
+
+// NOT YET IMPLEMENTED: set up mappings for reports
+logger.map('@EventLabel', { valueInt: 'usage kwh' });  // instead of making the user do this, attempt to do it automatically using fuzzy logic and then let them correct issues in their control panel.
 
 // see if you can generate a new IAM user for each customer (and use the access keys in your API) and
 // to funnel incoming data into the right account for display purposes.
