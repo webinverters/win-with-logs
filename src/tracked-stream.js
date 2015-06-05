@@ -53,7 +53,6 @@ module.exports = function construct(config, sewer) {
  * @param str
  */
 function extractEventLabel(str) {
-  console.log('STR=', str);
   if (str.indexOf(' ') > 0) {
     return str.split(' ')[0];
   }

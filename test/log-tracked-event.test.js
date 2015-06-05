@@ -22,6 +22,9 @@ var logger = require('../index')({
   winWithLogsSecret: ''
 });
 
-logger.log('@TrackedEvent', {details: 'info'});
+logger.log('@TrackedEvent', {superdate: 'sumptuous'});
+logger.log('Here is a logged message');
+logger.log('@This is a tracked message.');
+//logger.log('@STARTING', 12, 24);
 
 

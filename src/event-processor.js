@@ -116,7 +116,7 @@ module.exports = function construct(config, storage, longTermStorage) {
   function chooseStorageContainerName(eventRow) {
     if (!eventRow.app) throw 'chooseStorageContainerName eventRow.app is empty';
     if (!eventRow.env) warn('chooseStorageContainerName eventRow.env is empty');
-    return eventRow.app + '-' +eventRow.env;
+    return eventRow.app + '-' + eventRow.env;
   }
 
   /**
