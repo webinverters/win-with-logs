@@ -34,7 +34,7 @@ module.exports = function construct(config, storage, longTermStorage) {
     })
     .then(function(eventrow) {
       eventRow = eventrow;
-        console.log('Saving to S3...', eventRow.timestamp);
+      console.log('Saving to S3...', eventRow.timestamp);
       return saveToLongTermStorage(eventRow, eventPayload)
         .then(function(result) {
           console.log('Saving to S3...', eventRow.timestamp);
@@ -74,7 +74,7 @@ module.exports = function construct(config, storage, longTermStorage) {
       var details = extractDetailsObject(eventPayload);
 
       var eventRow = {
-        details: details || 'none',
+        details: JSON.stringify(details) || '{}',
         local_ts: Math.floor(Date.parse(eventPayload.time)/1000),
         component: eventPayload.name || 'unknown',
         host: eventPayload.hostname || 'unknown',
