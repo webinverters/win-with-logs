@@ -124,7 +124,7 @@ module.exports = function construct(config, storage, longTermStorage) {
    * @param eventRow
    */
   function chooseStorageKey(eventRow) {
-    return util.format("%s--%s-%s-%s", new Date().getUTCMilliseconds(), new Date().toISOString(), eventRow.component, eventRow.version);
+    return util.format("%s-%s-%s", new Date().toISOString(), eventRow.component, eventRow.version);
   }
 
   function saveToLongTermStorage(eventRow, eventPayload) {
