@@ -34,7 +34,15 @@ module.exports = function construct(config, storage, longTermStorage) {
     })
     .then(function(eventrow) {
       eventRow = eventrow;
-      return saveToLongTermStorage(eventRow, eventPayload);
+        console.log('Saving to S3...', eventRow.timestamp);
+      return saveToLongTermStorage(eventRow, eventPayload)
+        .then(function(result) {
+          console.log('Saving to S3...', eventRow.timestamp);
+          return result;
+        })
+        .catch(function(err) {
+          console.error('Failed to save to S3.', err);
+        });
     })
     .then(function(longTermStorageUrl) {
       console.log('Saved to', longTermStorageUrl);
