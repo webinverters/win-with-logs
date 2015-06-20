@@ -66,16 +66,16 @@ module.exports = function construct(config, storage, longTermStorage) {
       var details = extractDetailsObject(eventPayload);
 
       var eventRow = {
-        details: details,
+        details: details || 'none',
         local_ts: Math.floor(Date.parse(eventPayload.time)/1000),
-        component: eventPayload.name,
-        host: eventPayload.hostname,
-        label: eventPayload.eventLabel,
-        env: eventPayload.env,
-        pid: eventPayload.pid,
-        app: eventPayload.app || 'UnknownApp',
-        version: eventType,
-        level: eventPayload.level
+        component: eventPayload.name || 'unknown',
+        host: eventPayload.hostname || 'unknown',
+        label: eventPayload.eventLabel || 'unknown',
+        env: eventPayload.env || 'unknown',
+        pid: eventPayload.pid || 'unknown',
+        app: eventPayload.app || 'unknown',
+        version: eventType || 'unknown',
+        level: eventPayload.level || 'unspecified'
       };
 
       return eventRow;
