@@ -79,12 +79,14 @@ module.exports = function construct(config, storage, longTermStorage) {
         component: eventPayload.name || 'unknown',
         host: eventPayload.hostname || 'unknown',
         label: eventPayload.eventLabel || 'unknown',
-        env: eventPayload.env || 'unknown',
+        env: eventPayload.env || 'env',
         pid: eventPayload.pid || 'unknown',
-        app: eventPayload.app || 'unknown',
+        app: (eventPayload.app || 'unknown') + (eventPayload.env || 'env'),
         version: eventType || 'unknown',
         level: eventPayload.level || 'unspecified'
       };
+
+      eventRow.key = util.format('%s-%s', eventRow.app, eventRow.label);
 
       return eventRow;
     }
