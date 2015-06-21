@@ -114,10 +114,18 @@ module.exports = function construct(config, storage, longTermStorage) {
 
     if (parse) {
       var json = fixJSON(msg.substr(detailsObjectStart));
-      return JSON.parse(json);
+      try {
+        return JSON.parse(json);
+      } catch (ex) {
+        console.log('WARNING: details could not be parsed.', json, ex);
+      }
     }
 
-    return { details: msg.substr(eventPayload.eventLabel.length+1) };
+    if (eventPayload.eventLabel && eventPayload.eventLabel.length) {
+      return { details: msg.substr(eventPayload.eventLabel.length+1) };
+    } else {
+      return { details: msg };
+    }
   }
 
   /**
