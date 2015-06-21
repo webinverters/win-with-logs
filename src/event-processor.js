@@ -34,10 +34,10 @@ module.exports = function construct(config, storage, longTermStorage) {
     })
     .then(function(eventrow) {
       eventRow = eventrow;
-      console.log('Saving to S3...', eventRow.timestamp);
+      console.log('Saving to S3...', eventRow.local_ts);
       return saveToLongTermStorage(eventRow, eventPayload)
         .then(function(result) {
-          console.log('Saving to S3...', eventRow.timestamp);
+          console.log('Done saving to S3...', eventRow.local_ts);
           return result;
         })
         .catch(function(err) {
@@ -54,7 +54,8 @@ module.exports = function construct(config, storage, longTermStorage) {
         eventRow.label = eventRow.label.substr(0,24);
       }
       eventRow.url = longTermStorageUrl;
-      eventRow.timestamp = Math.floor(new Date().getTime()/1000);
+      eventRow.timestamp = new Date().getTime();
+
       return storage.save('eventlog', eventRow)
         .catch(function(err) {
           console.error('Error saving tracked event to storage.');
@@ -126,7 +127,7 @@ module.exports = function construct(config, storage, longTermStorage) {
   function chooseStorageContainerName(eventRow) {
     if (!eventRow.app) throw 'chooseStorageContainerName eventRow.app is empty';
     if (!eventRow.env) warn('chooseStorageContainerName eventRow.env is empty');
-    return eventRow.app + '-' + eventRow.env;
+    return eventRow.app;
   }
 
   /**
@@ -134,7 +135,7 @@ module.exports = function construct(config, storage, longTermStorage) {
    * @param eventRow
    */
   function chooseStorageKey(eventRow) {
-    return util.format("%s-%s-%s", new Date().toISOString(), eventRow.component, eventRow.version);
+    return util.format("%s-%s.%s", new Date().toISOString(), eventRow.component, eventRow.version);
   }
 
   function saveToLongTermStorage(eventRow, eventPayload) {
