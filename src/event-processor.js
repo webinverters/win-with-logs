@@ -82,7 +82,7 @@ module.exports = function construct(config, storage, longTermStorage) {
         label: eventPayload.eventLabel || 'unknown',
         env: eventPayload.env || 'env',
         pid: eventPayload.pid || 'unknown',
-        app: (eventPayload.app || 'unknown') + (eventPayload.env || 'env'),
+        app: (eventPayload.app || 'app') + '-' + (eventPayload.env || 'env'),
         version: eventType || 'unknown',
         level: eventPayload.level || 'unspecified'
       };
