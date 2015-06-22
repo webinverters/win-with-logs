@@ -113,11 +113,18 @@ module.exports = function construct(config, storage, longTermStorage) {
     }
 
     if (parse) {
-      var json = fixJSON(msg.substr(detailsObjectStart));
+      var json = msg.substr(detailsObjectStart);
       try {
         return JSON.parse(json);
       } catch (ex) {
-        console.log('WARNING: details could not be parsed.', json, ex);
+        json = fixJSON(json);
+        try {
+          return JSON.parse(json);
+        }
+        catch (ex) {
+          console.log('WARNING: details could not be parsed.', json, ex);
+          return { details: msg.substr(detailsObjectStart) };
+        }
       }
     }
 
