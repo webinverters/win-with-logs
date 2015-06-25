@@ -101,6 +101,7 @@ module.exports = function construct(config, logProvider, bunyan, PrettyStream, T
   log.logWarn = log.warn;
   log.logError = log.error;
   log.logFatal = log.fatal;
+  log.debug = log.debug;
 
   return log;
 };
