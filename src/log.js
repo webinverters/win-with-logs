@@ -97,11 +97,65 @@ module.exports = function construct(config, logProvider, bunyan, PrettyStream, T
     log.reopenFileStreams();
   });
 
-  log.log = log.info;
-  log.logWarn = log.warn;
-  log.logError = log.error;
-  log.logFatal = log.fatal;
-  log.debug = log.debug;
+  return createEventLogger(log);
+};
+
+
+function createEventLogger(logger) {
+  logger.observers = {};
+
+  var enactObservers = function() {
+    if (arguments[0][0] == '@') {
+      if (logger.observers[arguments[0]]) {
+        var event = {};
+        p.map(logger.observers[arguments[0]] || [], function(cb) {
+          if (!event.stopPropagation) cb(event, arguments[1]);
+        }, {concurrency: 1});
+      }
+    }
+  };
+
+  var log = function() {
+    enactObservers.apply(logger, arguments);
+    logger.info.apply(logger, arguments);
+  };
+
+  log.log = function() {
+    enactObservers.apply(logger, arguments);
+    logger.info.apply(logger, arguments);
+  };
+
+  log.watchFor = function(eventLabel, observerAction) {
+    logger.observers[eventLabel] = logger.observers[eventLabel] || [];
+    logger.observers[eventLabel].push(observerAction);
+  };
+
+  // make sure all the interfaces are wired up.
+  log.logWarn = logger.warn;
+  log.logError = logger.error;
+  log.logFatal = logger.fatal;
+  log.debug = logger.debug;
+  log.error = logger.error;
+  log.error = function() {
+    logger.error.apply(logger, arguments);
+  };
+  log.warn = function() {
+    logger.warn.apply(logger, arguments);
+  };
+  log.debug = function() {
+    logger.debug.apply(logger, arguments);
+  };
+  log.logError = function() {
+    logger.error.apply(logger, arguments);
+  };
+  log.info = function() {
+    logger.log.apply(logger, arguments);
+  };
+  log.fatal = logger.fatal;
+
+  log.child = function() {
+    logger.child.apply(logger, arguments);
+  };
 
   return log;
-};
+}
