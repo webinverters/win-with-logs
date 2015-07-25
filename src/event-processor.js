@@ -24,7 +24,8 @@ module.exports = function construct(config, storage, longTermStorage) {
   var m = {};
   config = config ? config : {};
   config = _.defaults(config, {
-    saveEventsToLongTermStorage: true
+    saveEventsToLongTermStorage: true,
+    logTableName: 'log'
   });
 
   m.processEvent = function(eventPayload, eventType) {
@@ -56,7 +57,7 @@ module.exports = function construct(config, storage, longTermStorage) {
       eventRow.url = longTermStorageUrl;
       eventRow.timestamp = new Date().getTime();
 
-      return storage.save('eventlog', eventRow)
+      return storage.save(config.logTableName, eventRow)
         .catch(function(err) {
           console.error('Error saving tracked event to storage.');
           console.error(err);

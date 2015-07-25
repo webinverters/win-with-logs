@@ -19,7 +19,6 @@ var logger = require('../index')({
   app: 'test-app'
   //enableTrackedEvents: false
 });
-// TODO: include event broadcaster
 
 logger.log('@USAGE_LEVEL', {superdate: 'sumptuous', valueInt: 10, valueStr: 'whatever'});
 logger.log('Here is a logged message');

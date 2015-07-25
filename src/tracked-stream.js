@@ -33,7 +33,7 @@ module.exports = function construct(config, sewer) {
   util.inherits(TrackedStream, Writable);
   TrackedStream.prototype._write = function(chunk, encoding, done) {
     var eventLabel = extractEventLabel(chunk.msg);
-    if (eventLabel[0] == '@' || eventLabel[0] == '$') {
+    if (eventLabel[0] == '@') {
       // console.log('TrackedEvent:', eventLabel);
       chunk.eventLabel = eventLabel.substr(1);
       sewer.write(new Buffer(JSON.stringify(chunk)));
