@@ -40,6 +40,11 @@ logger.map('@EventLabel', { valueInt: 'usage kwh' });  // instead of making the 
 // see if you can generate a new IAM user for each customer (and use the access keys in your API) and
 // to funnel incoming data into the right account for display purposes.
 
+
+### Goals:
+
+- The goal uid must be specifed like {GOAL_NAME}#{uid}  Example: sayhello#100.  Note they are seperated by a pound sign.
+
 ## Tests
 
 npm install -g kinesalite

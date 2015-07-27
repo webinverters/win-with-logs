@@ -54,7 +54,9 @@ module.exports = function construct(config, storage, longTermStorage) {
     .then(function(eventRow) {
       if (eventRow.level == 50 && config.errorTableName) {
         logTableName = config.errorTableName;
-        return trackGoal({name: eventType, uid: eventPayload.uid, data: eventPayload});
+        if (eventRow.uid) {
+          return trackGoal(eventRow);
+        }
       }
       return eventRow;
     })
@@ -106,24 +108,22 @@ module.exports = function construct(config, storage, longTermStorage) {
   function trackGoal(goal) {
     goal.callCount = 0;
 
-    if (!goal.uid) return p.resolve();
+    if (!goal.uid) return p.resolve('No goal uid specified.');
+    goal.name = goal.uid.split('#')[0];
 
-    // TODO: storage.get(goal) and increase the goal information if it already exists
-    return p.resolve().then(function(currentGoal) {
-      currentGoal = currentGoal || goal;
-      currentGoal.lastModified = new Date().getTime();
-      goal.status = 'TemporaryFailure';
-      goal.callCount += 1;
+    var currentGoal = currentGoal || goal;
+    currentGoal.lastModified = new Date().getTime();
+    goal.status = 'TemporaryFailure';
+    goal.callCount += 1;
 
-      return storage.save(config.goalTableName, goal)
-        .then(function() {
-          return goal;
-        })
-        .catch(function(err) {
-          console.error('Error saving the goal:');
-          throw err;
-        });
-    });
+    return storage.save(config.goalTableName, goal)
+      .then(function() {
+        return goal;
+      })
+      .catch(function(err) {
+        console.error('Error saving the goal:');
+        throw err;
+      });
   }
 
   //function fixJSON(str) {

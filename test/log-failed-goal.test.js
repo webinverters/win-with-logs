@@ -13,11 +13,17 @@
 
 require('./config');
 
-var logger = require('../index')({
+var log = require('../index')({
   name: 'test',
   env: 'dev',
   app: 'test-goal-logging'
   //enableTrackedEvents: false
 });
 
-logger.error('@FAILED_TODO_SOMETHING', {info: 'additional info', uid:'unique-goal-identifier-'+new Date().getTime()});
+return log.error('@FAILED_TODO_SOMETHING', {info: 'additional info', uid:'unique-goal-identifier-'+new Date().getTime()});
+//.then(function(result) {
+//    console.log('Success:', result);
+//  })
+//.catch(function(err) {
+//    console.log('Error: ',err);
+//  });
