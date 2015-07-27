@@ -25,39 +25,41 @@ module.exports = function construct(config, storage, longTermStorage) {
   config = config ? config : {};
   config = _.defaults(config, {
     saveEventsToLongTermStorage: true,
-    logTableName: 'log'
+    logTableName: 'log',
+    errorTableName: 'error-log',
+    goalTableName: 'failed-goals'
   });
 
   m.processEvent = function(eventPayload, eventType) {
-    var eventRow;
+    var eventRow, logTableName = config.logTableName;  // by default logs to logTableName
+
     return p.resolve().then(function() {
       return extractEventRow(eventPayload,eventType);
     })
     .then(function(eventrow) {
       eventRow = eventrow;
-      console.log('Saving to S3...', eventRow.local_ts);
-      return saveToLongTermStorage(eventRow, eventPayload)
-        .then(function(result) {
-          console.log('Done saving to S3...', eventRow.local_ts);
-          return result;
-        })
-        .catch(function(err) {
-          console.error('Failed to save to S3.', err);
-        });
-    })
-    .then(function(longTermStorageUrl) {
-      console.log('Saved to', longTermStorageUrl);
-        // the database only allows 100 characters.
-      if (eventRow.details.length && eventRow.details.length > 100) {
-        eventRow.details = eventRow.details.substr(0, 99);
-      }
-      if(eventRow.label.length > 24) {
-        eventRow.label = eventRow.label.substr(0,24);
-      }
-      eventRow.url = longTermStorageUrl;
-      eventRow.timestamp = new Date().getTime();
 
-      return storage.save(config.logTableName, eventRow)
+      // dynamo's max item size is 400kb, but we'll cap it at 4000 bytes to be safe.
+      if (JSON.stringify(eventRow).length > 4000) {
+        return saveToLongTermStorage(eventRow, eventPayload);
+      }
+      return eventRow;
+    })
+    .then(function(eventRow) {
+      if (eventRow.completeGoal) {
+        return completeGoal(eventRow.completeGoal);
+      }
+      return eventRow;
+    })
+    .then(function(eventRow) {
+      if (eventRow.level == 50 && config.errorTableName) {
+        logTableName = config.errorTableName;
+        return trackGoal({name: eventType, uid: eventPayload.uid, data: eventPayload});
+      }
+      return eventRow;
+    })
+    .then(function(eventRow) {
+      return storage.save(logTableName, eventRow)
         .catch(function(err) {
           console.error('Error saving tracked event to storage.');
           console.error(err);
@@ -73,10 +75,10 @@ module.exports = function construct(config, storage, longTermStorage) {
     eventType = eventType || 'bunyan-v1';
     // you have to extract the payload and the essential details about the logged event.
     if (eventType=='bunyan-v1') {
-      var details = extractDetailsObject(eventPayload);
+      //var details = extractDetailsObject(eventPayload);
 
       var eventRow = {
-        details: JSON.stringify(details) || '{}',
+        details: eventPayload.details,
         local_ts: Math.floor(Date.parse(eventPayload.time)/1000),
         component: eventPayload.name || 'unknown',
         host: eventPayload.hostname || 'unknown',
@@ -85,56 +87,89 @@ module.exports = function construct(config, storage, longTermStorage) {
         pid: eventPayload.pid || 'unknown',
         app: (eventPayload.app || 'app') + '-' + (eventPayload.env || 'env'),
         version: eventType || 'unknown',
-        level: eventPayload.level || 'unspecified'
+        level: eventPayload.level || 'unspecified',
+        completeGoal: eventPayload.completeGoal,
+        uid: eventPayload.uid // goal unique identifier
       };
 
       eventRow.key = util.format('%s-%s', eventRow.app, eventRow.label);
+      eventRow.timestamp = new Date().getTime();
 
       return eventRow;
     }
   }
 
-  function fixJSON(str) {
-    var json = str.replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:/g, '"$2": ');
-    json = json.replace(/\'/g, '"');
-    return json;
+  function completeGoal(uid) {
+    return storage.delete(config.goalTableName, {uid: uid});
   }
 
-  function extractDetailsObject(eventPayload) {
-    var msg = eventPayload.msg;
+  function trackGoal(goal) {
+    goal.callCount = 0;
 
-    var detailsObjectStart = msg.indexOf('{');
-    var parse = false;
-    if (detailsObjectStart>=0) {
-      parse = true;
-    }
-    else {
-      detailsObjectStart = msg.indexOf('[');
-      if (detailsObjectStart >= 0) parse = true;
-    }
+    if (!goal.uid) return p.resolve();
 
-    if (parse) {
-      var json = msg.substr(detailsObjectStart);
-      try {
-        return JSON.parse(json);
-      } catch (ex) {
-        json = fixJSON(json);
-        try {
-          return JSON.parse(json);
-        }
-        catch (ex) {
-          console.log('WARNING: details could not be parsed.', json, ex);
-          return { details: msg.substr(detailsObjectStart) };
-        }
-      }
-    }
+    // TODO: storage.get(goal) and increase the goal information if it already exists
+    return p.resolve().then(function(currentGoal) {
+      currentGoal = currentGoal || goal;
+      currentGoal.lastModified = new Date().getTime();
+      goal.status = 'TemporaryFailure';
+      goal.callCount += 1;
 
-    if (eventPayload.eventLabel && eventPayload.eventLabel.length) {
-      return { details: msg.substr(eventPayload.eventLabel.length+1) };
-    } else {
-      return { details: msg };
-    }
+      return storage.save(config.goalTableName, goal)
+        .then(function() {
+          return goal;
+        })
+        .catch(function(err) {
+          console.error('Error saving the goal:');
+          throw err;
+        });
+    });
   }
+
+  //function fixJSON(str) {
+  //  var json = str.replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:/g, '"$2": ');
+  //  json = json.replace(/\'/g, '"');
+  //  return json;
+  //}
+
+  //// the ugly reality is that bunyan wants you to always log objects, whereas win-with-logs API wants you to
+  //// generally always log a string followed by an object (2 params total).  This function is meant to analyze
+  //// the payload and split it back into the original 2 params.
+  //function extractDetailsObject(eventPayload) {
+  //  var msg = eventPayload.msg;
+  //
+  //  var detailsObjectStart = msg.indexOf('{');
+  //  var parse = false;
+  //  if (detailsObjectStart>=0) {
+  //    parse = true;
+  //  }
+  //  else {
+  //    detailsObjectStart = msg.indexOf('[');
+  //    if (detailsObjectStart >= 0) parse = true;
+  //  }
+  //
+  //  if (parse) {
+  //    var json = msg.substr(detailsObjectStart);
+  //    try {
+  //      return JSON.parse(json);
+  //    } catch (ex) {
+  //      json = fixJSON(json);
+  //      try {
+  //        return JSON.parse(json);
+  //      }
+  //      catch (ex) {
+  //        console.log('WARNING: details could not be parsed.', json, ex);
+  //        return { details: msg.substr(detailsObjectStart) };
+  //      }
+  //    }
+  //  }
+  //
+  //  if (eventPayload.eventLabel && eventPayload.eventLabel.length) {
+  //    return { details: msg.substr(eventPayload.eventLabel.length+1) };
+  //  } else {
+  //    return { details: msg };
+  //  }
+  //}
 
   /**
    * Container names are per application per environment.
@@ -158,7 +193,16 @@ module.exports = function construct(config, storage, longTermStorage) {
     var container = chooseStorageContainerName(eventRow);
     var key = chooseStorageKey(eventRow);
 
-    return longTermStorage.save(container, key, eventPayload);
+    return longTermStorage.save(container, key, eventPayload)
+      .then(function(result) {
+        console.log('Saved to url: ', result);
+        eventRow.url = result;
+        return eventRow;
+      })
+      .catch(function(err) {
+        console.error('Failed to save to S3.', err);
+        throw err;
+      });
   }
 
   return m;

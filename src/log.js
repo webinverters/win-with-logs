@@ -18,10 +18,7 @@ module.exports = function construct(config, logProvider, bunyan, PrettyStream, T
   var bunyanConf = {
     src: config.debug,
     name: config.name,
-    streams: config.streams,
-    serializers: {
-      err: bunyan.stdSerializers.err
-    }
+    streams: config.streams
   };
 
   if (config.enableTrackedEvents) {
@@ -53,21 +50,23 @@ module.exports = function construct(config, logProvider, bunyan, PrettyStream, T
   }
 
 
-  var prettyStdOut = new PrettyStream();
-  prettyStdOut.pipe(process.stdout);
-  if (config.debug) {
-    bunyanConf.streams.push(
-      {
-        level: 'debug',
-        type: 'raw',
-        stream: prettyStdOut
+  if (PrettyStream) {
+    var prettyStdOut = new PrettyStream();
+    prettyStdOut.pipe(process.stdout);
+    if (config.debug) {
+      bunyanConf.streams.push(
+        {
+          level: 'debug',
+          type: 'raw',
+          stream: prettyStdOut
+        });
+      console.warn('Debug Logging Is Enabled.  This is OK if it is not production');
+    } else {
+      bunyanConf.streams.push({
+        level: 'info',
+        stream: prettyStdOut           // log INFO and above to stdout
       });
-    console.warn('Debug Logging Is Enabled.  This is OK if it is not production');
-  } else {
-    bunyanConf.streams.push({
-      level: 'info',
-      stream: prettyStdOut           // log INFO and above to stdout
-    });
+    }
   }
 
   if (config.slackLoggingEnabled) {
@@ -115,14 +114,30 @@ function createEventLogger(logger) {
     }
   };
 
-  var log = function() {
-    enactObservers.apply(logger, arguments);
-    logger.info.apply(logger, arguments);
-  };
+  function parseLogObject() {
+    var logObject = {};
 
-  log.log = function() {
+    if (_.isString(arguments[0])) {
+      logObject.msg = arguments[0];
+      if (_.isObject(arguments[1])) {
+        logObject.details = arguments[1];
+      }
+      _.each(arguments, function(arg, idx) {
+        if (idx != 0) {
+          logObject.msg += JSON.stringify(arg);
+        }
+      });
+    }
+    return logObject;
+  }
+
+  // The log method itself is a little special.  It does 2 things:
+  // 1. Calls bunyan info() log level logger.
+  // 2. Checks for observers to this log event and fires their handlers.
+  var log = function() {
+    var logObject = parseLogObject.apply(undefined,arguments);
     enactObservers.apply(logger, arguments);
-    logger.info.apply(logger, arguments);
+    logger.info(logObject);
   };
 
   log.watchFor = function(eventLabel, observerAction) {
@@ -131,31 +146,46 @@ function createEventLogger(logger) {
   };
 
   // make sure all the interfaces are wired up.
-  log.logWarn = logger.warn;
-  log.logError = logger.error;
-  log.logFatal = logger.fatal;
-  log.debug = logger.debug;
-  log.error = logger.error;
   log.error = function() {
-    logger.error.apply(logger, arguments);
+    var logObject = parseLogObject.apply(undefined,arguments);
+    logger.error(logObject);
   };
   log.warn = function() {
-    logger.warn.apply(logger, arguments);
+    var logObject = parseLogObject.apply(undefined,arguments);
+    logger.warn(logObject);
   };
   log.debug = function() {
-    logger.debug.apply(logger, arguments);
-  };
-  log.logError = function() {
-    logger.error.apply(logger, arguments);
+    var logObject = parseLogObject.apply(undefined,arguments);
+    logger.debug(logObject);
   };
   log.info = function() {
-    logger.log.apply(logger, arguments);
+    var logObject = parseLogObject.apply(undefined,arguments);
+    logger.info(logObject);
   };
-  log.fatal = logger.fatal;
+
+  log.fatal = function() {
+    var logObject = parseLogObject.apply(undefined,arguments);
+    logger.fatal(logObject);
+  };
+
+  // log a goal completion.
+  log.completion = function() {
+    var logObject = parseLogObject.apply(undefined,arguments);
+    if (!logObject.details.uid) { log.warn('Goal completion log failed due to no uid specified.'); }
+
+    logger.info(logObject);
+  };
 
   log.child = function() {
-    logger.child.apply(logger, arguments);
+    var logObject = parseLogObject.apply(undefined,arguments);
+    logger.child(logObject);
   };
+
+  // assign aliases:
+  log.logFatal = log.fatal;
+  log.log = log;
+  log.logError = log.error;
+  log.logWarn = log.warn;
 
   return log;
 }
