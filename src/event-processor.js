@@ -77,7 +77,7 @@ module.exports = function construct(config, storage, longTermStorage) {
     eventType = eventType || 'bunyan-v1';
     // you have to extract the payload and the essential details about the logged event.
     if (eventType=='bunyan-v1') {
-      if (eventPayload.details == null) {
+      if (!eventPayload.details) {
         eventPayload.details = extractDetailsObject(eventPayload).details;
       }
 
