@@ -148,24 +148,24 @@ function createEventLogger(logger) {
   // make sure all the interfaces are wired up.
   log.error = function() {
     var logObject = parseLogObject.apply(undefined,arguments);
-    logger.error(logObject);
+    logger.error(logObject, logObject.msg);
   };
   log.warn = function() {
     var logObject = parseLogObject.apply(undefined,arguments);
-    logger.warn(logObject);
+    logger.warn(logObject, logObject.msg);
   };
   log.debug = function() {
     var logObject = parseLogObject.apply(undefined,arguments);
-    logger.debug(logObject);
+    logger.debug(logObject, logObject.msg);
   };
   log.info = function() {
     var logObject = parseLogObject.apply(undefined,arguments);
-    logger.info(logObject);
+    logger.info(logObject, logObject.msg);
   };
 
   log.fatal = function() {
     var logObject = parseLogObject.apply(undefined,arguments);
-    logger.fatal(logObject);
+    logger.fatal(logObject, logObject.msg);
   };
 
   // log a goal completion.
@@ -173,7 +173,7 @@ function createEventLogger(logger) {
     var logObject = parseLogObject.apply(undefined,arguments);
     if (!logObject.details.uid) { log.warn('Goal completion log failed due to no uid specified.'); }
 
-    logger.info(logObject);
+    logger.info(logObject, logObject.msg);
   };
 
   log.child = function() {
