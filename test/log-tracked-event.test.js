@@ -15,12 +15,14 @@ require('./config');
 
 var logger = require('../index')({
   name: 'webservice',
-  env: 'dev',
-  app: 'test-app'
+  env: 'test',
+  app: 'testapp',
+  debug: true,
+  streamName: 'Test'
   //enableTrackedEvents: false
 });
 
 logger.log('@USAGE_LEVEL', {superdate: 'sumptuous', valueInt: 10, valueStr: 'whatever'});
-logger.log('Here is a logged message');
-logger.error('@FAILED_TO_SEND_EMAIL', {info: 'additional info'});
+//logger.log('Here is a logged message');
+//logger.error('@FAILED_TO_SEND_EMAIL', {info: 'additional info'});
 //logger.log('@STARTING', 12, 24);

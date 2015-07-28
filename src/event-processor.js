@@ -82,7 +82,7 @@ module.exports = function construct(config, storage, longTermStorage) {
       }
 
       var eventRow = {
-        details: eventPayload.details || 'N/A',
+        details: (eventPayload.details && JSON.stringify(eventPayload.details)) || 'N/A',
         local_ts: Math.floor(Date.parse(eventPayload.time)/1000),
         component: eventPayload.name || 'unknown',
         host: eventPayload.hostname || 'unknown',
@@ -158,7 +158,7 @@ module.exports = function construct(config, storage, longTermStorage) {
     if (parse) {
       var json = msg.substr(detailsObjectStart);
       try {
-        return JSON.parse(json);
+        return { details: JSON.parse(json) };
       } catch (ex) {
         json = fixJSON(json);
         try {

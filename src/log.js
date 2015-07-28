@@ -124,7 +124,7 @@ function createEventLogger(logger) {
       }
       _.each(arguments, function(arg, idx) {
         if (idx != 0) {
-          logObject.msg += JSON.stringify(arg);
+          logObject.msg += ' ' + JSON.stringify(arg);
         }
       });
     }
@@ -137,7 +137,7 @@ function createEventLogger(logger) {
   var log = function() {
     var logObject = parseLogObject.apply(undefined,arguments);
     enactObservers.apply(logger, arguments);
-    logger.info(logObject);
+    logger.info(logObject, logObject.msg);
   };
 
   log.watchFor = function(eventLabel, observerAction) {

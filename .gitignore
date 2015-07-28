@@ -20,3 +20,5 @@ libs/*
 coverage
 docs
 *.log
+.env
+*.env
