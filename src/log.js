@@ -120,7 +120,7 @@ function createEventLogger(logger) {
     if (_.isString(arguments[0])) {
       logObject.msg = arguments[0];
       if (_.isObject(arguments[1])) {
-        logObject.details = arguments[1];
+        _.extend(logObject, arguments[1]);
       }
       _.each(arguments, function(arg, idx) {
         if (idx != 0) {

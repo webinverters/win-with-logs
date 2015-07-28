@@ -54,6 +54,7 @@ module.exports = function construct(config, storage, longTermStorage) {
     .then(function(eventRow) {
       if (eventRow.level == 50 && config.errorTableName) {
         logTableName = config.errorTableName;
+
         if (eventRow.uid) {
           return trackGoal(eventRow);
         }

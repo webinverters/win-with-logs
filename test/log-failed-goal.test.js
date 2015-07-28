@@ -14,13 +14,15 @@
 require('./config');
 
 var log = require('../index')({
-  name: 'test',
-  env: 'dev',
-  app: 'test-goal-logging'
+  name: 'webservice',
+  env: 'test',
+  app: 'testapp',
+  debug: true,
+  streamName: 'Test'
   //enableTrackedEvents: false
 });
 
-return log.error('@FAILED_TODO_SOMETHING', {info: 'additional info', uid:'unique-goal-identifier-'+new Date().getTime()});
+return log.error('@FAILED_TODO_SOMETHING', {info: 'additional info', uid:'goalName#-'+new Date().getTime()});
 //.then(function(result) {
 //    console.log('Success:', result);
 //  })
