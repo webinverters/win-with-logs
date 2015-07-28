@@ -77,7 +77,9 @@ module.exports = function construct(config, storage, longTermStorage) {
     eventType = eventType || 'bunyan-v1';
     // you have to extract the payload and the essential details about the logged event.
     if (eventType=='bunyan-v1') {
-      //var details = extractDetailsObject(eventPayload);
+      if (eventPayload.details == null) {
+        eventPayload.details = extractDetailsObject(eventPayload).details;
+      }
 
       var eventRow = {
         details: eventPayload.details,
@@ -126,50 +128,50 @@ module.exports = function construct(config, storage, longTermStorage) {
       });
   }
 
-  //function fixJSON(str) {
-  //  var json = str.replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:/g, '"$2": ');
-  //  json = json.replace(/\'/g, '"');
-  //  return json;
-  //}
+  function fixJSON(str) {
+    var json = str.replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:/g, '"$2": ');
+    json = json.replace(/\'/g, '"');
+    return json;
+  }
 
-  //// the ugly reality is that bunyan wants you to always log objects, whereas win-with-logs API wants you to
-  //// generally always log a string followed by an object (2 params total).  This function is meant to analyze
-  //// the payload and split it back into the original 2 params.
-  //function extractDetailsObject(eventPayload) {
-  //  var msg = eventPayload.msg;
-  //
-  //  var detailsObjectStart = msg.indexOf('{');
-  //  var parse = false;
-  //  if (detailsObjectStart>=0) {
-  //    parse = true;
-  //  }
-  //  else {
-  //    detailsObjectStart = msg.indexOf('[');
-  //    if (detailsObjectStart >= 0) parse = true;
-  //  }
-  //
-  //  if (parse) {
-  //    var json = msg.substr(detailsObjectStart);
-  //    try {
-  //      return JSON.parse(json);
-  //    } catch (ex) {
-  //      json = fixJSON(json);
-  //      try {
-  //        return JSON.parse(json);
-  //      }
-  //      catch (ex) {
-  //        console.log('WARNING: details could not be parsed.', json, ex);
-  //        return { details: msg.substr(detailsObjectStart) };
-  //      }
-  //    }
-  //  }
-  //
-  //  if (eventPayload.eventLabel && eventPayload.eventLabel.length) {
-  //    return { details: msg.substr(eventPayload.eventLabel.length+1) };
-  //  } else {
-  //    return { details: msg };
-  //  }
-  //}
+  // the ugly reality is that bunyan wants you to always log objects, whereas win-with-logs API wants you to
+  // generally always log a string followed by an object (2 params total).  This function is meant to analyze
+  // the payload and split it back into the original 2 params.
+  function extractDetailsObject(eventPayload) {
+    var msg = eventPayload.msg;
+
+    var detailsObjectStart = msg.indexOf('{');
+    var parse = false;
+    if (detailsObjectStart>=0) {
+      parse = true;
+    }
+    else {
+      detailsObjectStart = msg.indexOf('[');
+      if (detailsObjectStart >= 0) parse = true;
+    }
+
+    if (parse) {
+      var json = msg.substr(detailsObjectStart);
+      try {
+        return JSON.parse(json);
+      } catch (ex) {
+        json = fixJSON(json);
+        try {
+          return JSON.parse(json);
+        }
+        catch (ex) {
+          console.log('WARNING: details could not be parsed.', json, ex);
+          return { details: msg.substr(detailsObjectStart) };
+        }
+      }
+    }
+
+    if (eventPayload.eventLabel && eventPayload.eventLabel.length) {
+      return { details: msg.substr(eventPayload.eventLabel.length+1) };
+    } else {
+      return { details: msg };
+    }
+  }
 
   /**
    * Container names are per application per environment.
