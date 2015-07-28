@@ -82,7 +82,7 @@ module.exports = function construct(config, storage, longTermStorage) {
       }
 
       var eventRow = {
-        details: eventPayload.details,
+        details: eventPayload.details || 'N/A',
         local_ts: Math.floor(Date.parse(eventPayload.time)/1000),
         component: eventPayload.name || 'unknown',
         host: eventPayload.hostname || 'unknown',
@@ -91,10 +91,15 @@ module.exports = function construct(config, storage, longTermStorage) {
         pid: eventPayload.pid || 'unknown',
         app: (eventPayload.app || 'app') + '-' + (eventPayload.env || 'env'),
         version: eventType || 'unknown',
-        level: eventPayload.level || 'unspecified',
-        completeGoal: eventPayload.completeGoal,
-        uid: eventPayload.uid // goal unique identifier
+        level: eventPayload.level || 'unspecified'
       };
+
+      if (eventPayload.completeGoal) {
+        eventRow.completeGoal = eventPayload.completeGoal;
+      }
+      if (eventPayload.uid) {
+        eventRow.uid = eventPayload.uid; // goal unique identifier
+      }
 
       eventRow.key = util.format('%s-%s', eventRow.app, eventRow.label);
       eventRow.timestamp = new Date().getTime();
