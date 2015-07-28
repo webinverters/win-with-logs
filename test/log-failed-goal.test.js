@@ -22,7 +22,9 @@ var log = require('../index')({
   //enableTrackedEvents: false
 });
 
-return log.error('@FAILED_TODO_SOMETHING', {info: 'additional info', uid:'goalName#-'+new Date().getTime()});
+//return log.error('@FAILED_TODO_SOMETHING', {info: 'additional info', uid:'goalName#-1000'});
+
+return log.completion('@SOMETHING', {uid:'goalName#-1000'});
 //.then(function(result) {
 //    console.log('Success:', result);
 //  })

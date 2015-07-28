@@ -171,7 +171,7 @@ function createEventLogger(logger) {
   // log a goal completion.
   log.completion = function() {
     var logObject = parseLogObject.apply(undefined,arguments);
-    if (!logObject.details.uid) { log.warn('Goal completion log failed due to no uid specified.'); }
+    if (!logObject.uid) { log.warn('Goal completion log failed due to no uid specified.'); }
 
     logger.info(logObject, logObject.msg);
   };

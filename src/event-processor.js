@@ -110,7 +110,8 @@ module.exports = function construct(config, storage, longTermStorage) {
   }
 
   function completeGoal(uid) {
-    return storage.delete(config.goalTableName, {uid: uid});
+    var name = uid.split('#')[0];
+    return storage.delete(config.goalTableName, {name: name, uid: uid});
   }
 
   function trackGoal(goal) {
