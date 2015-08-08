@@ -22,9 +22,12 @@ var log = require('../index')({
   //enableTrackedEvents: false
 });
 
+// create a goal:
 //return log.error('@FAILED_TODO_SOMETHING', {info: 'additional info', uid:'goalName#-1000'});
 
+// complete a goal:
 return log.completion('@SOMETHING', {uid:'goalName#-1000'});
+
 //.then(function(result) {
 //    console.log('Success:', result);
 //  })

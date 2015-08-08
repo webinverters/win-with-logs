@@ -127,6 +127,12 @@ function createEventLogger(logger) {
           logObject.msg += ' ' + JSON.stringify(arg);
         }
       });
+    } else if (!arguments[1]) {
+      if (_.isObject(arguments[0])) return arguments[0];
+    } else {
+      _.each(arguments, function(arg, idx) {
+        logObject.msg += ' ' + JSON.stringify(arg);
+      });
     }
     return logObject;
   }
@@ -147,8 +153,12 @@ function createEventLogger(logger) {
 
   // make sure all the interfaces are wired up.
   log.error = function() {
-    var logObject = parseLogObject.apply(undefined,arguments);
-    logger.error(logObject, logObject.msg);
+    if (_.isString(arguments[0]) && _.isObject(arguments[1]) && arguments[1].message) {
+      logger.error({err: arguments[1]}, arguments[0]);
+    } else {
+      var logObject = parseLogObject.apply(undefined,arguments);
+      logger.error(logObject, logObject.msg);
+    }
   };
   log.warn = function() {
     var logObject = parseLogObject.apply(undefined,arguments);
@@ -173,6 +183,7 @@ function createEventLogger(logger) {
     var logObject = parseLogObject.apply(undefined,arguments);
     if (!logObject.uid) { log.warn('Goal completion log failed due to no uid specified.'); }
 
+    logObject.completeGoal = logObject.uid;
     logger.info(logObject, logObject.msg);
   };
 
