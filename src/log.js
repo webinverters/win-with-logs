@@ -229,7 +229,7 @@ function createEventLogger(logger, context) {
 
   log.errorReport = function(what, details) {
     if (context) {
-      details = _.extend(context, details, {what: what})
+      details = _.extend({}, context, details, {what: what})
     }
     log.error(what, details);
     return details;
