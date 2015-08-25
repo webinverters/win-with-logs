@@ -100,7 +100,7 @@ module.exports = function construct(config, logProvider, bunyan, PrettyStream, T
 };
 
 
-function createEventLogger(logger) {
+function createEventLogger(logger, context) {
   logger.observers = {};
 
   var enactObservers = function() {
@@ -140,7 +140,7 @@ function createEventLogger(logger) {
   // The log method itself is a little special.  It does 2 things:
   // 1. Calls bunyan info() log level logger.
   // 2. Checks for observers to this log event and fires their handlers.
-  var log = function() {
+  var log = function log() {
     var logObject = parseLogObject.apply(undefined,arguments);
     enactObservers.apply(logger, arguments);
     logger.info(logObject, logObject.msg);
@@ -192,11 +192,47 @@ function createEventLogger(logger) {
     logger.child(logObject);
   };
 
+
   // assign aliases:
   log.logFatal = log.fatal;
   log.log = log;
   log.logError = log.error;
   log.logWarn = log.warn;
+
+  // bonus
+
+  log.context = function(funcName, params, object) {
+    return createEventLogger(log, {
+      where: object? object.toString() + '->' +funcName: funcName,
+      params: params
+    })
+  }
+
+  log.rejectWithCode = function(code) {
+    return function rejectWithCodeHandler(err) {
+      var details = {
+        what: code,
+        context: context,
+        err: err
+      };
+      log.error(code, details)
+      return p.reject(details)
+    };
+  }
+
+  log.resolve = function(result) {
+    if (context)
+      log.log(context.what+' resolved.', {context: context, result: result});
+    return result;
+  }
+
+  log.errorReport = function(what, details) {
+    if (context) {
+      details = _.extend(context, details)
+    }
+    log.error(what, details);
+    return details;
+  }
 
   return log;
 }
