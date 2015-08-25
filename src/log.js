@@ -203,7 +203,7 @@ function createEventLogger(logger, context) {
 
   log.context = function(funcName, params, object) {
     return createEventLogger(log, {
-      where: object? object.toString() + '->' +funcName: funcName,
+      where: object? object.constructor + '->' +funcName: funcName,
       params: params
     })
   }
