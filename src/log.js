@@ -213,7 +213,8 @@ function createEventLogger(logger, context) {
       var details = {
         what: code,
         context: context,
-        err: err
+        err: err,
+        why: _.isString(err) ? err : err.message
       };
       log.error(code, details)
       return p.reject(details)
