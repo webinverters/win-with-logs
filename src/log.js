@@ -202,6 +202,10 @@ function createEventLogger(logger, context) {
   // bonus
 
   log.context = function(funcName, params, object) {
+    log.debug(funcName+"()", {
+      params: JSON.stringify(params),
+      objectName: object? 'none':object.constructor
+    });
     return createEventLogger(log, {
       where: object? object.constructor + '->' +funcName: funcName,
       params: params
@@ -213,6 +217,7 @@ function createEventLogger(logger, context) {
       var details = {
         what: code,
         context: context,
+        details: err.details,
         err: err,
         why: _.isString(err) ? err : err.message
       };
