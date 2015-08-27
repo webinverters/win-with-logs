@@ -34,7 +34,6 @@ module.exports = function construct(config, sewer) {
   TrackedStream.prototype._write = function(chunk, encoding, done) {
     var eventLabel = extractEventLabel(chunk.msg);
     if (eventLabel[0] == '@') {
-      console.log('THE TRACKED EVENT:', eventLabel);
       chunk.eventLabel = eventLabel.substr(1);
       sewer.write(new Buffer(JSON.stringify(chunk)));
     }

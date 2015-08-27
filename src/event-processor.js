@@ -12,6 +12,7 @@
 "use strict";
 
 var util = require('util');
+var getConfig = require('../config');
 
 /**
  *
@@ -24,21 +25,19 @@ module.exports = function construct(config, storage, longTermStorage) {
   var m = {};
   config = config ? config : {};
   config = _.defaults(config, {
-    saveEventsToLongTermStorage: true,
-    logTableName: 'log',
-    errorTableName: 'error-log',
-    goalTableName: 'failed-goals'
+    saveEventsToLongTermStorage: true
   });
 
   m.processEvent = function(eventPayload, eventType) {
-    var eventRow, logTableName = config.logTableName;  // by default logs to logTableName
+    var eventRow, _logTableName;
 
     return p.resolve().then(function() {
       return extractEventRow(eventPayload,eventType);
     })
     .then(function(eventrow) {
-      eventRow = eventrow;
-
+      _.extend(config,getConfig(eventrow.env, 'wwl'))
+      _logTableName = config.TABLE_EVENTS  // by default logs to the event table.
+      eventRow = eventrow
       // dynamo's max item size is 400kb, but we'll cap it at 4000 bytes to be safe.
       if (JSON.stringify(eventRow).length > 4000) {
         return saveToLongTermStorage(eventRow, eventPayload);
@@ -52,8 +51,8 @@ module.exports = function construct(config, storage, longTermStorage) {
       return eventRow;
     })
     .then(function(eventRow) {
-      if (eventRow.level == 50 && config.errorTableName) {
-        logTableName = config.errorTableName;
+      if (eventRow.level == 50 && config.TABLE_ERRORS) {
+        _logTableName = config.TABLE_ERRORS;
 
         if (eventRow.uid) {
           return trackGoal(eventRow);
@@ -62,7 +61,7 @@ module.exports = function construct(config, storage, longTermStorage) {
       return eventRow;
     })
     .then(function(eventRow) {
-      return storage.save(logTableName, eventRow)
+      return storage.save(_logTableName, eventRow)
         .catch(function(err) {
           console.error('Error saving tracked event to storage.');
           console.error(err);
@@ -111,7 +110,7 @@ module.exports = function construct(config, storage, longTermStorage) {
 
   function completeGoal(uid) {
     var name = uid.split('#')[0];
-    return storage.delete(config.goalTableName, {name: name, uid: uid});
+    return storage.delete(config.TABLE_FAILED_GOALS, {name: name, uid: uid});
   }
 
   function trackGoal(goal) {
@@ -125,7 +124,7 @@ module.exports = function construct(config, storage, longTermStorage) {
     goal.status = 'TemporaryFailure';
     goal.callCount += 1;
 
-    return storage.save(config.goalTableName, goal)
+    return storage.save(config.TABLE_FAILED_GOALS, goal)
       .then(function() {
         return goal;
       })
