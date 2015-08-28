@@ -20,11 +20,8 @@ module.exports = function construct(env, app) {
   var m = new (function Init() {
   })();
 
-  var config = config ? config : {};
+  var config = require('./config')(env,app)
   config = _.defaults(config, {
-    TABLE_FAILED_GOALS: app+'-failed_goals-'+env,
-    TABLE_ERRORS: app+'-error_log-'+env,  // TODO: update all errors
-    TABLE_EVENTS: app+'-event_log-'+env,
     aws: {
       region: "us-east-1",
       //apiVersion: "2012-08-10",

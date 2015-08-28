@@ -204,7 +204,7 @@ function createEventLogger(logger, context) {
   log.context = function(funcName, params, object) {
     log.debug(funcName+"()", {
       params: JSON.stringify(params),
-      objectName: object? 'none':object.constructor
+      objectName: object? object.constructor : 'none'
     });
     return createEventLogger(log, {
       where: object? object.constructor + '->' +funcName: funcName,
