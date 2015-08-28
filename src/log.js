@@ -122,11 +122,11 @@ function createEventLogger(logger, context) {
       if (_.isObject(arguments[1])) {
         _.extend(logObject, arguments[1]);
       }
-      _.each(arguments, function(arg, idx) {
-        if (idx != 0) {
-          logObject.msg += ' ' + JSON.stringify(arg);
-        }
-      });
+      //_.each(arguments, function(arg, idx) {
+      //  if (idx != 0) {
+      //    logObject.msg += ' ' + JSON.stringify(arg);
+      //  }
+      //});
     } else if (!arguments[1]) {
       if (_.isObject(arguments[0])) return arguments[0];
     } else {
@@ -202,8 +202,8 @@ function createEventLogger(logger, context) {
   // bonus
 
   log.context = function(funcName, params, object) {
-    log.debug(funcName+"()", {
-      params: JSON.stringify(params),
+    log.debug(funcName, {
+      params: JSON.stringify(params, null, '\t'),
       objectName: object? object.constructor : 'none'
     });
     return createEventLogger(log, {
