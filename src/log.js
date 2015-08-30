@@ -202,12 +202,13 @@ function createEventLogger(logger, context) {
   // bonus
 
   log.context = function(funcName, params, object) {
-    log.debug(funcName, {
-      params: JSON.stringify(params, null, '\t'),
-      objectName: object? object.constructor : 'none'
-    });
+    logger.debug({
+      msg: 'Calling function: '+funcName,
+      args: JSON.stringify(params, null, '\t'),
+      className: (object && _.isString(object.constructor)) ? object.constructor : 'none'
+    }, funcName);
     return createEventLogger(log, {
-      where: object? object.constructor + '->' +funcName: funcName,
+      where: (object && _.isString(object.constructor)) ? object.constructor + '->' +funcName: funcName,
       params: params
     })
   }
