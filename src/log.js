@@ -49,7 +49,6 @@ module.exports = function construct(config, logProvider, bunyan, PrettyStream, T
     });
   }
 
-
   if (PrettyStream) {
     var prettyStdOut = new PrettyStream();
     prettyStdOut.pipe(process.stdout);
@@ -152,21 +151,27 @@ function createEventLogger(logger, context) {
   };
 
   // make sure all the interfaces are wired up.
-  log.error = function() {
-    if (_.isString(arguments[0]) && _.isObject(arguments[1]) && arguments[1].message) {
-      logger.error({err: arguments[1]}, arguments[0]);
-    } else {
-      var logObject = parseLogObject.apply(undefined,arguments);
-      logger.error(logObject, logObject.msg);
+  log.error = function(msg, err) {
+    console.log('err instanceof Error', err instanceof Error)
+    if (err) {
+      logger.error({err: err}, msg);
+    } else if (err) {
+      logger.error(JSON.stringify(err, null, '\t'), msg);
+    }
+    else {
+      logger.error(msg)
     }
   };
+
   log.warn = function() {
     var logObject = parseLogObject.apply(undefined,arguments);
     logger.warn(logObject, logObject.msg);
   };
-  log.debug = function() {
-    var logObject = parseLogObject.apply(undefined,arguments);
-    logger.debug(logObject, logObject.msg);
+  log.debug = function(msg, details) {
+    if (!details) logger.debug(msg)
+    else {
+      logger.debug(details, msg);
+    }
   };
   log.info = function() {
     var logObject = parseLogObject.apply(undefined,arguments);
@@ -209,36 +214,42 @@ function createEventLogger(logger, context) {
     }, funcName);
     return createEventLogger(log, {
       where: (object && _.isString(object.constructor)) ? object.constructor + '->' +funcName: funcName,
-      params: params
+      args: JSON.stringify(params, null, '\t')
     })
   }
 
   log.rejectWithCode = function(code) {
     return function rejectWithCodeHandler(err) {
-      var details = {
+      if (!err) throw 'reject with code called with empty err param.'
+      var error = {
         what: code,
         context: context,
         details: err.details,
         err: err,
-        why: _.isString(err) ? err : err.message
       };
-      log.error(code, details)
-      return p.reject(details)
+
+      error.rootCause = err.rootCause || _.clone(error);
+
+      log.error(code, error)
+      throw error
     };
   }
 
   log.resolve = function(result) {
     if (context)
-      log.log(context.what+' resolved.', {context: context, result: result});
+      log.log(context.where+' resolved.', {context: context, result: result});
     return result;
   }
 
-  log.errorReport = function(what, details) {
-    if (context) {
-      details = _.extend({}, context,{what: what}, details)
+  log.errorReport = function(what, details, err) {
+    details = details || {}
+    if (err) {
+      details = _.merge({}, err.details || {},details)
     }
-    log.error(what, details);
-    return details;
+    var errorReport = {what: what, details:details, err: err};
+
+    log.error(what, errorReport);
+    return errorReport;
   }
 
   return log;
