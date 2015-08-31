@@ -237,7 +237,7 @@ function createEventLogger(logger, context) {
 
   log.resolve = function(result) {
     if (context)
-      log(context.where+' resolved.', {context: context, result: result});
+      log(context.where+' resolved.', {context: context, result: result})
     return result;
   }
 

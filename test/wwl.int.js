@@ -28,4 +28,11 @@ describe('wwl', function () {
       });
     })
   })
+
+  describe('context()', function() {
+    it('resolves with context info', function() {
+      log.context('test()', {0:'hello'})
+      log.resolve('result')
+    })
+  })
 });
