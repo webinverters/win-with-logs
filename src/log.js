@@ -139,10 +139,13 @@ function createEventLogger(logger, context) {
   // The log method itself is a little special.  It does 2 things:
   // 1. Calls bunyan info() log level logger.
   // 2. Checks for observers to this log event and fires their handlers.
-  var log = function log() {
-    var logObject = parseLogObject.apply(undefined,arguments);
+  var log = function log(what, details) {
+    //var logObject = parseLogObject.apply(undefined,arguments);
     enactObservers.apply(logger, arguments);
-    logger.info(logObject, logObject.msg);
+    if (details)
+      logger.info(details, what)
+    else
+      logger.info(what)
   };
 
   log.watchFor = function(eventLabel, observerAction) {
@@ -152,11 +155,8 @@ function createEventLogger(logger, context) {
 
   // make sure all the interfaces are wired up.
   log.error = function(msg, err) {
-    console.log('err instanceof Error', err instanceof Error)
     if (err) {
       logger.error({err: err}, msg);
-    } else if (err) {
-      logger.error(JSON.stringify(err, null, '\t'), msg);
     }
     else {
       logger.error(msg)
@@ -237,7 +237,7 @@ function createEventLogger(logger, context) {
 
   log.resolve = function(result) {
     if (context)
-      log.log(context.where+' resolved.', {context: context, result: result});
+      log(context.where+' resolved.', {context: context, result: result});
     return result;
   }
 
