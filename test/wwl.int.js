@@ -31,6 +31,7 @@ describe('wwl', function () {
   describe('log()', function() {
     it('logs the msg and details.', function(done) {
       cb = function(chunk, encoding) {
+        console.log('FUCK', chunk)
         expect(chunk.details.table).to.equal('tableName')
         expect(chunk.details.params).to.deep.equal({insert: 'xyz', double: 10.001, nested: { x: 10 } })
         expect(chunk.level).to.equal(30)  // info is level 30

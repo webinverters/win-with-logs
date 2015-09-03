@@ -40,13 +40,16 @@ module.exports = function construct(config) {
     throw "win-with-logs: requires config to contain 'name' and 'app' properties.";
   }
 
-  var robustClient;
+  var stub = function() {return p.reject('robustKey missing')};
+
+  var robustClient = { getLogs:stub , postLogEvents: stub }
   if(config.robustKey) {
     robustClient = require('./src/robust-client')(config);
   }
-  var log = require('./src/log')(config, null, bunyan, PrettyStream, TrackedStream);
 
-  log.debug('WIN-WITH-LOGS Initialized', config)
+  var log = require('./src/log')(config, null, bunyan, PrettyStream, TrackedStream, robustClient);
+
+  //log.debug('WIN-WITH-LOGS Initialized', config)
 
   return log;
 };

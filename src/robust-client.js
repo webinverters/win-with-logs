@@ -12,7 +12,7 @@
 "use strict";
 
 module.exports = function construct(config, log) {
-  log.module('robust-client', {log: log})
+  //log.module('robust-client', {log: log})
   var m = new (function RobustClient() {
   })();
 
@@ -22,7 +22,7 @@ module.exports = function construct(config, log) {
     robustKey: ''
   });
 
-  var http = p.promisifyAll(require('resilient'))
+  var http = p.promisifyAll(require('resilient')({}))
 
   var options = {
     headers: {
