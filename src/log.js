@@ -11,9 +11,11 @@
 'use strict';
 var _ = require('lodash');
 
-module.exports = function construct(config, logProvider, bunyan, PrettyStream, TrackedStream) {
+module.exports = function construct(config, logProvider, bunyan, PrettyStream, TrackedStream, cloud) {
   config = config || {};
-  //config = _.defaults(config, );
+  config = _.defaults(config, {
+
+  });
 
   var bunyanConf = {
     src: config.debug,
@@ -34,7 +36,7 @@ module.exports = function construct(config, logProvider, bunyan, PrettyStream, T
       level: 'error',
       type: 'rotating-file',
       period: '1d',
-      count: 14,
+      count: 5,
       path: config.errorFile
     });
   }
@@ -68,11 +70,11 @@ module.exports = function construct(config, logProvider, bunyan, PrettyStream, T
     }
   }
 
-  if (config.slackLoggingEnabled) {
+  if (config.slackConfig) {
     var BunyanSlack = require('bunyan-slack');
-    bunyanConf.stream = new BunyanSlack(config.slackConfig, function (error) {
-      console.log(error);
-    });
+    bunyanConf.streams.push(new BunyanSlack(config.slackConfig, function (error) {
+      console.log('Logging to slack:',error);
+    }));
   }
 
   var log = (logProvider && logProvider(bunyanConf)) || bunyan.createLogger(bunyanConf);
@@ -100,16 +102,14 @@ module.exports = function construct(config, logProvider, bunyan, PrettyStream, T
 
 
 function createEventLogger(logger, context) {
-  logger.observers = {};
+  logger.observers = logger.observers || {};
 
   var enactObservers = function() {
-    if (arguments[0][0] == '@') {
-      if (logger.observers[arguments[0]]) {
-        var event = {};
-        p.map(logger.observers[arguments[0]] || [], function(cb) {
-          if (!event.stopPropagation) cb(event, arguments[1]);
-        }, {concurrency: 1});
-      }
+    if (logger.observers[arguments[0]]) {
+      var event = {};
+      p.map(logger.observers[arguments[0]] || [], function(cb) {
+        if (!event.stopPropagation) cb(event, arguments[1]);
+      }, {concurrency: 1});
     }
   };
 
@@ -117,22 +117,21 @@ function createEventLogger(logger, context) {
     var logObject = {};
 
     if (_.isString(arguments[0])) {
-      logObject.msg = arguments[0];
-      if (_.isObject(arguments[1])) {
-        _.extend(logObject, arguments[1]);
+      logObject.msg = arguments[0]
+    } else if (_.isObject(arguments[0])) {
+      logObject.details = arguments[0]
+      if (logObject.details.err) {
+        logObject.err = logObject.details.err
       }
-      //_.each(arguments, function(arg, idx) {
-      //  if (idx != 0) {
-      //    logObject.msg += ' ' + JSON.stringify(arg);
-      //  }
-      //});
-    } else if (!arguments[1]) {
-      if (_.isObject(arguments[0])) return arguments[0];
-    } else {
-      _.each(arguments, function(arg, idx) {
-        logObject.msg += ' ' + JSON.stringify(arg);
-      });
     }
+
+    if (_.isObject(arguments[1])) {
+      logObject.details = arguments[1]
+      if (logObject.details.err) {
+        logObject.err = logObject.details.err
+      }
+    }
+
     return logObject;
   }
 
@@ -140,18 +139,20 @@ function createEventLogger(logger, context) {
   // 1. Calls bunyan info() log level logger.
   // 2. Checks for observers to this log event and fires their handlers.
   var log = function log(what, details) {
-    //var logObject = parseLogObject.apply(undefined,arguments);
+    var logObject = parseLogObject.apply(undefined,arguments);
     enactObservers.apply(logger, arguments);
     if (details)
-      logger.info(details, what)
+      logger.info(logObject, logObject.msg)
     else
       logger.info(what)
   };
+  log.log = log;
 
   log.watchFor = function(eventLabel, observerAction) {
     logger.observers[eventLabel] = logger.observers[eventLabel] || [];
     logger.observers[eventLabel].push(observerAction);
   };
+  log.subscribe = log.watchFor;
 
   // make sure all the interfaces are wired up.
   log.error = function(msg, err) {
@@ -183,27 +184,52 @@ function createEventLogger(logger, context) {
     logger.fatal(logObject, logObject.msg);
   };
 
+
+  log.failedGoal = function(goal) {
+    var logObject = parseLogObject.apply(log,arguments);
+
+    if (!logObject.goalName || !logObject.goalId) {
+      console.log('Failed to log goal.  Missing goalName or goalId', logObject)
+      log.error('Failed to log goal.  Missing goalName or goalId', logObject)
+      return;
+    }
+
+    logObject.logAction = {
+      failedGoal: {
+        goalName: goal.goalName,
+        goalId: goal.goalId
+      }
+    };
+
+    logger.error(logObject, 'Goal Failed: '+goal.goalName+':'+goal.goalId );
+  };
+
   // log a goal completion.
-  log.completion = function() {
-    var logObject = parseLogObject.apply(undefined,arguments);
-    if (!logObject.uid) { log.warn('Goal completion log failed due to no uid specified.'); }
+  log.completedGoal = function(goal) {
+    var logObject = parseLogObject.apply(log,arguments);
 
-    logObject.completeGoal = logObject.uid;
-    logger.info(logObject, logObject.msg);
+    if (logObject.uid) {
+      console.log('Error goal uid is deprecated', logObject)
+      log.warn('Error goal uid is deprecated.', logObject)
+    }
+
+    if (!logObject.goalName || !logObject.goalId) {
+      console.log('Failed to log goal.  Missing goalName or goalId', logObject)
+      log.error('Failed to log goal.  Missing goalName or goalId', logObject)
+      return;
+    }
+
+    logObject.logAction = {
+      completeGoal: {
+        goalName: goal.goalName,
+        goalId: goal.goalId
+      }
+    };
+
+    logger.info(logObject, 'Completed goal: '+goal.goalName+':'+goal.goalId );
   };
 
-  log.child = function() {
-    var logObject = parseLogObject.apply(undefined,arguments);
-    logger.child(logObject);
-  };
-
-
-  // assign aliases:
-  log.logFatal = log.fatal;
-  log.log = log;
-  log.logError = log.error;
-  log.logWarn = log.warn;
-
+  log.child = logger.child.bind(logger);
   // bonus
 
   log.context = function(funcName, params, object) {
@@ -217,6 +243,22 @@ function createEventLogger(logger, context) {
       args: JSON.stringify(params, null, '\t')
     })
   }
+
+  log.module = function(moduleName, params) {
+    logger.debug({
+      msg: 'Initializing Module: '+ moduleName,
+      params: JSON.stringify(params, null, '\t')
+    }, 'Creating module instance: '+ moduleName);
+    return createEventLogger(log, {
+      module: {
+        moduleName: moduleName,
+        params: params
+      }
+    })
+  };
+
+  log.method = log.context;
+  log.function = log.context;
 
   log.rejectWithCode = function(code) {
     return function rejectWithCodeHandler(err) {
@@ -233,13 +275,20 @@ function createEventLogger(logger, context) {
       log.error(code, error)
       throw error
     };
-  }
+  };
 
+  // TODO: delete resolve
   log.resolve = function(result) {
     if (context)
       log(context.where+' resolved.', {context: context, result: result})
     return result;
-  }
+  };
+
+  log.result = function(result) {
+    if (context)
+      log(context.where+' resolved.', {context: context, result: result})
+    return result;
+  };
 
   log.errorReport = function(what, details, err) {
     details = details || {}
@@ -250,7 +299,7 @@ function createEventLogger(logger, context) {
 
     log.error(what, errorReport);
     return errorReport;
-  }
+  };
 
   return log;
 }

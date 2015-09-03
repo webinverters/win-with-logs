@@ -21,37 +21,32 @@ module.exports = function construct(config) {
   config = _.defaults(config, {
     name: 'DefaultComponent',
     app: 'DefaultApp',
-    env: 'local',
-    errorFile: '',
-    logFile: '',
+    env: 'dev',
+    errorFile: 'error.log',
+    logFile: 'trace.log',
     useLoggingGlobals: true,
-    debug: false,
-    slackLoggingEnabled: false,
-    slackConfig: {
-      webhook_url: "",
-      channel: "",
-      username: "bot"
-    },
-    enableTrackedEvents: true,
-    streamName: 'Sewer',  // for tracked events, this will the be the kinesis stream name.
-    streams: []
+    debug: config.env != 'prod' ? true : false,
+    //slackConfig: {
+    //  webhook_url: "",
+    //  channel: "",
+    //  username: "bot"
+    //},
+    robustKey: '',
+    cloudLogServerEndpoint: 'http://robustly.io/api/logs',
+    streams: []  // advanced: custom streams can be subscribed for plugin support.
   });
 
-  if (config.name == 'DefaultComponent' || config.app=='DefaultApp' || config.env=='local') {
-    throw "win-with-logs: requires config to contain 'name', 'env', and 'app' properties.";
+  if (config.name == 'DefaultComponent' || config.app=='DefaultApp') {
+    throw "win-with-logs: requires config to contain 'name' and 'app' properties.";
   }
 
-  var winlogger = require('./src/log')(config, null, bunyan, PrettyStream, TrackedStream);
-
-  winlogger.EventProcessor = require('./src/event-processor');
-
-  if (config.useLoggingGlobals) {
-    global.log = winlogger.log.bind(winlogger);
-    global.logError = winlogger.error.bind(winlogger);
-    global.debug = winlogger.debug.bind(winlogger);
-    global.logWarn = winlogger.warn.bind(winlogger);
-    global.fatal = winlogger.fatal.bind(winlogger);
+  var robustClient;
+  if(config.robustKey) {
+    robustClient = require('./src/robust-client')(config);
   }
+  var log = require('./src/log')(config, null, bunyan, PrettyStream, TrackedStream);
 
-  return winlogger;
+  log.debug('WIN-WITH-LOGS Initialized', config)
+
+  return log;
 };

@@ -25,7 +25,8 @@ require('dotenv').load();
 global.config = {};
 config.secrets = {
   AWS_KEY: process.env.AWS_KEY,
-  AWS_SECRET: process.env.AWS_SECRET
+  AWS_SECRET: process.env.AWS_SECRET,
+  ROBUST_KEY: process.env.ROBUST_KEY
 };
 
 global.AWS = require('aws-sdk');
