@@ -45,8 +45,12 @@ describe('wwl', function () {
   })
 
   describe('log.error()', function() {
-    it('logs the error details and stack trace', function() {
-      log('error occurred:', new Error('test error'));
+    xit('logs the error details and stack trace', function() {
+      log.error('error occurred:', new Error('test error'));
+      throw "fails"
+    })
+    it('logs the error string', function() {
+      log.error('error occurred:', 'some error info');
     })
   })
 

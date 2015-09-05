@@ -151,11 +151,11 @@ module.exports = function construct(config, logProvider, bunyan, PrettyStream, T
     log.subscribe = log.watchFor;
 
     log.error = function(msg, err) {
-      if (err) {
+      if (_.isObject(err)) {
         logger.error({err: err}, msg);
       }
       else {
-        logger.error(msg)
+        logger.error(msg, err)
       }
     };
 
