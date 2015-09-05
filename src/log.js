@@ -150,7 +150,6 @@ module.exports = function construct(config, logProvider, bunyan, PrettyStream, T
     };
     log.subscribe = log.watchFor;
 
-    // make sure all the interfaces are wired up.
     log.error = function(msg, err) {
       if (err) {
         logger.error({err: err}, msg);
@@ -164,12 +163,14 @@ module.exports = function construct(config, logProvider, bunyan, PrettyStream, T
       var logObject = parseLogObject.apply(undefined,arguments);
       logger.warn(logObject, logObject.msg);
     };
+
     log.debug = function(msg, details) {
       if (!details) logger.debug(msg)
       else {
         logger.debug(details, msg);
       }
     };
+
     log.info = function() {
       var logObject = parseLogObject.apply(undefined,arguments);
       logger.info(logObject, logObject.msg);
@@ -179,7 +180,6 @@ module.exports = function construct(config, logProvider, bunyan, PrettyStream, T
       var logObject = parseLogObject.apply(undefined,arguments);
       logger.fatal(logObject, logObject.msg);
     };
-
 
     log.failedGoal = function(goal) {
       var logObject = parseLogObject.apply(log,arguments);

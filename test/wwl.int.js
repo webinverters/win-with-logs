@@ -31,7 +31,6 @@ describe('wwl', function () {
   describe('log()', function() {
     it('logs the msg and details.', function(done) {
       cb = function(chunk, encoding) {
-        console.log('FUCK', chunk)
         expect(chunk.details.table).to.equal('tableName')
         expect(chunk.details.params).to.deep.equal({insert: 'xyz', double: 10.001, nested: { x: 10 } })
         expect(chunk.level).to.equal(30)  // info is level 30
@@ -42,6 +41,12 @@ describe('wwl', function () {
         table: 'tableName',
         params: {insert: 'xyz', double: 10.001, nested: { x: 10 } }
       });
+    })
+  })
+
+  describe('log.error()', function() {
+    it('logs the error details and stack trace', function() {
+      log('error occurred:', new Error('test error'));
     })
   })
 
