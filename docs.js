@@ -19,6 +19,7 @@ var log = require('win-with-logs')({
   errorLogFilePath: '.',
   eventLogFilePath: '.',
   goalLogFilePath: '.',
+  maxLogFileSize: 100000,  // bytes
   recipients: [
     {
       name: 'Admin',

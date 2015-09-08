@@ -81,7 +81,6 @@ logger.fatal('SOMETHING_BAD_HAPPENED', details)  // sends a notification.
 
 // Log Viewing API:
 
- log.getErrors({timestamp:0, limit:100})
  log.getLogs({timestamp:0, limit:100})
 
 // Tracked Event Query API:

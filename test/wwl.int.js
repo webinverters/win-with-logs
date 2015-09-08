@@ -33,6 +33,7 @@ describe('wwl', function () {
       cb = function(chunk, encoding) {
         expect(chunk.details.table).to.equal('tableName')
         expect(chunk.details.params).to.deep.equal({insert: 'xyz', double: 10.001, nested: { x: 10 } })
+        expect(chunk.msg).to.equal('method()')
         expect(chunk.level).to.equal(30)  // info is level 30
         done()
       };
@@ -49,7 +50,7 @@ describe('wwl', function () {
       log.error('error occurred:', new Error('test error'));
       throw "fails"
     })
-    it('logs the error string', function() {
+    xit('logs the error string', function() {
       log.error('error occurred:', 'some error info');
     })
   })
