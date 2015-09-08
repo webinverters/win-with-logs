@@ -24,19 +24,28 @@ client that will do all of the above, plus afford you unique capabilities.
 ## Code Example
 
 var log = require('win-with-logs')({
-  name: 'webservice',
+  component: 'webservice',
   env: 'dev',
-  app: 'test-app'
-  enableTrackedEvents: true,  // default is true
-  logFile: '{app}.log',
+  app: 'test-app',
+  logFilePath: '.',
+  errorLogFilePath: '.',
+  trackedEventLogFilePath: '.',
   recipients: [
    {
       name: 'Admin',
       email: 'admin@company.com',
-      subscribeTo: 'EVENT_TYPE1, EVENT_TYPE2',
-      criticalErrors: true  // default.
+      subscribeToTriggers: {
+        events: [EVENT_TYPE1, EVENT_TYPE2'],
+        levels: 'critical'  // default
+      }
    }],
-   robustKey: 'xxx'  // provide your robustKey for "Robust-*" integration
+   robustKey: 'xxx',  // enables "Robustly.io" integration.
+   cloudConfig: {
+      enableTrackedEvents: true,    // tracked events are queryable events stored in the cloud,
+      trackedEventSendInterval: 5,    // tracked events are sent to the cloud at this interval  (synchronizing event and streamed logs
+      enableLogStreaming: true,     // enable logs to be stored on the cloud
+      logSendInterval: 5,      // sends logs to the cloud every 5 seconds.
+   }
 });
 
 // LOGGING API:
