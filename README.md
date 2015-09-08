@@ -20,6 +20,9 @@ client that will do all of the above, plus afford you unique capabilities.
 - Local log file rotation
 - Cloud backups
 - Log indexed, queryable events in addition to grepable string/binary streams.
+- Works on most browser clients
+
+TODO: trim down the fat for tracked events and only store component info, event label, and event details.
 
 ## Code Example
 
