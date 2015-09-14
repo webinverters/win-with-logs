@@ -114,7 +114,8 @@ Provide code examples and explanations of how to get the project.
 - Require it in your codebase: 
 
 __Barebones__:
-global.log = require('win-with-logs')({app: 'appName', env: 'dev', name: 'componentName', robustKey: 'a-b-c'})
+
+    global.log = require('win-with-logs')({app: 'appName', env: 'dev', name: 'componentName', robustKey: 'a-b-c'})
 
 __Kitchen Sink:__  (note: you do not have to make "log" a global singleton.)
     
@@ -137,8 +138,129 @@ __Kitchen Sink:__  (note: you do not have to make "log" a global singleton.)
 
 ## API Reference
 
+### logging
+
+##### log methods
+   - log(msg,details)
+   - log.warn(msg,details)
+   - log.fatal(msg,details)
+   - log.debug(msg,details)
+   - log.error(msg,details)
+
+##### description
+Will log an entry with a level of log     
+##### parameters
+msg - a string or object // mandatory
+details - string or object //optional
+##### output
+Will always resolve a promise (true)
+If fs logging is enabled, it will resolve when the entry is flushed.
+otherwise, it will resolve immediately.
+It is not required to wait for it to resolve.
+##### examples
+
+```javascript
+    
+var basicConfig = {
+        component: "webservice",
+        env: "dev",
+        app: "test-app"
+    }
+    
+var log = require('win-with-logs')(basicConfig);
+
+log()
+//outputs {"name":"test-app","component":"webservice","env":"dev","hostname":"MacBook-Pro.local","pid":69975,"level":30,"msg":"undefined","time":"Sun Jan 1 2015 10:20:30 GMT-0400 (EDT)","v":0}
+
+log("test")
+//outputs {"name":"test-app","component":"webservice","env":"dev","hostname":"MacBook-Pro.local","pid":69975,"level":30,"msg":"test","time":"Sun Jan 1 2015 10:20:30 GMT-0400 (EDT)","v":0}
+
+log({a: 1});
+//outputs {"name":"test-app","component":"webservice","env":"dev","hostname":"MacBook-Pro.local","pid":69975,"level":30,"msg":"{a:1}","time":"Sun Jan 1 2015 10:20:30 GMT-0400 (EDT)","v":0}
+
+log("a", "hello");
+//outputs {"name":"test-app","component":"webservice","env":"dev","hostname":"MacBook-Pro.local","pid":69975,"level":30,"msg":"a hello","time":"Sun Jan 1 2015 10:20:30 GMT-0400 (EDT)","v":0}
+
+log({details: {msg: "hello"}}, "message");
+//outputs outputs {"name":"test-app","component":"webservice","env":"dev","hostname":"MacBook-Pro.local","pid":69975,"level":30,"details":{"msg":"hello"},"msg":"message","time":"Sun Jan 1 2015 10:20:30 GMT-0400 (EDT)","v":0}
+
+log.warn("test")
+//outputs {"name":"test-app","component":"webservice","env":"dev","hostname":"MacBook-Pro.local","pid":69975,"level":30,"msg":"test","time":"Sun Jan 1 2015 10:20:30 GMT-0400 (EDT)","v":0}
+
+log.debug("test")
+//outputs {"name":"test-app","component":"webservice","env":"dev","hostname":"MacBook-Pro.local","pid":69975,"level":30,"msg":"test","time":"Sun Jan 1 2015 10:20:30 GMT-0400 (EDT)","v":0}
+
+log.error("test")
+//outputs {"name":"test-app","component":"webservice","env":"dev","hostname":"MacBook-Pro.local","pid":69975,"level":30,"msg":"test","time":"Sun Jan 1 2015 10:20:30 GMT-0400 (EDT)","v":0}
+
+log.fatal("test")
+//outputs {"name":"test-app","component":"webservice","env":"dev","hostname":"MacBook-Pro.local","pid":69975,"level":30,"msg":"test","time":"Sun Jan 1 2015 10:20:30 GMT-0400 (EDT)","v":0}
+
+```
+    
+
+##### log context methods
+   - log.module(name)
+ 
+##### description
+will return a new logger for context logging     
+##### parameters
+name - a string // mandatory
+##### output
+will return the  with the similar properties
+log,debug,fatal,error,warn,etc
+##### examples
+
+```javascript
+    
+var basicConfig = {
+        component: "webservice",
+        env: "dev",
+        app: "test-app"
+    }
+    
+var log = require('win-with-logs')(basicConfig);
+
+log=log.module("testModule")
+log("new context)
+//all future log entries now contain the module name {module:"testModule",name":"test-app","component":"webservice","env":"dev","hostname":"MacBook-Pro.local","pid":69975,"level":30,"msg":"new context","time":"Sun Jan 1 2015 10:20:30 GMT-0400 (EDT)","v":0}
+
+```
+
 
 ### Event Aggregator (pub/sub): 
+
+#### methods
+   - log.addEventHandler(name,func)
+ 
+##### description
+Attach a listener to listen for events     
+##### parameters
+name - a string // mandatory
+func - a function // mandatory
+##### output
+no output, this is a synchronous function
+##### examples
+
+```javascript
+    
+var basicConfig = {
+        component: "webservice",
+        env: "dev",
+        app: "test-app"
+    }
+    
+var log = require('win-with-logs')(basicConfig);
+
+log.addEventHandler("test",function(){
+console.log("test activated")
+})
+
+log("new context)
+//expect to see the following in the console "test activated" 
+
+
+```
 
 ### Goal Tracking:
 
