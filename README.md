@@ -138,6 +138,109 @@ __Kitchen Sink:__  (note: you do not have to make "log" a global singleton.)
 
 ## API Reference
 
+### config
+
+#### description
+    Various properties required to enable specific features     
+
+#### mandatory properties
+    -config.name (string)
+    -config.env (string)
+    -config.component (string)
+    
+    description
+        basic properties for creating and identifying a new logger.
+   
+#### misc
+    - config.debug(boolean)
+
+    description
+        when enabled it will log the source line number from any errors logged from log.failure 
+        By default it is enabled.
+
+#### fileSystem properties
+    - config.logFilePath (string)  
+    - config.eventFilePath (string) 
+    - config.errorFilePath (string) 
+    - config.maxLogFileSize (number) 
+    - config.maxLogFiles (number) 
+    
+    description
+        Modify to choose where the logs will be saved.
+        By default it will log to the relative directory if this is running on node.
+        default size will be 1000000 and max of 5 files.
+
+
+#### cloud properties
+    -config.robustKey (string)
+    -config.cloudConfig.enabledTrackEvents (boolean)
+    -config.cloudConfig.trackedEventSendInterval (number)
+    -config.cloudConfig.enableLogStreaming (boolean)
+    -config.cloudConfig.logSendInterval (number)
+    -config.goalLogFilePath(string)
+    
+    description
+        All properties except goalLogFilePath are required to enable cloud logging.
+
+
+##### examples
+
+```javascript
+var basicConfig = {
+    component"webservice",
+    env: "dev",
+    app: "test-app",
+    debug:true
+}
+
+var WriteConfig = {
+    component"webservice",
+    env: "dev",
+    app: "test-app",
+    logFilePath: "../log",
+    eventFilePath: "../log",
+    errorFilePath: "../log",
+    maxLogFileSize: 100000,
+    maxLogFiles: 5,
+}
+
+var cloudConfig = {
+    component: "webservice",
+    env: "dev",
+    app: "test-app",
+    recipients: [],
+    goalLogFilePath: "../log",
+    robustKey: "string",
+    cloudConfig: {
+        enabledTrackedEvents: true,
+        trackedEventSendInterval: 5,
+        enableLogStreaming: true,
+        logSendInterval: 5
+    }
+}
+
+var enableEverythingConfig = {
+    component"webservice",
+    env: "dev",
+    app: "test-app",
+    logFilePath: "../log",
+    eventFilePath: "../log",
+    errorFilePath: "../log",
+    maxLogFileSize: 100000,
+    maxLogFiles: 5,
+    goalLogFilePath: "../log",
+    robustKey: "string",
+    cloudConfig: {
+        enabledTrackedEvents: true,
+        trackedEventSendInterval: 5,
+        enableLogStreaming: true,
+        logSendInterval: 5
+    }
+}
+
+````
+
+
 ### logging
 
 ##### log methods
@@ -195,6 +298,52 @@ log.error("test")
 
 log.fatal("test")
 //outputs {"name":"test-app","component":"webservice","env":"dev","hostname":"MacBook-Pro.local","pid":69975,"level":30,"msg":"test","time":"Sun Jan 1 2015 10:20:30 GMT-0400 (EDT)","v":0}
+
+```
+
+##### logging results and failures
+   - log.success(name)
+   - log.failure(err)
+ 
+##### description
+    methods for logging the results of function that returns a result or failure     
+##### parameters
+name - a string // mandatory
+err - a valid error object //mandatory
+##### output
+will return the input exactly
+##### examples
+```javascript
+
+var basicConfig = {
+        component: "webservice",
+        env: "dev",
+        app: "test-app"
+    }
+    
+var log = require('win-with-logs')(basicConfig);
+
+function successTest(){
+    return Promise.resolve("success")
+}
+
+function failureTest(){
+    throw new Error("failure")
+}
+
+
+return successTest()
+    .then(log.succeeded)
+    .catch(log.failed)
+
+//successTest() will work as normally and the event will be logged.
+
+return failureTest()
+    .then(log.succeeded)
+    .catch(log.failed)
+
+//failureTest() will fail as normal and the event will be logged.
+
 
 ```
     
@@ -264,6 +413,46 @@ log("new context)
 
 ### Goal Tracking:
 
+#### methods
+   - log.goal(name)
+ 
+##### description
+Create and start watching for a goal.     
+##### parameters
+name - a string // mandatory
+##### output
+no output, this is a synchronous function
+##### examples
+
+```javascript
+var basicConfig = {
+        component: "webservice",
+        env: "dev",
+        app: "test-app"
+    }
+    
+var log = require('win-with-logs')(basicConfig);
+
+
+
+function failureTest(){
+    throw new Error("failure")
+}
+
+goal=log.goal("test")
+
+return failureTest()
+    .then(goal.succeeded)
+    .catch(goal.failed)
+
+//a failed goal will be logged and submitted to the cloud.
+
+log.goal("test").succeeded(true)
+//when a goal succeeds it will notify the cloud.
+//the cloud will remove any existing failed goals with the same name.
+
+
+```
 
 ## Tests
 
