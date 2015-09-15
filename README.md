@@ -1,15 +1,16 @@
-## TODO: 
+## TODO:
 - how to turn off debug logging in libraries by default?  Check bunyan, if not, then use the 'appName' to determine it...
-- convert to isotime for timestamps when viewing logs.
+- support config.name as an alias of config.component, but only document "component".
+- trim down the fat for tracked events and only store component info, event label, and event details.
 
 ## Synopsis
 
-The best Node.JS Logging Library.  A concise, human, and fully-featured logging client with out-of-the-box cloud integration, by Justin Mooser & Robustly.io
+The best Node.JS Logging Library.  A concise, human, and fully-featured logging client with out-of-the-box cloud backups, log streaming, and search support.
 
 ## Description & Motivation
 
 Rather than creating yet another logging tool that focuses on storing and structuring your log data, here's a logging
-client that will do all of the above, plus afford you unique capabilities. 
+client that will do all of the above, plus afford you unique capabilities.
 
 ### Unique Capabilities?
 
@@ -22,168 +23,79 @@ client that will do all of the above, plus afford you unique capabilities.
 - Log indexed, queryable events in addition to grepable string/binary streams.
 - Works on most browser clients
 
-TODO: trim down the fat for tracked events and only store component info, event label, and event details.
+## Setup
 
-## Code Example
+  npm install win-with-logs --save
 
-var log = require('win-with-logs')({
-  component: 'webservice',
-  env: 'dev',
-  app: 'test-app',
-  logFilePath: '.',
-  errorLogFilePath: '.',
-  trackedEventLogFilePath: '.',
-  recipients: [
-   {
-      name: 'Admin',
-      email: 'admin@company.com',
-      subscribeToTriggers: {
-        events: [EVENT_TYPE1, EVENT_TYPE2'],
-        levels: 'critical'  // default
-      }
-   }],
-   robustKey: 'xxx',  // enables "Robustly.io" integration.
-   cloudConfig: {
-      enableTrackedEvents: true,    // tracked events are queryable events stored in the cloud,
-      trackedEventSendInterval: 5,    // tracked events are sent to the cloud at this interval  (synchronizing event and streamed logs
-      enableLogStreaming: true,     // enable logs to be stored on the cloud
-      logSendInterval: 5,      // sends logs to the cloud every 5 seconds.
-   }
-});
+__TODO:__ include tutorial on setting up robust account key.
 
-// LOGGING API:
+- Require it in your codebase:
 
-log.module('ModuleName', { })
-log.method('MethodName', { })
-log.result('MethodName')
-log.rejectWithCode('CODE')
+__Basic Configuration__:
 
-// log a tracked event (that you can query by)
-log('@USAGE_LEVEL', {superdate: 'sumptuous', valueInt: 10, valueStr: 'whatever'});
+    global.log = require('win-with-logs')({app: 'appName', env: 'dev', component: 'componentName'})
 
-// log an event (untracked)
-log('Something happened...', {superdate: 'sumptuous', valueInt: 10, valueStr: 'whatever'});
+__Advanced Configuration with cloud integration__:
 
-// log an error (tracked)
-log.error('@MESSAGE_CORRUPTED', {messageId: 'topgun'});
-
-// log a critical error and receive notifications immediately.
-logger.fatal('SOMETHING_BAD_HAPPENED', details)  // sends a notification.
-
-// Pub/Sub API:
-
-// components can react to application events
- function handler(event, details) { }
- log.eventHandler('EVENT_LABEL', handler)
-
-// trigger the handler via:
- log('EVENT_LABEL', { info: 'some details here.'})
-
-// Log Viewing API:
-
- log.getLogs({timestamp:0, limit:100})
-
-// Tracked Event Query API:
-
- log.query({
-    event: '@POWER_OUTAGE',
-    before: epoch_timestamp,
-    limit: 10
- })
-
- log.query({
-   event: '@DATA_LOSS',
-   index: 'type7'
- })
-
-// Goal Logging API:
- var goal = log.goal({goalName: 'MyGoal', goalId: 'xyz'})
- log.failedGoal({ goalName: 'DeleteFolder', goalId: 'uniqueInstanceId', details: {} })  // details optional
- log.failedGoal(goal)  // same as above but demonstrates the purpose of createGoal()
- goal.log('EVENT', details)  // log some details which will get tracked with the goal itself.
- log.completedGoal(goal)
- log.listGoals({timestamp:0, limit:100, goalName: '', goalId: '', completed: false})
-
-
-## Installation
-
-Provide code examples and explanations of how to get the project.
-
-    npm install win-with-logs --save
-    
-- Require it in your codebase: 
-
-__Barebones__:
-
-    global.log = require('win-with-logs')({app: 'appName', env: 'dev', name: 'componentName', robustKey: 'a-b-c'})
-
-__Kitchen Sink:__  (note: you do not have to make "log" a global singleton.)
-    
-    global.log = require('win-with-logs')({
-      name: 'backend',
+    var log = require('win-with-logs')({
+      component: 'webservice',
       env: 'dev',
-      app: 'test-app'
-      logFile: 'trace.log',
-      errorLogFile: 'errors.log',
-      robustKey: 'a-b-c',   // if you do not provide your robustKey (get one free at: https://robustly.io/register).  **You will not have access to any of the library's cloud hosted features.  
+      app: 'test-app',
       recipients: [
        {
           name: 'Admin',
           email: 'admin@company.com',
-          subscribeTo: 'EVENT_TYPE1, EVENT_TYPE2',
-          criticalErrors: true  // default.
+          subscribeToTriggers: {
+            events: [EVENT_TYPE1, EVENT_TYPE2'],
+            levels: 'critical'  // default
+          }
        }],
-       robustKey: 'xxx'  // provide your robustKey for "Robust-*" integration
+       robustKey: 'xxx',  // enables "Robustly.io" integration.
+       cloudConfig: {
+          enableTrackedEvents: true,    // tracked events are queryable events stored in the cloud,
+          trackedEventSendInterval: 5,    // tracked events are sent to the cloud at this interval  (synchronizing event and streamed logs
+          enableLogStreaming: true,     // enable logs to be stored on the cloud
+          logSendInterval: 5,      // sends logs to the cloud every 5 seconds.
+       }
     });
 
-## API Reference
+## Config
 
-### config
+require('win-with-logs')(config)
 
-#### description
-    Various properties required to enable specific features     
+### Mandatory Properties
+*Basic properties for creating and identifying a new logger.*
+  - config.component (string)
+  - config.env (string)
+  - config.component (string)
 
-#### mandatory properties
-    -config.name (string)
-    -config.env (string)
-    -config.component (string)
-    
-    description
-        basic properties for creating and identifying a new logger.
-   
-#### misc
-    - config.debug(boolean)
+*Enable source level debug statements (poor performance: avoid in production.)*
+  - config.debug (boolean) [false]
 
-    description
-        when enabled it will log the source line number from any errors logged from log.failure 
-        By default it is enabled.
+*Enable logging to files on the filesystem*
+  - config.enableFSLogging (boolean) [true]
 
-#### fileSystem properties
-    - config.logFilePath (string)  
-    - config.eventFilePath (string) 
-    - config.errorFilePath (string) 
-    - config.maxLogFileSize (number) 
-    - config.maxLogFiles (number) 
-    
-    description
-        Modify to choose where the logs will be saved.
-        By default it will log to the relative directory if this is running on node.
-        default size will be 1000000 and max of 5 files.
+*Specify log files*
+  - config.logFilePath (string)  [./log]
+  - config.eventFilePath (string) [./events]
+  - config.errorFilePath (string) [./errors]
 
+*Control maximum log storage on the local file system.  Maximum = maxLogFileSize*maxLogFiles in bytes.  By default the maximum allowed is 5 one megabyte files.  After that, logs will be overwritten as per a circular buffer.  Since there are 3 log file types, the theoretical maximum file system storage is 15MB by default.*
+  - config.maxLogFileSize (number) [1024*1000]
+  - config.maxLogFiles (number) [5]
 
-#### cloud properties
-    -config.robustKey (string)
-    -config.cloudConfig.enabledTrackEvents (boolean)
-    -config.cloudConfig.trackedEventSendInterval (number)
-    -config.cloudConfig.enableLogStreaming (boolean)
-    -config.cloudConfig.logSendInterval (number)
-    -config.goalLogFilePath(string)
-    
-    description
-        All properties except goalLogFilePath are required to enable cloud logging.
+*Provide a robustKey for cloud integration.  You can get a free key at https://robustly.io*
+  - config.robustKey (string)
 
+  - config.cloudConfig.enabledTrackEvents (boolean) [enabled if robustKey is provided]
+  - config.cloudConfig.trackedEventSendInterval (number) [5000ms]
+  - config.cloudConfig.enableLogStreaming (boolean) [true]
+  - config.cloudConfig.logSendInterval (number) [5000ms]
 
-##### examples
+  __TODO: clarify what this goalLogFilePath is all about__
+  - config.goalLogFilePath(string)
+
+### Config Examples
 
 ```javascript
 var basicConfig = {
@@ -238,38 +150,67 @@ var enableEverythingConfig = {
     }
 }
 
-````
+```
+<!-- __Kitchen Sink:__  (note: you do not have to make "log" a global singleton.)
+
+    global.log = require('win-with-logs')({
+      name: 'backend',
+      env: 'dev',
+      app: 'test-app'
+      logFile: 'trace.log',
+      errorLogFile: 'errors.log',
+      robustKey: 'a-b-c',   // if you do not provide your robustKey (get one free at: https://robustly.io/register).  **You will not have access to any of the library's cloud hosted features.  
+      recipients: [
+       {
+          name: 'Admin',
+          email: 'admin@company.com',
+          subscribeTo: 'EVENT_TYPE1, EVENT_TYPE2',
+          criticalErrors: true  // default.
+       }],
+       robustKey: 'xxx'  // provide your robustKey for "Robust-*" integration
+    }); -->
+
+## API Reference
+
+### Logging
+
+#### Supported Log Levels
+ - log.debug(msg,details)
+ - log(msg,details)
+ - log.warn(msg,details)
+ - log.error(msg,details)
+ - log.fatal(msg,details)
+
+##### Description
+The log levels allow you to filter out lower priority logging (ordered from greatest to lowest detail).  There are other important differences:
+  - By default, FATAL level logging triggers an alert if you specify recipient email addresses in the config.
+  - Tracked events cannot be triggered via DEBUG level logging, but can be triggered on all others.  __TODO: add link to more info on tracked events.__
 
 
-### logging
+##### Parameters
+  - msg (string) *a message or event name*
+  __Note:__ msg doubles as an event name when treated as such.  See more in TODO: link to event section.
+  - details (object) *a details object to log*
+  __Note:__ details is best used by keying the various properties.  For example,instead of log('The user:', user) -- it is better to write log('The user:', {user: user}).  Also,
+  log.error('The error:', {err:err}) "err" property is formatted with a stack trace.
 
-##### log methods
-   - log(msg,details)
-   - log.warn(msg,details)
-   - log.fatal(msg,details)
-   - log.debug(msg,details)
-   - log.error(msg,details)
-
-##### description
-Will log an entry with a level of log     
-##### parameters
-msg - a string or object // mandatory
-details - string or object //optional
-##### output
+##### Returns
 Will always resolve a promise (true)
-If fs logging is enabled, it will resolve when the entry is flushed.
+If cloud logging is enabled, it will resolve when the event was sent.
+If Filesystem logging is enabled, it will resolve when the entry is flushed.
 otherwise, it will resolve immediately.
 It is not required to wait for it to resolve.
-##### examples
+
+##### Examples
 
 ```javascript
-    
+
 var basicConfig = {
         component: "webservice",
         env: "dev",
         app: "test-app"
     }
-    
+
 var log = require('win-with-logs')(basicConfig);
 
 log()
@@ -304,7 +245,7 @@ log.fatal("test")
 ##### logging results and failures
    - log.success(name)
    - log.failure(err)
- 
+
 ##### description
     methods for logging the results of function that returns a result or failure     
 ##### parameters
@@ -320,7 +261,7 @@ var basicConfig = {
         env: "dev",
         app: "test-app"
     }
-    
+
 var log = require('win-with-logs')(basicConfig);
 
 function successTest(){
@@ -346,11 +287,11 @@ return failureTest()
 
 
 ```
-    
+
 
 ##### log context methods
    - log.module(name)
- 
+
 ##### description
 will return a new logger for context logging     
 ##### parameters
@@ -361,13 +302,13 @@ log,debug,fatal,error,warn,etc
 ##### examples
 
 ```javascript
-    
+
 var basicConfig = {
         component: "webservice",
         env: "dev",
         app: "test-app"
     }
-    
+
 var log = require('win-with-logs')(basicConfig);
 
 log=log.module("testModule")
@@ -377,11 +318,11 @@ log("new context)
 ```
 
 
-### Event Aggregator (pub/sub): 
+### Event Aggregator (pub/sub):
 
 #### methods
    - log.addEventHandler(name,func)
- 
+
 ##### description
 Attach a listener to listen for events     
 ##### parameters
@@ -392,22 +333,21 @@ no output, this is a synchronous function
 ##### examples
 
 ```javascript
-    
+
 var basicConfig = {
         component: "webservice",
         env: "dev",
         app: "test-app"
     }
-    
+
 var log = require('win-with-logs')(basicConfig);
 
 log.addEventHandler("test",function(){
 console.log("test activated")
 })
 
-log("new context)
-//expect to see the following in the console "test activated" 
-
+log("test")
+//expect to see the following in the console "test activated"
 
 ```
 
@@ -415,7 +355,7 @@ log("new context)
 
 #### methods
    - log.goal(name)
- 
+
 ##### description
 Create and start watching for a goal.     
 ##### parameters
@@ -430,7 +370,7 @@ var basicConfig = {
         env: "dev",
         app: "test-app"
     }
-    
+
 var log = require('win-with-logs')(basicConfig);
 
 
@@ -456,7 +396,14 @@ log.goal("test").succeeded(true)
 
 ## Tests
 
-npm install -g kinesalite
+### Run unit tests:
+    make
+
+### Run integration tests:
+    make int
+
+### Run all tests:
+    make all
 
 ## Contributors
 
