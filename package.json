@@ -48,6 +48,7 @@
     "bunyan-slack": "0.0.9",
     "kinesis": "^1.2.0",
     "lodash": "^3.9.1",
+    "lz-string": "^1.4.4",
     "resilient": "^0.3.0"
   }
 }
