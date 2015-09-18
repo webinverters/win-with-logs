@@ -11,10 +11,7 @@
 
 'use strict';
 
-var _ = require('lodash');
-var bunyan = require('bunyan');
-var PrettyStream = require('bunyan-prettystream');
-var TrackedStream = require('./src/tracked-stream');
+var api=require('./src/api')
 
 module.exports = function construct(config) {
   config = config ? config : {};
@@ -36,20 +33,6 @@ module.exports = function construct(config) {
     streams: []  // advanced: custom streams can be subscribed for plugin support.
   });
 
-  if (config.name == 'DefaultComponent' || config.app=='DefaultApp') {
-    throw "win-with-logs: requires config to contain 'name' and 'app' properties.";
-  }
+  return api(config);
 
-  var stub = function() {return p.reject('robustKey missing')};
-
-  var robustClient = { getLogs:stub , postLogEvents: stub }
-  if(config.robustKey) {
-    robustClient = require('./src/robust-client')(config);
-  }
-
-  var log = require('./src/log')(config, null, bunyan, PrettyStream, TrackedStream, robustClient);
-
-  //log.debug('WIN-WITH-LOGS Initialized', config)
-
-  return log;
 };
