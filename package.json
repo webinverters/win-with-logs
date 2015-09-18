@@ -50,6 +50,7 @@
     "kinesis": "^1.2.0",
     "lodash": "^3.9.1",
     "lz-string": "^1.4.4",
+    "proxyquire": "^1.7.2",
     "request-promise": "^0.4.3",
     "resilient": "^0.3.0"
   }
