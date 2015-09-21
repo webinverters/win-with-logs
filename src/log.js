@@ -266,7 +266,7 @@ module.exports = function construct(config, logProvider, bunyan, PrettyStream, T
           err: err,
         };
 
-        error.rootCause = err.rootCause || err.what || _.clone(error);
+        error.rootCause = err.rootCause || (err.what ? err : _.clone(error));
 
         log.error(code, error)
         throw error
