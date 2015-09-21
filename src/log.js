@@ -266,7 +266,7 @@ module.exports = function construct(config, logProvider, bunyan, PrettyStream, T
           err: err,
         };
 
-        error.rootCause = err.rootCause || _.clone(error);
+        error.rootCause = err.rootCause || err.what || _.clone(error);
 
         log.error(code, error)
         throw error
@@ -291,7 +291,7 @@ module.exports = function construct(config, logProvider, bunyan, PrettyStream, T
       if (err) {
         details = _.merge({}, err.details || {},details)
       }
-      var errorReport = {what: what, details:details, err: err};
+      var errorReport = {what: what, details:details, err: err, context:context};
 
       log.error(what, errorReport);
       return errorReport;
@@ -302,5 +302,3 @@ module.exports = function construct(config, logProvider, bunyan, PrettyStream, T
 
   return createEventLogger(log);
 };
-
-
