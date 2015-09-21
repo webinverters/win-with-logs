@@ -297,6 +297,13 @@ module.exports = function construct(config, logProvider, bunyan, PrettyStream, T
       return errorReport;
     };
 
+    log.timestamp = function (kind) {
+      if (config.timestampFunc) return config.timestampFunc()
+      if (!kind) return new Date().toISOString()
+      if (kind=='epoch') return Math.floor(new Date().getTime()/1000)
+      if (kind=='epochmill') return new Date().getTime()
+    }
+
     return _.extend(log, robustClient);
   }
 
