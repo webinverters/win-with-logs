@@ -19,8 +19,8 @@ module.exports = function construct(config) {
     name: 'DefaultComponent',
     app: 'DefaultApp',
     env: 'dev',
-    errorFile: 'error.log',
-    logFile: 'trace.log',
+    logErrorFile: 'error.log',
+    logFilePath: 'trace.log',
     useLoggingGlobals: true,
     debug: config.env != 'prod' ? true : false,
     //slackConfig: {

@@ -8,10 +8,9 @@ fsHelper.hasFile=function(dir,name){
     })[0]==name;
 };
 
-fsHelper.containLines=function(file,arrayoflines){
+fsHelper.containLines=function(filePath,arrayoflines){
   arrayoflines=arrayoflines||[];
-  var file=fs.readFileSync(file,"utf8").split('\n')
-
+  var file=fs.readFileSync(filePath,"utf8").split('\n')
   var result=true;
   if(file.length<1) return false;
   if(file.length==1 && file[0]=='') return false;

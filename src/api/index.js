@@ -1,88 +1,66 @@
-var logEntry=require('../log-entry');
+var pubSub=require('../pub-sub');
 
-var helpers;
 
-function ctx(param){
+var logEntry=function(){};//stub to be overridden when intialized.
+
+var log=function(msg,details){
+  return logEntry("log",msg,details)
+};
+log.debug=function(msg,details){
+  return logEntry("debug",msg,details)
+};
+log.error= function(msg,details){
+  return  logEntry("error",msg,details)
+};
+log.fatal= function(msg,details){
+  return  logEntry("fatal",msg,details)
+};
+log.warn= function(msg,details){
+  return logEntry("warn",msg,details)
+};
+log.currentContext="";
+
+
+function createContext(self,context){
+  var temp=context;
+  if(self.currentContext){
+    temp=self.currentContext+"-"+context;
+  }
   return {
-    log:function(msg,details){
-      helpers.logEntry("log",msg,details,param)
-    },
-    debug:function(msg,details){
-      helpers.logEntry("debug",msg,details,param)
-    },
-    warn:function(msg,details){
-      helpers.logEntry("warn",msg,details,param)
-    },
-    error:function(msg,details){
-      helpers.logEntry("error",msg,details,param)
-    },
-    fatal:function(msg,details){
-      helpers.logEntry("fatal",msg,details,param)
+    currentContext:temp,
+    log: _.partial(logEntry,'log',_,_,temp),
+    debug: _.partial(logEntry,'debug',_,_,temp),
+    error: _.partial(logEntry,'error',_,_,temp),
+    fatal: _.partial(logEntry,'fatal',_,_,temp),
+    warn: _.partial(logEntry,'warn',_,_,temp),
+    context:function(a){
+      return createContext(this,a)
     }
   }
 
 }
 
 
-var logObj={
-  debug:function(msg,details){
-    helpers.logEntry("debug",msg,details)
-  },
-  warn:function(msg,details){
-    helpers.logEntry("warn",msg,details)
-  },
-  error:function(msg,details){
-    helpers.logEntry("error",msg,details)
-  },
-  fatal:function(msg,details){
-    helpers.logEntry("fatal",msg,details)
-  }
-}
+log.context=function(a){
+  return createContext(this,a);
+};
+
+log.module=function(a){
+  return createContext(a);
+};
 
 
-var contex={
-  module:function(name){
-    return ctx({module:name})
-  },
-  method:function(name){
-    return ctx({method:name})
-  },
-  function: function (name) {
-    return ctx({function: name})
-  }
-}
-
-var others={
-  addEventHandler:function(){},
-  queryEvents:function(){},
-  getLogs:function(){},
-  goal:function(){},
-  failedGoal:function(){},
-  completedGoals:function(){},
-  result: function (name) {
-    return name
-  },
-  rejectWithCode: function (a) {
-    return a
-  }
-}
-
-
-
-var log=function(msg,details){
-  return helpers.logEntry("log",msg,details)
-}
-
-
-_.extend(log,contex,logObj,others)
+log.addEventHandler=pubSub.addEventHandler;
 
 
 
 
 module.exports=function(config){
-  helpers=logEntry(config);
+  //helpers=logEntry(config);
+  logEntry=require('../log-entry')(config).logEntry;
 
-
+  //var stub=function(){};
+  //stub.abc=5;
 
   return log;
-}
+};

@@ -23,4 +23,9 @@ describe('file manager',function(){
 
       })
   })
+  it('computes the filesize of the write',function(){
+
+
+  })
+
 });

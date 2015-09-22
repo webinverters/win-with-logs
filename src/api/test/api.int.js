@@ -20,7 +20,7 @@ describe('log writes to a filesystem',function(){
     };
     var log=m(basicConfig);
 
-    return p.resolve()
+     return p.resolve()
       .then(function(){
         return log("hello world")
       })
@@ -33,7 +33,7 @@ describe('log writes to a filesystem',function(){
       })
   });
 
-  it('logs rotate file when size is exceeded tzx',function(){
+  xit('logs rotate file when size is exceeded tzx',function(){
     var basicConfig = {
       component:"webservice",
       env: "dev",

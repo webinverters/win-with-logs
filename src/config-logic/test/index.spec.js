@@ -7,6 +7,22 @@ describe('configLogic',function(){
     config.app="test"
     config.component="testComponent"
   });
+  describe('enables fs',function(){
+    it('by default',function(){
+      expect(m(config)).to.containSubset({
+        fsEnabled:true
+      })
+    })
+  })
+  describe('disable fs',function(){
+    it('when disabled in config',function(){
+      config.disableFs=true
+      expect(m(config)).to.containSubset({
+        fsEnabled:false
+      })
+    })
+  })
+
   it('enables fs by default',function(){
     expect(m(config)).to.containSubset({
       fsEnabled:true

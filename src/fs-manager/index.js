@@ -6,9 +6,9 @@ function createStream(path){
   writableStream=fs.createWriteStream(path);
 }
 
-function writeLogEntry(a){
+function writeLogEntry(data){
   var tempId=id;
-  writableStream.write(JSON.stringify(a)+"\n",function(err){
+  writableStream.write(JSON.stringify(data)+"\n",function(err){
     if(err){
       //rejectWait(err)//perhaps application shouldn't break due to a logging error.
     }
@@ -32,7 +32,6 @@ function rejectWait(err){
  * @returns {*}
  */
 function waiter(){
-
   var temp= p.defer()
   waiters[id]={
     done:function(){
@@ -42,16 +41,18 @@ function waiter(){
       temp.reject(err)
     }
   };
-  id++;
   if(id>2000111000) id=0;
   return temp.promise;
 }
 
-
-
 var m={}
 m.waiter=waiter;
-m.writeLogEntry=writeLogEntry;
+m.writeLogEntry=function(data){
+  id++;
+  return writeLogEntry(data,id-1)
+};
+
+
 
 
 module.exports=function(path,maxSize,maxCount){
