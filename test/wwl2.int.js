@@ -78,7 +78,14 @@ describe('win-with-logs ', function () {
       log.context("a").error("abc")
       log.context("a").context("test2").error("abc")
     })
-  })
+    it('log.success logs and returns success',function(){
+      return p.resolve("hi")
+        .then(log.success)
+        .then(function(result){
+          expect(result).to.equal("hi")
+        })
+    })
+  });
   describe('pubSub',function(){
     beforeEach(function(){
       log=m({

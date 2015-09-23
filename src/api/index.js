@@ -49,6 +49,13 @@ log.module=function(a){
   return createContext(a);
 };
 
+log.success=function(a){
+  logEntry("log","success",a)
+  return a
+};
+
+
+
 
 log.addEventHandler=pubSub.addEventHandler;
 
