@@ -58,5 +58,19 @@ describe('log writes to a filesystem',function(){
       })
 
   })
+  it('delete any older files and count to the next highest number',function(){
+    exec("cd testing;touch log0.log log1.log log2.log log3.log log4.log log5.log log6.log")
+    var basicConfig = {
+      component:"webservice",
+      env: "dev",
+      app: "test-app",
+      logFilePath: './testing/',
+      maxLogFileSize: 200
+    };
+    var log=m(basicConfig);
+    log("hello")
+    expect(fs.readdirSync('./testing').length).to.equal(5)
+  })
+
 });
 
