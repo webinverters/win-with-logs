@@ -21,24 +21,25 @@ chai.config.includeStack = true;
 
 global.expect = chai.expect;
 
-require('dotenv').load();
+//we don't need aws anymore....
+//require('dotenv').load();
 global.config = {};
-config.secrets = {
-  AWS_KEY: process.env.AWS_KEY,
-  AWS_SECRET: process.env.AWS_SECRET,
-  ROBUST_KEY: process.env.ROBUST_KEY
-};
+//config.secrets = {
+//  AWS_KEY: process.env.AWS_KEY,
+//  AWS_SECRET: process.env.AWS_SECRET,
+//  ROBUST_KEY: process.env.ROBUST_KEY
+//};
 
-global.AWS = require('aws-sdk');
+//global.AWS = require('aws-sdk');
 
-config.aws ={
-  region: "us-east-1",
-  apiVersion: "2012-08-10",
-  accessKeyId: config.secrets.AWS_KEY,
-  secretAccessKey: config.secrets.AWS_SECRET
-};
-
-AWS.config.update(config.aws);
+//config.aws ={
+//  region: "us-east-1",
+//  apiVersion: "2012-08-10",
+//  accessKeyId: config.secrets.AWS_KEY,
+//  secretAccessKey: config.secrets.AWS_SECRET
+//};
+//
+//AWS.config.update(config.aws);
 
 
 
