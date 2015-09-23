@@ -15,7 +15,7 @@ describe('log writes to a filesystem',function(){
       component:"webservice",
       env: "dev",
       app: "test-app",
-      logFilePath: './testing/test4.log',
+      logFilePath: './testing/',
       maxLogFileSize: 100000
     };
     var log=m(basicConfig);
@@ -27,22 +27,36 @@ describe('log writes to a filesystem',function(){
       .then(function(){
         return log("hi")
       })
+       .then(function(){
+         return log("hi")
+       })
+       .then(function(){
+         return log("hi")
+       })
+       .then(function(){
+         return log("hi")
+       })
+       .then(function(){
+         return log("hi")
+       })
+       .then(function(){
+         return log("hi")
+       })
       .then(function(){
-        expect(fsHelper.hasFile('./testing','test4.log')).to.equal(true,"log should have written a file")
-        expect(fsHelper.containLines('./testing/test4.log',['hello world','hi'])).to.equal(true,"file does not contain log entries")
+        expect(fsHelper.hasFile('./testing','log0.log')).to.equal(true,"log should have written a file")
+        expect(fsHelper.containLines('./testing/log0.log',['hello world','hi'])).to.equal(true,"file does not contain log entries")
       })
   });
 
-  xit('logs rotate file when size is exceeded tzx',function(){
+  it('logs rotate file when size is exceeded tzx',function(){
     var basicConfig = {
       component:"webservice",
       env: "dev",
       app: "test-app",
-      logFilePath: './testing/test1.log',
-      maxLogFileSize: 300
+      logFilePath: './testing/',
+      maxLogFileSize: 200
     };
     var log=m(basicConfig);
-
 
     return p.resolve()
       .then(function(){
@@ -52,9 +66,11 @@ describe('log writes to a filesystem',function(){
         return log("hi")
       })
       .then(function(){
-        expect(fsHelper.hasFile('./testing','test1.log')).to.equal(true,"log should have written a file");
-        //expect(fsHelper.containLines('./testing/test1.log',['hello world'])).to.equal(true,"file does not contain log entries")
-        console.log(fs.statSync("./testing/test1.log").size)
+        expect(fsHelper.hasFile('./testing','log0.log')).to.equal(true,"log should have written a file");
+        expect(fsHelper.hasFile('./testing','log1.log')).to.equal(true,"log should have written a file");
+        expect(fsHelper.containLines('./testing/log0.log',['hello world'])).to.equal(true,"file does not contain log entries")
+        expect(fsHelper.containLines('./testing/log1.log',['hi'])).to.equal(true,"file does not contain log entries")
+        //console.log(fs.statSync("./testing/test1.log").size)
       })
 
   })

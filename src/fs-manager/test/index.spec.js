@@ -2,7 +2,6 @@ proxyquire = require('proxyquire').noPreserveCache();//can't use in config?
 
 var m=proxyquire('../index.js',{"fs":{
   createWriteStream:sinon.stub().returns({write:function(a,b){
-    //console.log(a);
     setTimeout(b,0)
   }})
 }});
@@ -22,10 +21,5 @@ describe('file manager',function(){
       .then(function(){
 
       })
-  })
-  it('computes the filesize of the write',function(){
-
-
-  })
-
+  });
 });

@@ -11,7 +11,6 @@ function rejectWait(err){
 
 function waiter(){
   var temp= p.defer()
-  console.log("wait",id)
   waiters[id]={
     done:function(){
       temp.resolve(true)
