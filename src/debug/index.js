@@ -6,5 +6,4 @@ module.exports=function(e){
     line:line.match(/:(.+?):/)[1],
     func:line.match(/at (.+?) /)[1]
   }
-
 };

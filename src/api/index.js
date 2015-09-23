@@ -1,5 +1,5 @@
 var pubSub=require('../pub-sub');
-
+var cloud=require('../cloud-manager');
 
 var logEntry=function(){};//stub to be overridden when intialized.
 
@@ -33,12 +33,21 @@ function createContext(self,context){
     error: _.partial(logEntry,'error',_,_,temp),
     fatal: _.partial(logEntry,'fatal',_,_,temp),
     warn: _.partial(logEntry,'warn',_,_,temp),
+    success:function(a){
+      logEntry('log',"success",a,temp)
+      return a
+    },
+    failure:function(){
+      if(!err)return;
+      logEntry("error","failure",err,temp)
+      throw err
+    },
     context:function(a){
       return createContext(this,a)
     }
   }
-
 }
+
 
 
 log.context=function(a){
@@ -65,13 +74,8 @@ log.addEventHandler=pubSub.addEventHandler;
 
 
 
-
 module.exports=function(config){
   //helpers=logEntry(config);
   logEntry=require('../log-entry')(config).logEntry;
-
-  //var stub=function(){};
-  //stub.abc=5;
-
   return log;
 };
