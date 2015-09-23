@@ -8,7 +8,7 @@ var m=proxyquire('../index.js',{"fs":{
 
 
 describe('file manager',function(){
-  it('writes to log file.',function(){
+  it('writes to log file.',function(done){
     var path="./"
     var name="test.log";
     var maxFileSize=1000000;
@@ -19,7 +19,7 @@ describe('file manager',function(){
 
     return file.waiter()//resolves when entry is flushed
       .then(function(){
-
+        done();
       })
   });
 });
