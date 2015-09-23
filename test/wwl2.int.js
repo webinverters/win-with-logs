@@ -85,6 +85,21 @@ describe('win-with-logs ', function () {
           expect(result).to.equal("hi")
         })
     })
+    it('log.failure',function(done){
+      var thrownError = new Error("error")
+      function test() {
+        throw thrownError
+      }
+      return p.resolve()
+        .then(function () {
+          return test()
+        })
+        .then(_.noop, log.failure)
+        .catch(function (err) {
+          expect(err).to.equal(thrownError)
+          done()
+        })
+    })
   });
   describe('pubSub',function(){
     beforeEach(function(){

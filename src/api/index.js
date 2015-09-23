@@ -54,7 +54,11 @@ log.success=function(a){
   return a
 };
 
-
+log.failure=function(err){
+  if(!err)return;
+  logEntry("log","failure",err)
+  throw err
+};
 
 
 log.addEventHandler=pubSub.addEventHandler;

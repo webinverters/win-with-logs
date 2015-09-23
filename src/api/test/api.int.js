@@ -55,7 +55,6 @@ describe('log writes to a filesystem',function(){
         expect(fsHelper.hasFile('./testing','log1.log')).to.equal(true,"log should have written a file");
         expect(fsHelper.containLines('./testing/log0.log',['hello world'])).to.equal(true,"file does not contain log entries")
         expect(fsHelper.containLines('./testing/log1.log',['hi'])).to.equal(true,"file does not contain log entries")
-        //console.log(fs.statSync("./testing/test1.log").size)
       })
 
   })
