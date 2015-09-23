@@ -27,21 +27,6 @@ describe('log writes to a filesystem',function(){
       .then(function(){
         return log("hi")
       })
-       .then(function(){
-         return log("hi")
-       })
-       .then(function(){
-         return log("hi")
-       })
-       .then(function(){
-         return log("hi")
-       })
-       .then(function(){
-         return log("hi")
-       })
-       .then(function(){
-         return log("hi")
-       })
       .then(function(){
         expect(fsHelper.hasFile('./testing','log0.log')).to.equal(true,"log should have written a file")
         expect(fsHelper.containLines('./testing/log0.log',['hello world','hi'])).to.equal(true,"file does not contain log entries")
