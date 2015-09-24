@@ -241,10 +241,7 @@ module.exports = function construct(config, logProvider, bunyan, PrettyStream, T
     }
 
     log.module = function(moduleName, params) {
-      logger.debug({
-        msg: 'Initializing Module: '+ moduleName,
-        params: JSON.stringify(params, null, '\t')
-      }, 'Creating module instance: '+ moduleName);
+      logger.log('Initializing Module.', {moduleName:moduleName, params: params})
       return createEventLogger(log, {
         module: {
           moduleName: moduleName,
@@ -302,6 +299,32 @@ module.exports = function construct(config, logProvider, bunyan, PrettyStream, T
       if (!kind) return new Date().toISOString()
       if (kind=='epoch') return Math.floor(new Date().getTime()/1000)
       if (kind=='epochmill') return new Date().getTime()
+    }
+
+    log.goal = function(goalName, params, options) {
+      logger.log('Goal Started: ', {goalName:goalName,params: params})
+      var goalInfo = {}
+      goalInfo[goalName] = {
+        goalName: goalName,
+        goalParams: params,
+        goalOptions: options
+      }
+
+      return createEventLogger(log, _.extend({}, context||{}, {
+        goalName: goalName,
+        goalParams: params,
+        goalOptions: options
+      }, goalInfo))
+    }
+
+    log.fail = function(err) {
+      log.error(context.goalName+'Failed', err)
+      throw err
+    }
+
+    log.complete = function(result) {
+      log.log('Finished '+context.goalName, {result:result}) // TODO: show elapsed time...
+      return result
     }
 
     return _.extend(log, robustClient);
