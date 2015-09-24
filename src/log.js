@@ -241,7 +241,7 @@ module.exports = function construct(config, logProvider, bunyan, PrettyStream, T
     }
 
     log.module = function(moduleName, params) {
-      logger.log('Initializing Module.', {moduleName:moduleName, params: params})
+      logger.info('Initializing Module.', {moduleName:moduleName, params: params})
       return createEventLogger(log, {
         module: {
           moduleName: moduleName,
@@ -302,7 +302,7 @@ module.exports = function construct(config, logProvider, bunyan, PrettyStream, T
     }
 
     log.goal = function(goalName, params, options) {
-      logger.log('Goal Started: ', {goalName:goalName,params: params})
+      logger.info('Goal Started: ', {goalName:goalName,params: params})
       var goalInfo = {}
       goalInfo[goalName] = {
         goalName: goalName,
