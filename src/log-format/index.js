@@ -32,4 +32,4 @@ module.exports=function (_config, func) {
   config.env=_config.env;
 
   return Bunyan(config)
-}
+};

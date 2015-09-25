@@ -15,4 +15,4 @@ describe('grab line of error',function(){
         expect(result.func).to.equal('test')
       })
   })
-})
+});
