@@ -1,4 +1,7 @@
-var exec=require('child_process').execSync;
+
+
+//var exec=require('child_process').execSync;
+var exec=require('child_process').execSync || require('exec-sync');
 var fsHelper=require('../test/helpers/checkFile');
 
 var m = require('../index')
