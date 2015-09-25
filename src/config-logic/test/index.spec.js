@@ -1,9 +1,10 @@
 var m=require('../index')
-var fs=require('fs')
+proxyquire = require('proxyquire').noPreserveCache();//can't use in config?
 
 describe('configLogic',function(){
-  var config={};
+  var config;
   beforeEach(function(){
+    config={};
     config.env="dev";
     config.app="test"
     config.component="testComponent"
@@ -48,14 +49,16 @@ describe('configLogic',function(){
         fsEnabled:false
       })
     });
-    it('disables fs when in browser',function(){
-      var temp=fs;
-      fs=undefined;
-      expect(m(config)).to.containSubset({
-        fsEnabled:false
+    describe('when in the browser', function () {
+      it('it disables fs ', function () {
+        var m = proxyquire(require.resolve('../index.js'), {'fs': false})
+        expect(m(config)).to.containSubset({
+          fsEnabled: false
+        })
+
       })
-      fs=temp;
     })
+
   });
   describe('cloudlogic',function(){
     beforeEach(function(){
@@ -67,19 +70,31 @@ describe('configLogic',function(){
       config.cloudConfig.logSendInterval =5000;
     });
     describe('missing mandatory properties',function(){
-
-      it('it throws an error txtx',function(){
+      it('it throws an error',function(){
         delete config.robustKey;
         return expect(m.bind(null, config)).to.throw("missing property config.robustKey")
-
       })
-
-
     })
 
 
   });
-  describe('source logging',function(){});
+
+
+  describe('source logging',function(){
+
+    it('source logging is disabled by default',function(){
+      console.log(config)
+      expect(m(config)).to.containSubset({
+        stackTraceEnabled:false
+      })
+    })
+    it('source logging is enabled via config ',function(){
+      config.debug=true;
+      expect(m(config)).to.containSubset({
+        stackTraceEnabled:true
+      })
+    })
+  });
 
 
 

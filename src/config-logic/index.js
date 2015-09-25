@@ -28,7 +28,7 @@ module.exports=function(config){
 
   //Disable fs if we are in the browser.
   //this assumes fs is undefined when run through browserify.
-  if(fs==undefined) features.fsEnabled=false;
+  if(fs==undefined || !fs) features.fsEnabled=false;
 
 
   //cloud source
@@ -52,7 +52,7 @@ module.exports=function(config){
 
 
 //flags
-  config.debug
+//  config.debug
 
 
 //config.component
