@@ -9,7 +9,6 @@ describe('goal',function(){
     clock.restore();
   });
   it('returns the duration of the goal and a breakdown of log entries',function(){
-
     var goal=m('testGoal');
     clock.tick(1000);
     goal.addEntry("one");

@@ -125,5 +125,32 @@ describe('documentation tests',function(){
 
   })
 
+  describe('goal logging',function(){
+    it("doesn't throw an error",function(done){
+      config.env="dev";
+      config.app="test"
+      config.component="testComponent"
+      var log=m(config)
+      function doCrazyStuff(){return p.resolve();}
+      function doStuff(user, data) {
+
+        var goal = log.goal('doStuff',
+          {user: user, data:data},
+          {track:true,expireSecs:0,retry:'exponential',alert:'backendFailure',alertOnlyIfRetryFails: true})
+
+        return doCrazyStuff(goal) // can optionally pass the goal around so other parts can log to the goal.
+          .then(function() {
+            goal.log('Finished doCrazyStuff()')
+            console.log("here?",goal.complete)
+            return 2
+          })
+          .then(goal.complete)
+          .catch(goal.fail)
+      }
+      return doStuff("user","data")
+        .then(function(a){console.log("here");done();})
+    })
+  })
+
 
 })

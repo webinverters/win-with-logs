@@ -23,6 +23,5 @@ goal.prototype.returnStatus=function(status){
 };
 
 module.exports=function(goalName){
-
   return new goal(goalName)
 }

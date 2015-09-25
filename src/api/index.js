@@ -1,5 +1,6 @@
 var pubSub=require('../pub-sub');
 var cloud=require('../cloud-manager');
+var goal=require('../goals/index.js')
 
 var logEntry=function(){};//stub to be overridden when intialized.
 
@@ -71,6 +72,28 @@ log.failure=function(err){
 
 
 log.addEventHandler=pubSub.addEventHandler;
+
+
+log.goal=function(name,userObject,cloudObject){
+
+  var newgoal=goal(name);
+  var event={};
+  _.extend(event,userObject,cloudObject)
+
+
+  newgoal.log= _.partial(logEntry,'log',_,_,event),
+  newgoal.debug= _.partial(logEntry,'debug',_,_,event);
+  newgoal.error= _.partial(logEntry,'error',_,_,event);
+  newgoal.fatal= _.partial(logEntry,'fatal',_,_,event);
+  newgoal.warn= _.partial(logEntry,'warn',_,_,event);
+  newgoal.complete=function(success){
+    return newgoal.returnStatus("success")
+  };
+  newgoal.fail=function(failure){
+    return newgoal.returnStatus("failure")
+  };
+  return newgoal;
+};
 
 
 
