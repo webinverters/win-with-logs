@@ -13,9 +13,12 @@ int:
 coverage:
 	$(ISTANBUL) cover node_modules/.bin/_mocha -- ${MOCHA_ARGS} ${ARGS} ${UNIT_TEST_FILES} ${INT_TEST_FILES}
 
+dist:
+	echo "Coming soon: browser dist folder package with minified source."
+
 viewCov:
 	open coverage/lcov-report/index.html
 
 all: unit int
 
-.PHONY: unit int coverage viewCov all
+.PHONY: unit int coverage viewCov all dist
