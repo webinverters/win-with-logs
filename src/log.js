@@ -135,10 +135,9 @@ module.exports = function construct(config, logProvider, bunyan, PrettyStream, T
     // 1. Calls bunyan info() log level logger.
     // 2. Checks for observers to this log event and fires their handlers.
     var log = function log(what, details) {
-      var logObject = parseLogObject.apply(undefined,arguments);
       enactObservers.apply(logger, arguments);
       if (details)
-        logger.info(logObject, logObject.msg)
+        logger.info(what, details)
       else
         logger.info(what)
     };
@@ -154,31 +153,55 @@ module.exports = function construct(config, logProvider, bunyan, PrettyStream, T
       if (_.isObject(err)) {
         logger.error({err: err}, msg);
       }
-      else {
+      else if (!err) {
+        logger.error(msg)
+      } else {
         logger.error(msg, err)
       }
     };
 
-    log.warn = function() {
-      var logObject = parseLogObject.apply(undefined,arguments);
-      logger.warn(logObject, logObject.msg);
-    };
-
-    log.debug = function(msg, details) {
-      if (!details) logger.debug(msg)
-      else {
-        logger.debug(details, msg);
+    log.warn = function(msg, details) {
+      if (_.isObject(details)) {
+        logger.warn(msg, details);
+      }
+      else if (!details) {
+        logger.warn(msg)
+      } else {
+        logger.warn(msg, {details: details})
       }
     };
 
-    log.info = function() {
-      var logObject = parseLogObject.apply(undefined,arguments);
-      logger.info(logObject, logObject.msg);
+    log.debug = function(msg, details) {
+      if (_.isObject(details)) {
+        logger.debug(msg, details);
+      }
+      else if (!details) {
+        logger.debug(msg)
+      } else {
+        logger.debug(msg, {details: details})
+      }
     };
 
-    log.fatal = function() {
-      var logObject = parseLogObject.apply(undefined,arguments);
-      logger.fatal(logObject, logObject.msg);
+    log.info = function(msg, details) {
+      if (_.isObject(details)) {
+        logger.info(msg, details);
+      }
+      else if (!details) {
+        logger.info(msg)
+      } else {
+        logger.info(msg, {details: details})
+      }
+    };
+
+    log.fatal = function(msg, details) {
+      if (_.isObject(details)) {
+        logger.fatal(msg, details);
+      }
+      else if (!details) {
+        logger.fatal(msg)
+      } else {
+        logger.fatal(msg, {details: details})
+      }
     };
 
     log.failedGoal = function(goal) {
@@ -289,7 +312,7 @@ module.exports = function construct(config, logProvider, bunyan, PrettyStream, T
       if (err) {
         details = _.merge({}, err.details || {},details)
       }
-      var errorReport = _.merge(thisErr,{what: what, details:details, err: err, context:context};
+      var errorReport = _.merge(thisErr,{what: what, details:details, err: err, context:context});
 
       log.error(what, errorReport);
       return errorReport;
