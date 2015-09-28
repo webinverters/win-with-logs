@@ -255,7 +255,6 @@ module.exports = function construct(config, logProvider, bunyan, PrettyStream, T
 
     log.rejectWithCode = function(code) {
       return function rejectWithCodeHandler(err) {
-        if (!err) throw 'reject with code called with empty err param.'
         var error = {
           what: code,
           context: context,
@@ -263,7 +262,8 @@ module.exports = function construct(config, logProvider, bunyan, PrettyStream, T
           err: err,
         };
 
-        error.rootCause = err.rootCause || (err.what ? err : _.clone(error));
+        if (err)
+          error.rootCause = err.rootCause || (err.what ? err : _.clone(error));
 
         log.error(code, error)
         throw error
@@ -284,11 +284,12 @@ module.exports = function construct(config, logProvider, bunyan, PrettyStream, T
     };
 
     log.errorReport = function(what, details, err) {
-      details = details || {}
+      var thisErr = new Error(what)
+      thisErr.details = details || {}
       if (err) {
         details = _.merge({}, err.details || {},details)
       }
-      var errorReport = {what: what, details:details, err: err, context:context};
+      var errorReport = _.merge(thisErr,{what: what, details:details, err: err, context:context};
 
       log.error(what, errorReport);
       return errorReport;
