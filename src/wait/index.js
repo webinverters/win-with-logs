@@ -19,7 +19,7 @@ function waiter(){
       temp.reject(err)
     }
   };
-  if(id>2000111000) id=0;
+  if(id>2000111000) id=0;//prevent an overflow in the rare event it happens.
   return temp.promise;
 }
 
