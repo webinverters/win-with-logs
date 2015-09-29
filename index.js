@@ -11,7 +11,7 @@
 
 'use strict';
 
-var api=require('./src/api')
+var winWithLogs=require('./src/win-with-logs');
 
 module.exports = function construct(config) {
   config = config ? config : {};
@@ -33,6 +33,6 @@ module.exports = function construct(config) {
     streams: []  // advanced: custom streams can be subscribed for plugin support.
   });
 
-  return api(config);
+  return winWithLogs(config);
 
 };
