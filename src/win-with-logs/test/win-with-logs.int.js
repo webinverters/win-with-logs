@@ -159,7 +159,25 @@ describe('win-with-logs', function () {
       })
     });
     describe('when exceeding file size', function () {
-      it('creates a new log file')
+      beforeEach(function(){
+        config.maxLogFileSize=100;
+      })
+      it('creates a new log file',function(done){
+        var log = winWithLogs(config);
+        return log.warn("hi")
+          .then(function(){
+            return log.log("hello")
+          })
+          .then(function () {
+            expect(fsTest.hasFile("./testing", "log0.log")).to.equal(true)
+            expect(fsTest.hasFile("./testing", "log1.log")).to.equal(true)
+            expect(fsTest.containLines('./testing/log0.log', ["hi"])).to.equal(true, "log should have been written to filesystem")
+            expect(fsTest.containLines('./testing/log1.log', ["hello"])).to.equal(true, "log should have been written to filesystem")
+            done()
+          })
+
+
+      })
     });
     describe('when exceeding max file count', function () {
       it('delete old files')
