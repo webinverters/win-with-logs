@@ -148,6 +148,15 @@ describe('win-with-logs', function () {
             done()
           })
       })
+      it('writes entries to log file', function (done) {
+        var log = winWithLogs(config);
+        return log.warn("hi",{a:1})
+          .then(function () {
+            expect(fsTest.hasFile("./testing", "log0.log")).to.equal(true)
+            expect(fsTest.containLines('./testing/log0.log', ["hi"])).to.equal(true, "log should have been written to filesystem")
+            done()
+          })
+      })
     });
     describe('when exceeding file size', function () {
       it('creates a new log file')

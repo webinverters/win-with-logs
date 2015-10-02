@@ -16,8 +16,6 @@ function fileManager(config) {
 }
 
 fileManager.prototype.write = function (a) {
-  console.log("there?")
-  console.log("called",a)
   var defer = p.defer();
   this.currentStream.write(a, function () {
     defer.resolve();
