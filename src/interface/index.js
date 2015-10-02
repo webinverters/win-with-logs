@@ -11,10 +11,18 @@ function context(param){
   this.params=param
 }
 
-function fs(param){
-  this.path;
-  this.name;
-  this.maxSize;
+function fileConfig(logFilePath,maxLogFileSize,maxLogFiles){
+  if(!logFilePath)throw new Error("missing logFilePath");
+  if(!maxLogFileSize)throw new Error("missing maxLogFileSize");
+  if(!maxLogFiles)throw new Error("missing maxLogFiles");
+
+  if(typeof logFilePath!=="string") throw new Error("invalid type");
+  if(typeof maxLogFileSize!=="number") throw new Error("invalid type");
+  if(typeof maxLogFiles!=="number") throw new Error("invalid type");
+
+  this.logFilePath=logFilePath;
+  this.maxLogFileSize=maxLogFileSize;
+  this.maxLogFiles=maxLogFiles;
 }
 
 function logConfig(component,app,env){
@@ -37,7 +45,7 @@ function errorObject(stackTrace,lineNumber,fileName){
 
 
 module.exports={
-  fs:fs,
+  fileConfig:fileConfig,
   logConfig:logConfig,
   cloudConfig:cloudConfig,
   context:context,

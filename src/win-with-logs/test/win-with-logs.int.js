@@ -1,22 +1,27 @@
 var winWithLogs = require('../index');
 
 var exec=require('../../../test/helpers/exec')
+var fsTest=require('../../../test/helpers/checkFile');
 
 describe('win-with-logs', function () {
+  var config;
   describe('when supplied a basic config', function () {
+    beforeEach(function(){
+      config = {
+        app: "test",
+        env: "dev",
+        component: "testComponents"
+      };
+    })
     describe('it logs to the console when calling logger api', function () {
-      var config;
+
       var consoleStub;
 
       before(function () {
         sinon.spy(console,"log")
       });
       beforeEach(function () {
-        config = {
-          app: "test",
-          env: "dev",
-          component: "testComponents"
-        };
+
         //consoleStub = sinon.stub(console, "log", function () {});
       });
 
@@ -119,13 +124,30 @@ describe('win-with-logs', function () {
   })
   describe('when passed a filesystem config',function(){
     beforeEach(function(){
+      config = {
+        app: "test",
+        env: "dev",
+        component: "testComponents",
+        logFilePath: './testing/',
+        maxLogFileSize: 100000,
+        maxLogFiles:5
+      };
       return exec("rm -rf testing;mkdir testing;")
     });
     afterEach(function(){
-      return exec("rm -rf testing;")
+      //return exec("rm -rf testing;")
     });
     describe('regular api calls',function(){
-      it('hello',function(){})
+      it('hello',function(done){
+        var log = winWithLogs(config);
+        return log.log("hi")
+          .then(function(){
+            expect(fsTest.hasFile("./testing","log0.log")).to.equal(true)
+            done()
+          })
+
+
+      })
     });
     describe('when exceeding file size',function(){
       it('creates a new log file')
