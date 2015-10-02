@@ -1,12 +1,22 @@
+
+
 function logger(config, bunyan) {
   this.bunyan = bunyan;
+  this.transports=[];
 
   this.logger = function (data) {
     return this.bunyan.log(data)
       .then(function (result) {
-        console.log(JSON.stringify(result))
-      })
+        var loggedResult=JSON.stringify(result);
+        return p.map(this.transports,function(transportFunc){
+          return transportFunc(loggedResult)
+        },{concurrency:1})
+      }.bind(this))
   }
+}
+
+logger.prototype.addTransport=function(func){
+  this.transports.push(func)
 }
 
 logger.prototype.log = function (msg, context) {
