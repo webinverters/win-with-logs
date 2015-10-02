@@ -1,6 +1,6 @@
 
 
-function logger(config, bunyan) {
+function logger(bunyan) {
   this.bunyan = bunyan;
   this.transports=[];
 

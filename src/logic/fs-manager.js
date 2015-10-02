@@ -7,18 +7,18 @@ function fileManager(config) {
   this.name = "log";
   this.current = 0;
   this.directory = config.logFilePath;
-  this.maxSize=config.maxLogFileSize
-  this.maxFiles=config.maxLogFiles;
+  this.maxSize = config.maxLogFileSize
+  this.maxFiles = config.maxLogFiles;
 
-  this.current=this.deleteOldFiles();
+  this.current = this.deleteOldFiles();
   this.path = path.join(this.directory, this.name + this.current + ".log")
   this.currentStream = fs.createWriteStream(this.path)
 
 }
 
 fileManager.prototype.write = function (a) {
-  if(this.checkSize()){
-    this.current=this.deleteOldFiles();
+  if (this.checkSize()) {
+    this.current = this.deleteOldFiles();
     this.rotateFile()
   }
 
@@ -35,18 +35,18 @@ fileManager.prototype.rotateFile = function () {
   this.currentStream = fs.createWriteStream(this.path);
 };
 
-fileManager.prototype.checkSize=function(){
-  return fs.statSync(this.path).size>this.maxSize
+fileManager.prototype.checkSize = function () {
+  return fs.statSync(this.path).size > this.maxSize
 };
 
-fileManager.prototype.deleteOldFiles=function(){
-  var files=
+fileManager.prototype.deleteOldFiles = function () {
+  var files =
     _(fs.readdirSync(this.directory))
       .filter(function (name) {
         return name.indexOf("log") > -1
       }).value()
 
-  files.sort(function(a, b) {
+  files.sort(function (a, b) {
     return fs.statSync(this.directory + a).mtime.getTime() -
       fs.statSync(this.directory + b).mtime.getTime();
   }.bind(this));
@@ -65,7 +65,7 @@ fileManager.prototype.deleteOldFiles=function(){
     }.bind(this))
   }
 
-  if(!deletedFiles)return this.current
+  if (!deletedFiles)return this.current
 
   var highestint = _.max(_(files)
     .map(function (name) {
@@ -75,8 +75,8 @@ fileManager.prototype.deleteOldFiles=function(){
     })
     .value());
 
-  if(highestint==-Infinity)return 0
-  return highestint +1
+  if (highestint == -Infinity)return 0
+  return highestint + 1
 
 
 }

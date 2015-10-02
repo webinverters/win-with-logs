@@ -12,7 +12,7 @@ module.exports = function (config) {
 
   var loggingConfig = new logConfig(config.component, config.app, config.env);
   var bunyanInstance = new bunyan(loggingConfig);
-  var loggingInstance = new logger(loggingConfig, bunyanInstance);
+  var loggingInstance = new logger(bunyanInstance);
   loggingInstance.addTransport(console.log)
 
 
