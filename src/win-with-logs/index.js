@@ -4,7 +4,7 @@ var logger = require('../logic').logger;
 
 var bunyan = require('../helpers/bunyan');
 var fsManager = require('../logic/fs-manager');
-var debug=require('../helpers/debug')
+var debug = require('../helpers/debug')
 
 var _ = require('lodash');
 
@@ -24,27 +24,39 @@ module.exports = function (config) {
   }
 
 
-  api = function (msg,details) {
-    return loggingInstance.log(msg,details)
+  api = function (msg, details) {
+    return loggingInstance.log(msg, details)
   };
-  api.log = function (msg,details) {
-    return loggingInstance.log(msg,details)
+  api.log = function (msg, details) {
+    return loggingInstance.log(msg, details)
   };
-  api.debug = function (msg,details) {
-    return loggingInstance.debug(msg,details);
+  api.debug = function (msg, details) {
+    return loggingInstance.debug(msg, details);
   };
-  api.warn = function (msg,details) {
-    return loggingInstance.warn(msg,details);
+  api.warn = function (msg, details) {
+    return loggingInstance.warn(msg, details);
   };
-  api.error = function (msg,details) {
-    return loggingInstance.error(msg,details);
+  api.error = function (msg, details) {
+    return loggingInstance.error(msg, details);
   };
-  api.fatal = function (msg,details) {
-    return loggingInstance.fatal(msg,details);
+  api.fatal = function (msg, details) {
+    return loggingInstance.fatal(msg, details);
   };
 
-  api.failure=function(err){
+  api.failure = function (err) {
     return loggingInstance.fatal(debug(err));
+  }
+  api.success = function (success) {
+    var wait = true;
+    if (wait) {
+      return loggingInstance.log(success)
+        .then(function () {
+          return success
+        })
+    } else {
+      loggingInstance.log(success)
+      return p.resolve(success)
+    }
   }
 
   return api;

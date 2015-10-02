@@ -105,9 +105,15 @@ describe('win-with-logs', function () {
           })
       });
 
-      it('log.success() returns the success value and logs it.', function () {
+      it('log.success() returns the success value and logs it.', function (done) {
         var log = winWithLogs(config);
-      })
+        log.success("test")
+          .then(function (result) {
+            expect(result).to.equal("test")
+            expect(console.log).to.have.been.calledWith(sinon.match('test'))
+            done()
+          })
+      });
 
       describe('log.context', function () {
         it('logs all context.')
