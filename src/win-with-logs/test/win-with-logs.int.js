@@ -1,4 +1,6 @@
-var winWithLogs = require('../index')
+var winWithLogs = require('../index');
+
+var exec=require('../../../test/helpers/exec')
 
 describe('win-with-logs', function () {
   describe('when supplied a basic config', function () {
@@ -116,8 +118,14 @@ describe('win-with-logs', function () {
     })
   })
   describe('when passed a filesystem config',function(){
+    beforeEach(function(){
+      return exec("rm -rf testing;mkdir testing;")
+    });
+    afterEach(function(){
+      return exec("rm -rf testing;")
+    });
     describe('regular api calls',function(){
-
+      it('hello',function(){})
     });
     describe('when exceeding file size',function(){
       it('creates a new log file')
