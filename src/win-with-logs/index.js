@@ -4,6 +4,7 @@ var logger = require('../logic').logger;
 
 var bunyan = require('../helpers/bunyan');
 var fsManager = require('../logic/fs-manager');
+var debug=require('../helpers/debug')
 
 var _ = require('lodash');
 
@@ -41,6 +42,10 @@ module.exports = function (config) {
   api.fatal = function (msg,details) {
     return loggingInstance.fatal(msg,details);
   };
+
+  api.failure=function(err){
+    return loggingInstance.fatal(debug(err));
+  }
 
   return api;
 

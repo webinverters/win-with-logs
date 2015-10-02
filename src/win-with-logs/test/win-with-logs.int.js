@@ -93,11 +93,21 @@ describe('win-with-logs', function () {
           })
       });
 
-      it('log.failure() when logging an error it logs the stack trace with the stack', function () {
+      it('log.failure() when logging an error it logs the stack trace with the stack', function (done) {
         var log = winWithLogs(config);
+        var temp = new Error("failure");
+        log.failure(temp)
+          .then(function () {
+            expect(console.log).to.have.been.calledWith(sinon.match('"file":'));
+            expect(console.log).to.have.been.calledWith(sinon.match('"line":'));
+            expect(console.log).to.have.been.calledWith(sinon.match('"func":'));
+            done()
+          })
       });
 
-      it('log.success() returns the success value and logs it.')
+      it('log.success() returns the success value and logs it.', function () {
+        var log = winWithLogs(config);
+      })
 
       describe('log.context', function () {
         it('logs all context.')
