@@ -18,6 +18,7 @@ function fileManager(config) {
 
 fileManager.prototype.write = function (a) {
   if(this.checkSize()){
+    this.current=this.deleteOldFiles();
     this.rotateFile()
   }
 
@@ -51,11 +52,20 @@ fileManager.prototype.deleteOldFiles=function(){
   }.bind(this));
 
 
-  if(files.length>=this.maxFiles){
-    _.forEach(_.dropRight(files,files.length-this.maxFiles-1),function(file){
-      fs.unlinkSync(path.join(this.directory,file))
+  var deletedFiles = false
+  var filesToDelete = 0;
+  if (files.length == this.maxFiles) filesToDelete = 1;
+  if (files.length > this.maxFiles) {
+    filestoDelete = files.length - this.maxFiles - 1
+  }
+  if (files.length >= this.maxFiles) {
+    _.forEach(_.dropRight(files, filestoDelete), function (file) {
+      fs.unlinkSync(path.join(this.directory, file))
+      deletedFiles = true;
     }.bind(this))
   }
+
+  if(!deletedFiles)return this.current
 
   var highestint = _.max(_(files)
     .map(function (name) {

@@ -191,6 +191,22 @@ describe('win-with-logs', function () {
         expect(fsTest.hasFile("./testing", "log3.log")).to.equal(true);
         expect(fsTest.hasFile("./testing", "log4.log")).to.equal(true);
       })
+      it('delete old files when rotating files',function(done){
+        var log = winWithLogs(config);
+        return log.warn("hi")
+          .then(function(){
+            return log.log("hello")
+          })
+          .then(function(){
+            expect(fsTest.hasFile("./testing", "log0.log")).to.equal(false);
+            expect(fsTest.hasFile("./testing", "log1.log")).to.equal(false);
+            expect(fsTest.hasFile("./testing", "log2.log")).to.equal(false);
+            expect(fsTest.hasFile("./testing", "log3.log")).to.equal(false);
+            expect(fsTest.hasFile("./testing", "log4.log")).to.equal(true);
+            expect(fsTest.hasFile("./testing", "log4.log")).to.equal(true);
+            done();
+          })
+      })
     })
   });
   describe('when passed a cloud config', function () {
