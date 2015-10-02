@@ -21,7 +21,11 @@ var fs = require('fs'),
 module.exports = function construct(config, sewer) {
   config = config ? config : {};
 
-  sewer = sewer || kinesis.stream(config.streamName);
+  sewer = sewer || kinesis.stream({
+    name: config.streamName,
+    accessKeyId: config.accessKeyId,
+    secretAccessKey: config.secretAccessKey
+  });
 
 
   var Writable = require('stream').Writable,

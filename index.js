@@ -48,7 +48,7 @@ module.exports = function construct(config) {
   }
 
   var log = require('./src/log')(config, null, bunyan, PrettyStream, TrackedStream, robustClient);
-
+  log.EventProcessor = require('./src/event-processor');
   //log.debug('WIN-WITH-LOGS Initialized', config)
 
   return log;
