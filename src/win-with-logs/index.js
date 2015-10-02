@@ -40,8 +40,7 @@ module.exports = function (config) {
   };
   api.fatal = function (msg,details) {
     return loggingInstance.fatal(msg,details);
-  }
-
+  };
 
   return api;
 
