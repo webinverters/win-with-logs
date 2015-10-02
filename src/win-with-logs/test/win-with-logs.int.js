@@ -132,7 +132,7 @@ describe('win-with-logs', function () {
       return exec("rm -rf testing;mkdir testing;")
     });
     afterEach(function () {
-      //return exec("rm -rf testing;")
+      return exec("rm -rf testing;")
     });
     it('creates a new log file when newed up', function () {
       var log = winWithLogs(config);
@@ -175,12 +175,22 @@ describe('win-with-logs', function () {
             expect(fsTest.containLines('./testing/log1.log', ["hello"])).to.equal(true, "log should have been written to filesystem")
             done()
           })
-
-
       })
     });
     describe('when exceeding max file count', function () {
-      it('delete old files')
+      beforeEach(function(){
+        config.maxLogFileSize=100;
+        config.maxLogFiles=2
+        return exec("cd testing; touch log0.log log1.log log2.log log3.log")
+      });
+      it('delete old files',function(){
+        var log = winWithLogs(config);
+        expect(fsTest.hasFile("./testing", "log0.log")).to.equal(false);
+        expect(fsTest.hasFile("./testing", "log1.log")).to.equal(false);
+        expect(fsTest.hasFile("./testing", "log2.log")).to.equal(false);
+        expect(fsTest.hasFile("./testing", "log3.log")).to.equal(true);
+        expect(fsTest.hasFile("./testing", "log4.log")).to.equal(true);
+      })
     })
   });
   describe('when passed a cloud config', function () {
