@@ -23,8 +23,11 @@ module.exports = function construct(config, sewer) {
 
   sewer = sewer || kinesis.stream({
     name: config.streamName,
-    accessKeyId: config.accessKeyId,
-    secretAccessKey: config.secretAccessKey
+    region: config.region,
+    credentials: {
+      accessKeyId: config.accessKeyId,
+      secretAccessKey: config.secretAccessKey
+    }
   });
 
 
