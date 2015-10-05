@@ -1,16 +1,28 @@
+var log=require('../data-structures').log;
+var context=require('../data-structures').context;
+var transports=require('../data-structures').transports;
 
 
-function logger(bunyan) {
+
+function logger(bunyan,context,transportsInstance) {
   this.bunyan = bunyan;
+  this.theContext=context;
   this.transports=[];
+  if(transportsInstance){
+    this.transports=transportsInstance.actions
+  }
 
-  this.logger = function (data) {
-    return this.bunyan.log(data)
+
+  this.logger = function (data,context) {
+
+    //console.log("da context",this.theContext)
+    var tempContext= _.extend({},this.theContext,context)
+    return this.bunyan.log(data,tempContext)
       .then(function (result) {
         var loggedResult=JSON.stringify(result);
         return p.map(this.transports,function(transportFunc){
           return transportFunc(loggedResult)
-        },{concurrency:1})
+        })
       }.bind(this))
   }
 }
@@ -19,25 +31,35 @@ logger.prototype.addTransport=function(func){
   this.transports.push(func)
 }
 
-logger.prototype.log = function (msg, context) {
+logger.prototype.log = function (msg, details) {
+  var temp=new log({name:msg,obj:details})
+  return this.logger(temp.msg, temp.obj)
+};
+logger.prototype.warn = function (msg, details) {
+  var temp=new log({name:msg,obj:details})
+  return this.logger(temp.msg, temp.obj)
+};
+logger.prototype.trace = function (msg, details) {
+  var temp=new log({name:msg,obj:details})
+  return this.logger(temp.msg, temp.obj)
+};
+logger.prototype.fatal = function (msg, details) {
+  var temp=new log({name:msg,obj:details})
+  return this.logger(temp.msg, temp.obj)
+};
+logger.prototype.debug = function (msg, details) {
+  var temp=new log({name:msg,obj:details})
+  return this.logger(temp.msg, temp.obj)
+};
+logger.prototype.error = function (msg, details) {
+  var temp=new log({name:msg,obj:details})
+  return this.logger(temp.msg, temp.obj)
+};
+logger.prototype.context=function(name){
+  var newContext= _.extend(this.theContext,{context:name});
+  return new logger(this.bunyan,newContext,new transports(this.transports))
+}
 
-  return this.logger(msg, context)
-};
-logger.prototype.warn = function (msg, context) {
-  return this.logger(msg, context)
-};
-logger.prototype.trace = function (msg, context) {
-  return this.logger(msg, context)
-};
-logger.prototype.fatal = function (msg, context) {
-  return this.logger(msg, context)
-};
-logger.prototype.debug = function (msg, context) {
-  return this.logger(msg, context)
-};
-logger.prototype.error = function (msg, context) {
-  return this.logger(msg, context)
-};
 
 
 module.exports=logger;

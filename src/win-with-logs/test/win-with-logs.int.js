@@ -6,6 +6,7 @@ var fsTest = require('../../../test/helpers/checkFile');
 describe('win-with-logs', function () {
   var config;
   describe('when supplied a basic config', function () {
+
     beforeEach(function () {
       config = {
         app: "test",
@@ -14,6 +15,7 @@ describe('win-with-logs', function () {
       };
     })
     describe('it logs to the console when calling logger api', function () {
+
 
       var consoleStub;
 
@@ -29,6 +31,7 @@ describe('win-with-logs', function () {
         //consoleStub.restore();
         console.log.reset()
       });
+
 
       it('log() writes to the console', function (done) {
         var log = winWithLogs(config);
@@ -93,14 +96,14 @@ describe('win-with-logs', function () {
           })
       });
 
-      it('log.failure() when logging an error it logs the stack trace with the stack', function (done) {
+      it('log.failure() when logging an error it logs the stack trace with the stackaaa11', function (done) {
         var log = winWithLogs(config);
         var temp = new Error("failure");
         log.failure(temp)
           .then(function () {
-            expect(console.log).to.have.been.calledWith(sinon.match('"file":'));
-            expect(console.log).to.have.been.calledWith(sinon.match('"line":'));
-            expect(console.log).to.have.been.calledWith(sinon.match('"func":'));
+            expect(console.log).to.have.been.calledWith(sinon.match('file:'));
+            expect(console.log).to.have.been.calledWith(sinon.match('line:'));
+            expect(console.log).to.have.been.calledWith(sinon.match('func:'));
             done()
           })
       });
@@ -116,13 +119,36 @@ describe('win-with-logs', function () {
       });
 
       describe('log.context', function () {
-        it('logs all context.')
+        xit('logs all context.',function(){
+          var log = winWithLogs(config);
+          var ctx=log.context("new")
+          ctx.log("hi")
+          expect(console.log).to.have.been.calledWith(sinon.match('hi'))
+          expect(console.log).to.have.been.calledWith(sinon.match('"name":"test"'))
+          expect(console.log).to.have.been.calledWith(sinon.match('"env":"dev"'))
+          expect(console.log).to.have.been.calledWith(sinon.match('"component":"testComponents"'))
+        })
       })
 
 
     })
     describe('goal tracking', function () {
-      it('when logging a goal, it logs the duration of a goal duration', function () {
+      xit('when logging a goal, it logs the duration of a goal duration', function (done) {
+        var log = winWithLogs(config);
+        var goal = log.goal('doStuff',
+          {user: "user", data:"data"},
+          {track:true,expireSecs:0,retry:'exponential',alert:'backendFailure',alertOnlyIfRetryFails: true})
+
+        return p.resolve(goal) // can optionally pass the goal around so other parts can log to the goal.
+          .then(function(goal) {
+            goal.log('Finished doCrazyStuff()')
+          })
+          .then(goal.complete)
+          .then(function(){
+            expect(console.log).to.have.been.calledWith(sinon.match('"duration":'))
+            done();
+          });
+
 
       })
     })

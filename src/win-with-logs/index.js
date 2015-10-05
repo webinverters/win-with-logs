@@ -1,10 +1,12 @@
+var data=require('../data-structures')
 var logConfig = require('../interface').logConfig;
 var fileConfig = require('../interface').fileConfig;
 var logger = require('../logic').logger;
 
 var bunyan = require('../helpers/bunyan');
 var fsManager = require('../logic/fs-manager');
-var debug = require('../helpers/debug')
+var goal = require('../logic/goal');
+var debug = require('../helpers/debug');
 
 var _ = require('lodash');
 
@@ -22,6 +24,7 @@ module.exports = function (config) {
     var fsInstance = new fsManager(fsConfig)
     loggingInstance.addTransport(fsInstance.write.bind(fsInstance))
   }
+
 
 
   api = function (msg, details) {
@@ -44,19 +47,43 @@ module.exports = function (config) {
   };
 
   api.failure = function (err) {
-    return loggingInstance.fatal(debug(err));
-  }
+    return loggingInstance.log("failure",debug(err));
+  };
   api.success = function (success) {
     var wait = true;
     if (wait) {
-      return loggingInstance.log(success)
+      return loggingInstance.log("success",success)
         .then(function () {
           return success
         })
     } else {
-      loggingInstance.log(success)
+      loggingInstance.log("success",success)
       return p.resolve(success)
     }
+  };
+
+
+  api.goal=function(){
+    var temp=new goal();
+   var m={};
+    _.extend(m,api,temp)
+    //m.complete=function(successResult){
+    //  var tempaa=temp.returnStatus(successResult);
+    //
+    //  return loggingInstance.log("success", tempaa)
+    //    .then(function(){
+    //      return successResult
+    //    })
+    //
+    //};
+    //m.failure=function(){
+    //
+    //};
+
+
+    return m;
+
+
   }
 
   return api;
