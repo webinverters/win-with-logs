@@ -14,8 +14,6 @@ function logger(bunyan,context,transportsInstance) {
 
 
   this.logger = function (data,context) {
-
-    //console.log("da context",this.theContext)
     var tempContext= _.extend({},this.theContext,context)
     return this.bunyan.log(data,tempContext)
       .then(function (result) {

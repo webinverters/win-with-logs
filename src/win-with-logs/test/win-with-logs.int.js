@@ -118,15 +118,17 @@ describe('win-with-logs', function () {
           })
       });
 
-      describe('log.context', function () {
-        xit('logs all context.',function(){
+      describe('log.context aaz', function () {
+        it('logs all context.',function(){
           var log = winWithLogs(config);
           var ctx=log.context("new")
-          ctx.log("hi")
-          expect(console.log).to.have.been.calledWith(sinon.match('hi'))
-          expect(console.log).to.have.been.calledWith(sinon.match('"name":"test"'))
-          expect(console.log).to.have.been.calledWith(sinon.match('"env":"dev"'))
-          expect(console.log).to.have.been.calledWith(sinon.match('"component":"testComponents"'))
+          return ctx.log("hi")
+            .then(function(){
+              expect(console.log).to.have.been.calledWith(sinon.match('hi'))
+              expect(console.log).to.have.been.calledWith(sinon.match('"name":"test"'))
+              expect(console.log).to.have.been.calledWith(sinon.match('"env":"dev"'))
+              expect(console.log).to.have.been.calledWith(sinon.match('"component":"testComponents"'))
+            })
         })
       })
 

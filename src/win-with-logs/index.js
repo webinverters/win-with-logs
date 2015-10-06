@@ -27,6 +27,7 @@ module.exports = function (config) {
 
 
 
+
   api = function (msg, details) {
     return loggingInstance.log(msg, details)
   };
@@ -61,6 +62,9 @@ module.exports = function (config) {
       return p.resolve(success)
     }
   };
+  api.context=function(name){
+    return loggingInstance.context(name)
+  }
 
 
   api.goal=function(){
