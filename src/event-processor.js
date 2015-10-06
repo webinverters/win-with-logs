@@ -98,7 +98,8 @@ module.exports = function construct(config, storage, longTermStorage) {
       }
 
       eventRow.key = util.format('%s-%s', eventRow.app, eventRow.label);
-      eventRow.timestamp = new Date().getTime();
+      eventRow.timestamp = new Date().getTime()
+      eventRow.isotime = new Date().toISOString()
 
       return eventRow;
     }
