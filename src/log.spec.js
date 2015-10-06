@@ -58,7 +58,7 @@ describe('log', function(){
     it('parses details properly.', function() {
       var details = { id: 1};
       m.log('LABEL', details);
-      expect(mProvider.info).to.have.been.calledWith('LABEL', details);
+      expect(mProvider.info).to.have.been.calledWith({details: details}, 'LABEL');
     });
   });
 });
