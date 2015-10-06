@@ -178,9 +178,12 @@ describe('win-with-logs', function () {
     afterEach(function () {
       return exec("rm -rf testing;")
     });
-    it('creates a new log file when newed up', function () {
+    it('creates a new log file after first log', function () {
       var log = winWithLogs(config);
-      expect(fsTest.hasFile("./testing", "log0.log")).to.equal(true)
+      return log.log("hi").then(function(){
+        expect(fsTest.hasFile("./testing", "log0.log")).to.equal(true)
+      })
+
     });
     describe('regular api calls', function () {
       it('writes entries to log file', function (done) {
