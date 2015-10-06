@@ -78,7 +78,7 @@ module.exports = function construct(config, storage, longTermStorage) {
     // you have to extract the payload and the essential details about the logged event.
     if (eventType=='bunyan-v1') {
       var eventRow = {
-        details: eventPayload.details ? JSON.stringify(eventPayload.details) : 'N/A',
+        details: eventPayload.details,
         local_ts: Math.floor(Date.parse(eventPayload.time)/1000),
         component: eventPayload.name || 'unknown',
         host: eventPayload.hostname || 'unknown',

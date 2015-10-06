@@ -26,4 +26,14 @@ var logger = require('../index')({
 //logger.log('Here is a logged message');
 
 //logger.error('@SOMETHING_FAILED', {info: 'additional info'})
-logger.error('@SOMETHING_FAILED', {info: 'additional info', err: new Error('theerror')})
+//logger.error('@SOMETHING_FAILED', {info: 'additional info', err: new Error('theerror')})
+
+
+logger('@RECV_RESPONSE', {
+  response: {status:200, body: {body:'body'}},
+  status: 'OK',
+  meterUUID: 'abcdi',
+  transactionId: 'xdjdkjfkdf',
+  request: 'holy request',
+  info: null
+})
