@@ -22,7 +22,8 @@ var logger = require('../index')({
   //enableTrackedEvents: false
 });
 
-logger.log('@USAGE_LEVEL', {superdate: 'sumptuous', valueInt: 10, valueStr: 'whatever'});
+//logger.log('@USAGE_LEVEL', {superdate: 'sumptuous', valueInt: 10, valueStr: 'whatever'});
 //logger.log('Here is a logged message');
-logger.error('@SOMETHING_FAILED', {info: 'additional info'});
-//logger.log('@STARTING', 12, 24);
+
+//logger.error('@SOMETHING_FAILED', {info: 'additional info'})
+logger.error('@SOMETHING_FAILED', {info: 'additional info', err: new Error('theerror')})

@@ -134,10 +134,14 @@ module.exports = function construct(config, logProvider, bunyan, PrettyStream, T
     // The log method itself is a little special.  It does 2 things:
     // 1. Calls bunyan info() log level logger.
     // 2. Checks for observers to this log event and fires their handlers.
-    var log = function log(what, details) {
+    var log = function log(what, details, options) {
       enactObservers.apply(logger, arguments);
-      if (details)
-        logger.info(what, details)
+      if (options) {
+        options.details = details
+        logger.info(options, what)
+      }
+      else if (details)
+        logger.info({details:details}, what)
       else
         logger.info(what)
     };
@@ -146,19 +150,26 @@ module.exports = function construct(config, logProvider, bunyan, PrettyStream, T
     log.watchFor = function(eventLabel, observerAction) {
       logger.observers[eventLabel] = logger.observers[eventLabel] || [];
       logger.observers[eventLabel].push(observerAction);
-    };
+    }
     log.subscribe = log.watchFor;
 
-    log.error = function(msg, err) {
-      if (_.isObject(err)) {
-        logger.error({err: err}, msg);
+    // TODO: implmeent options param support...
+    log.error = function(msg, err, options) {
+      if (err) {
+        if (err instanceof Error) {
+          logger.error({err: err}, msg);
+        }
+        else if (!err.err) {
+          logger.error({details:err}, msg)
+        }
+        else {
+          logger.error({ details: err, err: err.err }, msg)
+        }
       }
-      else if (!err) {
+      else {
         logger.error(msg)
-      } else {
-        logger.error(msg, err)
       }
-    };
+    }
 
     log.warn = function(msg, details) {
       if (_.isObject(details)) {

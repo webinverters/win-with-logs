@@ -36,7 +36,8 @@ module.exports = function construct(config, sewer) {
 
   var TrackedStream = function(config) {
     Writable.call(this, {objectMode: true});
-  };
+  }
+
   util.inherits(TrackedStream, Writable);
   TrackedStream.prototype._write = function(chunk, encoding, done) {
     var eventLabel = extractEventLabel(chunk.msg);
