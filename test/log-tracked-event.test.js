@@ -29,11 +29,13 @@ var logger = require('../index')({
 //logger.error('@SOMETHING_FAILED', {info: 'additional info', err: new Error('theerror')})
 
 
-logger('@RECV_RESPONSE', {
-  response: {status:200, body: {body:'body'}},
-  status: 'OK',
-  meterUUID: 'abcdi',
-  transactionId: 'xdjdkjfkdf',
-  request: 'holy request',
-  info: null
-})
+// logger('@RECV_RESPONSE', {
+//   response: {status:200, body: {body:'body'}},
+//   status: 'OK',
+//   meterUUID: 'abcdi',
+//   transactionId: 'xdjdkjfkdf',
+//   request: 'holy request',
+//   info: null
+// })
+
+logger('listening at http://%s:%s', 'sher', 54)

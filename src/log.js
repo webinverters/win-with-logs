@@ -135,8 +135,14 @@ module.exports = function construct(config, logProvider, bunyan, PrettyStream, T
     // 1. Calls bunyan info() log level logger.
     // 2. Checks for observers to this log event and fires their handlers.
     var log = function log(what, details, options) {
+      // HACK: support util.format style logging (as bunyan does)
+      if (arguments.length > 3 || _.isString(details)) {
+        logger.info.apply(logger, arguments)
+        return
+      }
+
       enactObservers.apply(logger, arguments);
-      if (options) {
+      if (options && _.isObject(options)) {
         options.details = details
         logger.info(options, what)
       }
