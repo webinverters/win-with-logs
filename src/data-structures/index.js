@@ -1,3 +1,6 @@
+var _ = require('lodash');
+var p=require('bluebird');
+
 function log(param) {
   var name = param.name;
   var obj = param.obj;

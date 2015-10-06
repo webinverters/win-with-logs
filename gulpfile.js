@@ -6,6 +6,7 @@ var gulp = require('gulp'),
     tag_version = require('gulp-tag-version'),
     jsdoc = require("gulp-jsdoc");
 
+var exec = require('./test/helpers/exec')
 /**
  * Bumping version number and tagging the repository with it.
  * Please read http://semver.org/
@@ -47,6 +48,15 @@ gulp.task('generate-docs', function() {
     }, 'jsdoc.json'))
     .pipe(jsdoc.generator('./docs'));
 });
+
+
+gulp.task('create-browser-version',function(done){
+  //exec("browserify index.browser.js -o dist/win-with-logs.min.js");
+  return exec("browserify index.browser.js |uglifyjs -o dist/win-with-logs.min.js")
+})
+gulp.task('browser',function(){
+  exec("./node_modules/karma/bin/karma start karma.conf.js");
+})
 
 gulp.task('patch', function() { return inc('patch'); });
 gulp.task('feature', function() { return inc('minor'); });

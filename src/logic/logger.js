@@ -1,7 +1,8 @@
 var log=require('../data-structures').log;
 var context=require('../data-structures').context;
 var transports=require('../data-structures').transports;
-
+var _=require('lodash');
+var p=require('bluebird');
 
 
 function logger(bunyan,context,transportsInstance) {
