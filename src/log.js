@@ -14,7 +14,7 @@ var _ = require('lodash');
 module.exports = function construct(config, logProvider, bunyan, PrettyStream, TrackedStream, robustClient) {
   config = config || {};
   config = _.defaults(config, {
-
+    LOG_RENTENTION_DAYS: 1
   });
 
   var bunyanConf = {
@@ -36,7 +36,7 @@ module.exports = function construct(config, logProvider, bunyan, PrettyStream, T
       level: 'error',
       type: 'rotating-file',
       period: '1d',
-      count: 5,
+      count: config.LOG_RETENTION_DAYS,
       path: config.errorFile
     });
   }
@@ -46,7 +46,7 @@ module.exports = function construct(config, logProvider, bunyan, PrettyStream, T
       level: config.debug ? 'debug' : 'info',
       type: 'rotating-file',
       period: '1d',
-      count: 3,
+      count: config.LOG_RETENTION_DAYS,
       path: config.logFile
     });
   }
