@@ -1,11 +1,11 @@
-var data=require('../data-structures')
+var data = require('../data-structures')
 var logConfig = require('../interface').logConfig;
 var fileConfig = require('../interface').fileConfig;
-var logger = require('../logic').logger;
+var logger = require('../others/logger')
 
 var bunyan = require('../helpers/bunyan');
-var fsManager = require('../logic/fs-manager');
-var goal = require('../logic/goal');
+var fsManager = require('../others/fs-manager');
+var goal = require('../others/goal');
 var debug = require('../helpers/debug');
 
 var _ = require('lodash');
@@ -24,8 +24,6 @@ module.exports = function (config) {
     var fsInstance = new fsManager(fsConfig)
     loggingInstance.addTransport(fsInstance.write.bind(fsInstance))
   }
-
-
 
 
   api = function (msg, details) {
@@ -48,29 +46,29 @@ module.exports = function (config) {
   };
 
   api.failure = function (err) {
-    return loggingInstance.log("failure",debug(err));
+    return loggingInstance.log("failure", debug(err));
   };
   api.success = function (success) {
     var wait = true;
     if (wait) {
-      return loggingInstance.log("success",success)
+      return loggingInstance.log("success", success)
         .then(function () {
           return success
         })
     } else {
-      loggingInstance.log("success",success)
+      loggingInstance.log("success", success)
       return p.resolve(success)
     }
   };
-  api.context=function(name){
+  api.context = function (name) {
     return loggingInstance.context(name)
   }
 
 
-  api.goal=function(){
-    var temp=new goal();
-   var m={};
-    _.extend(m,api,temp)
+  api.goal = function () {
+    var temp = new goal();
+    var m = {};
+    _.extend(m, api, temp)
     //m.complete=function(successResult){
     //  var tempaa=temp.returnStatus(successResult);
     //
@@ -83,12 +81,9 @@ module.exports = function (config) {
     //m.failure=function(){
     //
     //};
-
-
     return m;
 
-
-  }
+  };
 
   return api;
 
