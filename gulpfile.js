@@ -52,7 +52,7 @@ gulp.task('generate-docs', function() {
 
 gulp.task('create-browser-version',function(done){
   //exec("browserify index.browser.js -o dist/win-with-logs.min.js");
-  return exec("browserify index.browser.js |uglifyjs -o dist/win-with-logs.min.js")
+  return exec("mkdir dist;browserify index.browser.js |uglifyjs -o dist/win-with-logs.min.js")
 })
 gulp.task('browser',function(){
   exec("./node_modules/karma/bin/karma start karma.conf.js");
