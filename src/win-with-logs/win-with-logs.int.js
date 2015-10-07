@@ -180,7 +180,6 @@ describe('win-with-logs', function () {
     it('creates a new log file after first log', function () {
       var log = winWithLogs(config);
       return log.log("hi").then(function () {
-        console.log("what wrong?",fs.readdirSync('./testing'))
         expect(fsTest.hasFile("./testing", "log0.log")).to.equal(true)
       })
 
@@ -190,6 +189,7 @@ describe('win-with-logs', function () {
         var log = winWithLogs(config);
         return log.log("hi")
           .then(function () {
+            console.log("what wrong?",fs.readdirSync('./testing'))
             expect(fsTest.hasFile("./testing", "log0.log")).to.equal(true)
             expect(fsTest.containLines('./testing/log0.log', ["hi"])).to.equal(true, "log should have been written to filesystem")
             done()
@@ -199,6 +199,7 @@ describe('win-with-logs', function () {
         var log = winWithLogs(config);
         return log.warn("hi", {a: 1})
           .then(function () {
+            console.log("what wrong?",fs.readdirSync('./testing'))
             expect(fsTest.hasFile("./testing", "log0.log")).to.equal(true)
             expect(fsTest.containLines('./testing/log0.log', ["hi"])).to.equal(true, "log should have been written to filesystem")
             done()
