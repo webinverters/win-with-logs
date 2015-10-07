@@ -1,11 +1,9 @@
 var logConfig = require('../data-structures').log_config;
 var fileConfig = require('../data-structures').file_config;
-
 var context = require('../data-structures').context;
 var transports = require('../data-structures').transports;
 
 var logger = require('../factories').loggerApi;
-//var goal = require('../factories');
 var bunyan = require('../providers/bunyan');
 var fsManager = require('../factories/fs-manager');
 var debug = require('../helpers').debug;
