@@ -2,6 +2,7 @@ var winWithLogs = require('./index');
 
 var exec = require('../../test/helpers/exec')
 var fsTest = require('../../test/helpers/checkFile');
+var fs=require('fs')
 
 describe('win-with-logs', function () {
   before(function () {
@@ -160,7 +161,7 @@ describe('win-with-logs', function () {
     })
   })
   describe('when passed a filesystem config', function () {
-    beforeEach(function () {
+    beforeEach(function (done) {
       config = {
         app: "test",
         env: "dev",
@@ -170,13 +171,16 @@ describe('win-with-logs', function () {
         maxLogFiles: 5
       };
       return exec("rm -rf testing;mkdir testing;")
+        .then(done)
     });
-    afterEach(function () {
+    afterEach(function (done) {
       return exec("rm -rf testing;")
+        .then(done)
     });
     it('creates a new log file after first log', function () {
       var log = winWithLogs(config);
       return log.log("hi").then(function () {
+        console.log("what wrong?",fs.readdirSync('./testing'))
         expect(fsTest.hasFile("./testing", "log0.log")).to.equal(true)
       })
 
