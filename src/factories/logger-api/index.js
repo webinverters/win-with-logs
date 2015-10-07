@@ -29,29 +29,31 @@ logger.prototype.addTransport = function (func) {
 }
 
 logger.prototype.log = function (msg, details) {
-  var temp = new log({name: msg, obj: details})
+  var temp = new log({name: msg, obj: details, level: "log"})
   return this.logger(temp.msg, temp.obj)
 };
 logger.prototype.warn = function (msg, details) {
-  var temp = new log({name: msg, obj: details})
-  return this.logger(temp.msg, temp.obj)
-};
-logger.prototype.trace = function (msg, details) {
-  var temp = new log({name: msg, obj: details})
+  var temp = new log({name: msg, obj: details, level: "warn"})
   return this.logger(temp.msg, temp.obj)
 };
 logger.prototype.fatal = function (msg, details) {
-  var temp = new log({name: msg, obj: details})
+  var temp = new log({name: msg, obj: details, level: "fatal"})
   return this.logger(temp.msg, temp.obj)
 };
 logger.prototype.debug = function (msg, details) {
-  var temp = new log({name: msg, obj: details})
+  var temp = new log({name: msg, obj: details, level: "debug"})
   return this.logger(temp.msg, temp.obj)
 };
 logger.prototype.error = function (msg, details) {
-  var temp = new log({name: msg, obj: details})
+  var temp = new log({name: msg, obj: details, level: "error"})
   return this.logger(temp.msg, temp.obj)
 };
+
+logger.prototype.success = function () {
+};
+logger.prototype.failure = function () {
+};
+
 logger.prototype.context = function (name) {
   var newContext = _.extend(this.theContext, {context: name});
   return new logger(this.bunyan, newContext, new transports(this.transports))
