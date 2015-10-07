@@ -5,7 +5,7 @@ var fsTest = require('../../../test/helpers/checkFile');
 
 describe('fsProvider', function () {
   var config;
-  beforeEach(function () {
+  beforeEach(function (done) {
     config = {
       app: "test",
       env: "dev",
@@ -14,7 +14,10 @@ describe('fsProvider', function () {
       maxLogFileSize: 100000,
       maxLogFiles: 5
     };
-    return exec("rm -rf testing;mkdir testing;")
+     exec("rm -rf testing;")
+       .then(function(){
+         return exec('mkdir testing')
+       })
   });
   afterEach(function () {
     return exec("rm -rf testing;")
