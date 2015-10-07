@@ -9,6 +9,7 @@ function logger(bunyan, context, transportsInstance) {
   this.transports = [];
   if (transportsInstance) {
     this.transports = transportsInstance.actions
+    if (typeof transports == "object") this.transports = transportsInstance;
   }
 
 

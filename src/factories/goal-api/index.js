@@ -38,7 +38,8 @@ goalApi.prototype.fatal = function (msg, details) {
 };
 
 goalApi.prototype.completeGoal=function(){
-  return this.goalInstance.report("success")
+  var goal=this.goalInstance.report("success")
+  return loggerApi.prototype.log.call(this, "success", goal)
 };
 
 

@@ -1,30 +1,6 @@
-
-//
-//function goal(name) {
-//  this.name = name;
-//  this.time = new Date().getTime();
-//  this.history = [];
-//}
-//
-//goal.prototype.addEntry = function (name) {
-//  this.history.push({
-//    log: name,
-//    time: new Date().getTime() - this.time
-//  })
-//
-//};
-//goal.prototype.returnStatus = function (status) {
-//  return {
-//    goal: this.name,
-//    duration: new Date().getTime() - this.time,
-//    history: this.history
-//  }
-//};
-//
-//
-var m = {};
+function factories() {};
+var m = new factories;
 m.loggerApi = require('./logger-api');
-//m.pubSub = pubSub;
-//m.goal = goal;
-
+m.goalApi = require('./goal-api');
+m.pubSub = require('./pub-sub');
 module.exports = m;

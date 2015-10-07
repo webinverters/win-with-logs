@@ -4,6 +4,12 @@ var exec = require('../../test/helpers/exec')
 var fsTest = require('../../test/helpers/checkFile');
 
 describe('win-with-logs', function () {
+  before(function () {
+    sinon.spy(console, "log")
+  });
+  beforeEach(function () {
+    console.log.reset();
+  });
   var config;
   describe('when supplied a basic config', function () {
 
@@ -15,23 +21,6 @@ describe('win-with-logs', function () {
       };
     })
     describe('it logs to the console when calling logger api', function () {
-
-
-      var consoleStub;
-
-      before(function () {
-        sinon.spy(console, "log")
-      });
-      beforeEach(function () {
-
-        //consoleStub = sinon.stub(console, "log", function () {});
-      });
-
-      afterEach(function () {
-        //consoleStub.restore();
-        console.log.reset()
-      });
-
 
       it('log() writes to the console', function (done) {
         var log = winWithLogs(config);
@@ -119,11 +108,11 @@ describe('win-with-logs', function () {
       });
 
       describe('log.context aaz', function () {
-        it('logs all context.',function(){
+        it('logs all context.', function () {
           var log = winWithLogs(config);
-          var ctx=log.context("new")
+          var ctx = log.context("new")
           return ctx.log("hi")
-            .then(function(){
+            .then(function () {
               expect(console.log).to.have.been.calledWith(sinon.match('hi'))
               expect(console.log).to.have.been.calledWith(sinon.match('"name":"test"'))
               expect(console.log).to.have.been.calledWith(sinon.match('"env":"dev"'))
@@ -135,28 +124,32 @@ describe('win-with-logs', function () {
 
     })
     describe('goal tracking', function () {
-      it('when logging a goal, it logs the duration of a goal duration', function (done) {
-        //var log = winWithLogs(config);
-        //var goal = log.goal('doStuff',
-        //  {user: "user", data:"data"},
-        //  {track:true,expireSecs:0,retry:'exponential',alert:'backendFailure',alertOnlyIfRetryFails: true})
-        //
-        //return p.resolve(goal) // can optionally pass the goal around so other parts can log to the goal.
-        //  .then(function(goal) {
-        //    goal.log('Finished doCrazyStuff()')
-        //  })
-        //  .then(goal.complete)
-        //  .then(function(){
-        //    expect(console.log).to.have.been.calledWith(sinon.match('"duration":'))
-        //    done();
-        //  });
-      done()
+
+      it('when logging a goal, it logs the duration of a goal duration on complete', function (done) {
+        var log = winWithLogs(config);
+        var goal = log.goal('doStuff',
+          {user: "user", data: "data"},
+          {track: true, expireSecs: 0, retry: 'exponential', alert: 'backendFailure', alertOnlyIfRetryFails: true})
+
+        p.resolve(goal) // can optionally pass the goal around so other parts can log to the goal.
+          .then(function (goal) {
+            return goal.log('Finished doCrazyStuff()')
+          })
+          .then(function () {
+            return goal.completeGoal()
+          })
+          .then(function (result) {
+            expect(console.log.callCount).to.equal(2)
+            expect(console.log).to.have.been.calledWith(sinon.match('doStuff'))
+            expect(console.log).to.have.been.calledWith(sinon.match('duration'))
+            done();
+          });
 
       })
     })
     describe('pub sub', function () {
       describe('when adding a custom event handler', function () {
-        it('runs an custom function when a tracked event is passed in the logs.',function(){
+        it('runs an custom function when a tracked event is passed in the logs.', function () {
           console.log("remove me")
 
         });
@@ -183,7 +176,7 @@ describe('win-with-logs', function () {
     });
     it('creates a new log file after first log', function () {
       var log = winWithLogs(config);
-      return log.log("hi").then(function(){
+      return log.log("hi").then(function () {
         expect(fsTest.hasFile("./testing", "log0.log")).to.equal(true)
       })
 
@@ -200,7 +193,7 @@ describe('win-with-logs', function () {
       })
       it('writes entries to log file', function (done) {
         var log = winWithLogs(config);
-        return log.warn("hi",{a:1})
+        return log.warn("hi", {a: 1})
           .then(function () {
             expect(fsTest.hasFile("./testing", "log0.log")).to.equal(true)
             expect(fsTest.containLines('./testing/log0.log', ["hi"])).to.equal(true, "log should have been written to filesystem")
@@ -209,13 +202,13 @@ describe('win-with-logs', function () {
       })
     });
     describe('when exceeding file size', function () {
-      beforeEach(function(){
-        config.maxLogFileSize=100;
+      beforeEach(function () {
+        config.maxLogFileSize = 100;
       })
-      it('creates a new log file',function(done){
+      it('creates a new log file', function (done) {
         var log = winWithLogs(config);
         return log.warn("hi")
-          .then(function(){
+          .then(function () {
             return log.log("hello")
           })
           .then(function () {
@@ -228,12 +221,12 @@ describe('win-with-logs', function () {
       })
     });
     describe('when exceeding max file count', function () {
-      beforeEach(function(){
-        config.maxLogFileSize=100;
-        config.maxLogFiles=2
+      beforeEach(function () {
+        config.maxLogFileSize = 100;
+        config.maxLogFiles = 2
         return exec("cd testing; touch log0.log log1.log log2.log log3.log")
       });
-      it('delete old files',function(){
+      it('delete old files', function () {
         var log = winWithLogs(config);
         expect(fsTest.hasFile("./testing", "log0.log")).to.equal(false);
         expect(fsTest.hasFile("./testing", "log1.log")).to.equal(false);
@@ -241,13 +234,13 @@ describe('win-with-logs', function () {
         expect(fsTest.hasFile("./testing", "log3.log")).to.equal(true);
         expect(fsTest.hasFile("./testing", "log4.log")).to.equal(true);
       })
-      it('delete old files when rotating files',function(done){
+      it('delete old files when rotating files', function (done) {
         var log = winWithLogs(config);
         return log.warn("hi")
-          .then(function(){
+          .then(function () {
             return log.log("hello")
           })
-          .then(function(){
+          .then(function () {
             expect(fsTest.hasFile("./testing", "log0.log")).to.equal(false);
             expect(fsTest.hasFile("./testing", "log1.log")).to.equal(false);
             expect(fsTest.hasFile("./testing", "log2.log")).to.equal(false);
@@ -261,18 +254,18 @@ describe('win-with-logs', function () {
   });
   describe('when passed a cloud config', function () {
     describe('regular api calls', function () {
-      it('whatever',function(){
+      it('whatever', function () {
         console.log("remove me!!!!!")
       })
     })
     describe('goal tracking', function () {
-      it('whatever',function(){
+      it('whatever', function () {
         //remove me
       })
     })
   });
   describe('when passed an invalid config', function () {
-    it('throws various errors',function(){
+    it('throws various errors', function () {
       //remove me
     })
   })

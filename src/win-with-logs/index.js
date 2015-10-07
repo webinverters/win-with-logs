@@ -4,6 +4,8 @@ var context = require('../data-structures').context;
 var transports = require('../data-structures').transports;
 
 var logger = require('../factories').loggerApi;
+var goalApi=require('../factories').goalApi;
+
 var bunyan = require('../providers/bunyan');
 var fsManager = require('../factories/fs-manager');
 var debug = require('../helpers').debug;
@@ -15,6 +17,7 @@ module.exports = function (config) {
   var bunyanInstance = new bunyan(loggingConfig);
   var loggingInstance = new logger(bunyanInstance, new context([]), new transports([]));
   loggingInstance.addTransport(console.log)
+
 
 
   if (config.logFilePath || config.maxLogFileSize || config.maxLogFiles) {
@@ -63,24 +66,8 @@ module.exports = function (config) {
   }
 
 
-  api.goal = function () {
-    var temp = new goal();
-    var m = {};
-    _.extend(m, api, temp)
-    //m.complete=function(successResult){
-    //  var tempaa=temp.returnStatus(successResult);
-    //
-    //  return loggingInstance.log("success", tempaa)
-    //    .then(function(){
-    //      return successResult
-    //    })
-    //
-    //};
-    //m.failure=function(){
-    //
-    //};
-    return m;
-
+  api.goal = function (goalName) {
+    return new goalApi(goalName,bunyanInstance,new context([]),{actions:[console.log]} )
   };
 
   return api;
