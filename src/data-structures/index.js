@@ -1,4 +1,4 @@
-function log(param) {
+function log_Type(param) {
   var name = param.name;
   var obj = param.obj;
   var context = param.context;
@@ -46,8 +46,53 @@ function transports(theArray) {
 }
 
 
+function log_args(msg,details){
+  if(typeof msg!=="string") throw new error("invalid msg");
+  if(typeof details!=="object") throw new error("invalid details");
+  this.msg=msg;
+  this.details=details;
+}
+
+
+function file_config(logFilePath,maxLogFileSize,maxLogFiles){
+  if(!logFilePath)throw new Error("missing logFilePath");
+  if(!maxLogFileSize)throw new Error("missing maxLogFileSize");
+  if(!maxLogFiles)throw new Error("missing maxLogFiles");
+
+  if(typeof logFilePath!=="string") throw new Error("invalid type");
+  if(typeof maxLogFileSize!=="number") throw new Error("invalid type");
+  if(typeof maxLogFiles!=="number") throw new Error("invalid type");
+
+  this.logFilePath=logFilePath;
+  this.maxLogFileSize=maxLogFileSize;
+  this.maxLogFiles=maxLogFiles;
+}
+
+function log_config(component,app,env){
+  this.component=component;
+  this.app=app;
+  this.env=env;
+}
+
+//function context(param){
+//  if(typeof param!=="object") throw new error("invalid context");
+//  this.params=param
+//}
+
+//function errorObject(stackTrace,lineNumber,fileName){
+//  this.stackTrace;
+//  this.lineNumber;
+//  this.fileName;
+//}
+
+
+
 module.exports = {
-  log: log,
+  log_type: log_Type,
   context: context,
-  transports: transports
+  transports: transports,
+
+  file_config:file_config,
+  log_config:log_config,
+  log_args:log_args
 };

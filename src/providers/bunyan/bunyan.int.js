@@ -1,4 +1,4 @@
-var m = require('../index')
+var m = require('./index')
 describe('bunyan', function () {
   describe('returns an instance that returns a log object', function () {
     it('returns a promise that formats log data with bunyan', function (done) {

@@ -1,4 +1,4 @@
-var log = require('../../data-structures').log;
+var log = require('../../data-structures').log_type;
 var context = require('../../data-structures').context;
 var transports = require('../../data-structures').transports;
 

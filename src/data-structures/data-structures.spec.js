@@ -1,4 +1,4 @@
-var log = require('./index').log
+var log = require('./index').log_type
 
 describe('data-structures', function () {
   describe('log return proper properties', function () {

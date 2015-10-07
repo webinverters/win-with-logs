@@ -1,6 +1,8 @@
 var data = require('../data-structures')
-var logConfig = require('../interface').logConfig;
-var fileConfig = require('../interface').fileConfig;
+
+var logConfig = require('../data-structures').log_config;
+var fileConfig = require('../data-structures').file_config;
+
 var logger = require('../others/logger')
 
 var bunyan = require('../providers/bunyan');
