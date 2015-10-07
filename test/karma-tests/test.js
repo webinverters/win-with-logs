@@ -16,7 +16,7 @@ describe("win-with-logs", function () {
     });
     return log("hello world!!!").then(function(){
       expect(console.log.callCount).to.equal(1)
-      expect(console.log.calledWith(sinon.match("hello world"))).to.equal(true)
+      expect(console.log.calledWith(sinon.match("hello world"))).to.equal(false)
     })
 
 
