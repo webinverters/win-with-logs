@@ -28,8 +28,13 @@ fileManager.prototype.write = function (a) {
 
   var defer = p.defer();
   this.currentStream.write(a, function () {
-    defer.resolve();
+      //defer.resolve();
   });
+  //horrible hack to debug a snap ci issue, remove when possible.
+  setTimeout(function(){
+    defer.resolve();
+  },1500);
+
   return defer.promise;
 };
 
