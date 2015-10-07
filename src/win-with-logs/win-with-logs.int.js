@@ -180,6 +180,7 @@ describe('win-with-logs', function () {
     it('creates a new log file after first log', function () {
       var log = winWithLogs(config);
       return log.log("hi").then(function () {
+        console.log("what wrong?",fs.readdirSync('./testing'))
         expect(fsTest.hasFile("./testing", "log0.log")).to.equal(true)
       })
 
