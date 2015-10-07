@@ -1,5 +1,5 @@
 var logger = require('./index.js');
-var log = require('../../data-structures').log;
+var log = require('../../data-structures').log_args;
 var context = require('../../data-structures').context;
 var transports = require('../../data-structures').transports;
 

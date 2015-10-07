@@ -11,7 +11,7 @@ goal.prototype.addEntry = function (name) {
   })
 
 };
-goal.prototype.returnStatus = function (status) {
+goal.prototype.report = function (status) {
   return {
     goal: this.name,
     duration: new Date().getTime() - this.time,
