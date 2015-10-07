@@ -3,7 +3,7 @@ var exec = require('../../../test/helpers/exec')
 var fileConfig = require('../../data-structures').file_config;
 var fsTest = require('../../../test/helpers/checkFile');
 
-describe('fsProvider', function () {
+xdescribe('fsProvider', function () {
   var config;
   beforeEach(function (done) {
     config = {
