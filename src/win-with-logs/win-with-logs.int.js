@@ -172,9 +172,11 @@ describe('win-with-logs', function () {
       };
       exec("rm -rf testing;")
         .then(function(){
+          console.log("one-removed testing folder completely")
           return exec("mkdir testing")
         })
         .then(function(){
+          console.log("two-recreated folder")
           console.log("reset folder?",fs.readdirSync('./testing'))
           done();
       })
@@ -192,9 +194,9 @@ describe('win-with-logs', function () {
     })
     it('creates a new log file after first log', function () {
       var log = winWithLogs(config);
-      console.log("current file",fs.readdirSync('./testing'))
+      console.log("in test before run",fs.readdirSync('./testing'))
       return log.log("hi").then(function () {
-        console.log("what wrong?",fs.readdirSync('./testing'))
+        console.log("in test after call",fs.readdirSync('./testing'))
         expect(fsTest.hasFile("./testing", "log0.log")).to.equal(true)
       })
 
@@ -202,9 +204,10 @@ describe('win-with-logs', function () {
     describe('regular api calls', function () {
       it('writes entries to log file', function (done) {
         var log = winWithLogs(config);
+        console.log("in test before run",fs.readdirSync('./testing'))
         return log.log("hi")
           .then(function () {
-            console.log("what wrong?",fs.readdirSync('./testing'))
+            console.log("in test after call",fs.readdirSync('./testing'))
             expect(fsTest.hasFile("./testing", "log0.log")).to.equal(true)
             expect(fsTest.containLines('./testing/log0.log', ["hi"])).to.equal(true, "log should have been written to filesystem")
             done()
@@ -212,9 +215,10 @@ describe('win-with-logs', function () {
       })
       it('writes entries to log file', function (done) {
         var log = winWithLogs(config);
+        console.log("in test before run",fs.readdirSync('./testing'))
         return log.warn("hi", {a: 1})
           .then(function () {
-            console.log("what wrong?",fs.readdirSync('./testing'))
+            console.log("in test after call",fs.readdirSync('./testing'))
             expect(fsTest.hasFile("./testing", "log0.log")).to.equal(true)
             expect(fsTest.containLines('./testing/log0.log', ["hi"])).to.equal(true, "log should have been written to filesystem")
             done()
