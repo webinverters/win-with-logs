@@ -2,13 +2,10 @@ var logConfig = require('../data-structures').log_config;
 var fileConfig = require('../data-structures').file_config;
 
 var logger = require('../factories').loggerApi;
-
+//var goal = require('../factories');
 var bunyan = require('../providers/bunyan');
 var fsManager = require('../factories/fs-manager');
-var goal = require('../factories/goal');
-var debug = require('../helpers/debug');
-
-var _ = require('lodash');
+var debug = require('../helpers').debug;
 
 
 module.exports = function (config) {
