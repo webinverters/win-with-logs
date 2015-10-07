@@ -12,7 +12,7 @@ pubSub.prototype.addEventHandler = function (event, func) {
   }
 };
 
-pubSub.prototype.addEventHandler.handleEvent = function (event) {
+pubSub.prototype.handleEvent = function (event) {
   if (this.events[event]) {
     _.forEach(this.events[event], function (func) {
       func(event);
