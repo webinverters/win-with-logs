@@ -33,14 +33,6 @@ function log_Type(param) {
 }
 
 
-function context() {
-  this.fullContext = {};
-}
-
-context.prototype.addContext = function (name, type) {
-  this.fullContext[type] = name;
-};
-
 function transports(theArray) {
   if (typeof theArray !== "object" || typeof theArray.length !== "number") throw new Error("invalid parameter, need an array")
   this.actions = theArray;
@@ -89,7 +81,8 @@ function log_config(component, app, env) {
 
 module.exports = {
   log_type: log_Type,
-  context: context,
+  context:require('./context-type'),
+  context_type:require('./context-type'),
   transports: transports,
 
   file_config: file_config,

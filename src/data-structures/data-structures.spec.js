@@ -8,20 +8,20 @@ describe('data-structures', function () {
     });
 
     it('when passed a string', function () {
-      param.name="string"
-      var instance= new log(param);
+      param.name = "string"
+      var instance = new log(param);
       expect(instance.msg).to.equal("string")
       expect(instance.obj).to.equal(false)
     });
     it('when passed an object', function () {
-      param.name={a:1}
-      var instance= new log(param);
+      param.name = {a: 1}
+      var instance = new log(param);
       expect(instance.msg).to.equal(JSON.stringify(param.name))
       expect(instance.obj).to.equal(JSON.stringify(param.name))
     });
-    it('when passed nothing',function(){
-      expect(function(){
-        var instance= new log(param);
+    it('when passed nothing', function () {
+      expect(function () {
+        var instance = new log(param);
       }).to.throw("missing name property")
     });
 
@@ -31,4 +31,8 @@ describe('data-structures', function () {
     it('when passed an object and then a string')
 
   })
+
+
+
+
 })
