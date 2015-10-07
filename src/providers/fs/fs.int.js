@@ -18,6 +18,7 @@ describe('fsProvider', function () {
        .then(function(){
          return exec('mkdir testing')
        })
+       .then(done)
   });
   afterEach(function () {
     return exec("rm -rf testing;")
