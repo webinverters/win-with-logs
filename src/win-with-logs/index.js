@@ -3,7 +3,7 @@ var logConfig = require('../interface').logConfig;
 var fileConfig = require('../interface').fileConfig;
 var logger = require('../others/logger')
 
-var bunyan = require('../helpers/bunyan');
+var bunyan = require('../providers/bunyan');
 var fsManager = require('../others/fs-manager');
 var goal = require('../others/goal');
 var debug = require('../helpers/debug');
