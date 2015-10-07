@@ -13,7 +13,7 @@ function logger(bunyan, context, transportsInstance) {
 
 
   this.logger = function (data, context) {
-    var tempContext = _.extend({}, this.theContext, context)
+    var tempContext = _.extend({}, this.theContext.fullContext, context)
     return this.bunyan.log(data, tempContext)
       .then(function (result) {
         var loggedResult = JSON.stringify(result);

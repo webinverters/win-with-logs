@@ -1,6 +1,9 @@
 var logConfig = require('../data-structures').log_config;
 var fileConfig = require('../data-structures').file_config;
 
+var context = require('../data-structures').context;
+var transports = require('../data-structures').transports;
+
 var logger = require('../factories').loggerApi;
 //var goal = require('../factories');
 var bunyan = require('../providers/bunyan');
@@ -12,12 +15,12 @@ module.exports = function (config) {
 
   var loggingConfig = new logConfig(config.component, config.app, config.env);
   var bunyanInstance = new bunyan(loggingConfig);
-  var loggingInstance = new logger(bunyanInstance);
+  var loggingInstance = new logger(bunyanInstance, new context([]), new transports([]));
   loggingInstance.addTransport(console.log)
 
 
   if (config.logFilePath || config.maxLogFileSize || config.maxLogFiles) {
-    var fsConfig = new fileConfig(config.logFilePath, config.maxLogFileSize, config.maxLogFiles)
+    var fsConfig = new fileConfig(config.logFilePath, config.maxLogFileSize, config.maxLogFiles);
     var fsInstance = new fsManager(fsConfig)
     loggingInstance.addTransport(fsInstance.write.bind(fsInstance))
   }

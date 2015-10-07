@@ -38,7 +38,7 @@ function context() {
 }
 
 context.prototype.addContext = function (name, type) {
-  this.context[type] = name;
+  this.fullContext[type] = name;
 };
 
 function transports(theArray) {
