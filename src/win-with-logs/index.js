@@ -1,7 +1,7 @@
 var logConfig = require('../data-structures').log_config;
 var fileConfig = require('../data-structures').file_config;
 
-var logger = require('../factories/logger');
+var logger = require('../factories').loggerApi;
 
 var bunyan = require('../providers/bunyan');
 var fsManager = require('../factories/fs-manager');

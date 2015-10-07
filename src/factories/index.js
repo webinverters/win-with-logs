@@ -48,9 +48,9 @@
 //};
 //
 //
-//var m = {};
-//m.logger = require('./logger');
+var m = {};
+m.loggerApi = require('./logger-api');
 //m.pubSub = pubSub;
 //m.goal = goal;
-//
-//module.exports = m;
+
+module.exports = m;
