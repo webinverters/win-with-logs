@@ -19,4 +19,7 @@ describe('logger.js', function () {
         })
     })
   })
+  it('logger.log')
+
+
 })
