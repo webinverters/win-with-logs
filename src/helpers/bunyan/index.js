@@ -1,6 +1,4 @@
 var Bunyan = require('bunyan');
-var p = require('bluebird');
-var _ = require('lodash');
 
 function bunyanLogger(_config) {
   this.logPromise = false;

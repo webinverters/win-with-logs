@@ -1,7 +1,5 @@
-var _ = require('lodash')
 var fs = require('fs');
 var path = require('path')
-var p = require('bluebird');
 
 function fileManager(config) {
   this.name = "log";
