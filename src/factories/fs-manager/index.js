@@ -1,5 +1,3 @@
-var fsProvider = require('../../providers/filesystem')
-
-
-
-module.exports = fsProvider;
+var fs = require('../../providers').fs;
+//todo separate logic from implementation
+module.exports = fs;
