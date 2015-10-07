@@ -170,15 +170,29 @@ describe('win-with-logs', function () {
         maxLogFileSize: 100000,
         maxLogFiles: 5
       };
-      return exec("rm -rf testing;mkdir testing;")
-        .then(done)
+      exec("rm -rf testing;")
+        .then(function(){
+          return exec("mkdir testing")
+        })
+        .then(function(){
+          console.log("reset folder?",fs.readdirSync('./testing'))
+          done();
+      })
     });
     afterEach(function (done) {
-      return exec("rm -rf testing;")
-        .then(done)
+      console.log("current folder",fs.readdirSync('./testing'))
+      exec("cd testing;rm *")
+        .then(function(){
+          console.log("reset folder",fs.readdirSync('./testing'))
+          done();
+        })
     });
+    after(function(){
+      return exec("rm -rf testing")
+    })
     it('creates a new log file after first log', function () {
       var log = winWithLogs(config);
+      console.log("current file",fs.readdirSync('./testing'))
       return log.log("hi").then(function () {
         console.log("what wrong?",fs.readdirSync('./testing'))
         expect(fsTest.hasFile("./testing", "log0.log")).to.equal(true)
