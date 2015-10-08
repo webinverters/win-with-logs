@@ -4,8 +4,8 @@ function pubSub(){}
 pubSub.prototype.addEventHandler=function(){};
 
 
-function api() {
-  loggerApi.call(this)
+function api(bunyan,context,transport) {
+  loggerApi.call(this,bunyan)
   pubSub.call(this);
 
   if (arguments.length == 1 && arguments[0] instanceof api) {
