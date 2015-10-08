@@ -1,8 +1,21 @@
-function loggerApi(bunyan,context,transport) {
+var transportType = require('../transport-type');
+var contextType = require('../context-type');
+
+
+function loggerApi(bunyan, context, transport) {
+  if(typeof bunyan!=="object") throw new Error("invalid bunyan")
+
+  this.bunyan = bunyan;
+  this.context_data = new contextType(context);
+  this.transport = new transportType(transport);
+
 
   //type should be able to pass itself as a parameter
   if (arguments.length == 1 && arguments[0] instanceof loggerApi) {
-    //this.stuff = _.cloneDeep(arguments[0].stuff)
+    this.bunyan=arguments[0].bunyan;//shouldn't need to make a copy of bunyan since it's a provider.
+
+    this.context_data = new contextType(arguments[0].context_data);
+    this.transport = new transportType(arguments[0].transport);
   }
 }
 
@@ -19,7 +32,7 @@ loggerApi.prototype.fatal = function () {
 };
 loggerApi.prototype.context = function () {
 
-  return new loggerApi
+  return new loggerApi(this.bunyan)
 };
 
 loggerApi.prototype.function = function () {
@@ -38,7 +51,6 @@ loggerApi.prototype.returnSuccess = function () {
 loggerApi.prototype.returnFailure = function () {
   return new loggerApi
 };
-
 
 
 module.exports = loggerApi;

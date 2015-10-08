@@ -5,7 +5,11 @@ function bunyanLogger(_config) {
 
   var func = function (data) {
     if (this.logPromise) {
-      this.logPromise.resolve(data)
+      var result = {
+        message: JSON.stringify(data)
+      }
+
+      this.logPromise.resolve(result)
       this.logPromise = false;
     }
   }.bind(this);

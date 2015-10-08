@@ -33,10 +33,7 @@ function log_Type(param) {
 }
 
 
-function transports(theArray) {
-  if (typeof theArray !== "object" || typeof theArray.length !== "number") throw new Error("invalid parameter, need an array")
-  this.actions = theArray;
-}
+
 
 
 function log_args(msg, details) {
@@ -67,23 +64,13 @@ function log_config(component, app, env) {
   this.env = env;
 }
 
-//function context(param){
-//  if(typeof param!=="object") throw new error("invalid context");
-//  this.params=param
-//}
-
-//function errorObject(stackTrace,lineNumber,fileName){
-//  this.stackTrace;
-//  this.lineNumber;
-//  this.fileName;
-//}
 
 
 module.exports = {
   log_type: log_Type,
   context:require('./context-type'),
   context_type:require('./context-type'),
-  transports: transports,
+  transports: require('./transport-type'),
 
   file_config: file_config,
   log_config: log_config,

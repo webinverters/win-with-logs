@@ -1,9 +1,12 @@
 var loggerApi=require('./index');
 
+
+
 describe('loggerApi',function(){
   it('world',function(){
+    var bunyan={};
 
-    var log=new loggerApi;
+    var log=new loggerApi(bunyan);
 
     log.log();
     log.warn();

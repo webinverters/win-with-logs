@@ -1,6 +1,6 @@
 var context_type = require('./index')
 
-describe('context', function () {
+describe('context-type.spec.js', function () {
   it('main usage', function () {
     var m = new context_type();
     m.addContext("hi", "goal");

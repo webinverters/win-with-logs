@@ -2,7 +2,7 @@ var winWithLogs_api=require('./index');
 
 
 
-describe('hello',function(){
+xdescribe('hello',function(){
   it('world',function(){
     var m=new winWithLogs_api
 

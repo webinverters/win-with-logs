@@ -12,12 +12,17 @@ pubSub.prototype.addEventHandler = function (event, func) {
   }
 };
 
-pubSub.prototype.handleEvent = function (event) {
+pubSub.prototype.handleEvent = function (msg) {
+  if (typeof msg !== "string") return;
+  if (msg[0] !== "@") return;
+  var event = msg.slice(1)
+
   if (this.events[event]) {
-    _.forEach(this.events[event], function (func) {
-      func(event);
-    })
+    return p.map(this.events[event], function (func) {
+      return func()
+    }, {concurrency: 1})
   }
+  return p.resolve(true)
 };
 
 
