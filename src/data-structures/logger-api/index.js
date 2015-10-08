@@ -1,4 +1,4 @@
-function loggerApi(transport, context, bunyan) {
+function loggerApi(bunyan,context,transport) {
 
   //type should be able to pass itself as a parameter
   if (arguments.length == 1 && arguments[0] instanceof loggerApi) {
@@ -21,6 +21,24 @@ loggerApi.prototype.context = function () {
 
   return new loggerApi
 };
+
+loggerApi.prototype.function = function () {
+  return new loggerApi
+};
+loggerApi.prototype.method = function () {
+  return new loggerApi
+};
+loggerApi.prototype.module = function () {
+  return new loggerApi
+};
+
+loggerApi.prototype.returnSuccess = function () {
+  return new loggerApi
+};
+loggerApi.prototype.returnFailure = function () {
+  return new loggerApi
+};
+
 
 
 module.exports = loggerApi;
