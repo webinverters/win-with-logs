@@ -10,8 +10,6 @@ function logMessage_type(msg, details) {
 
   //type should be able to pass itself as a parameter
   if (arguments.length == 1 && arguments[0] instanceof logMessage_type) {
-    console.log("here?", arguments[0].extraArgs)
-
     this.msg = _.cloneDeep(arguments[0].msg);
     this.details = _.cloneDeep(arguments[0].details);
     this.extraArgs = _.cloneDeep(arguments[0].extraArgs);

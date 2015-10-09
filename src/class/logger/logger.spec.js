@@ -27,7 +27,7 @@ describe('logger', function () {
       })
   })
 
-  describe('implementation fuck',function(){
+  describe('implementation',function(){
     var bunyan;
     beforeEach(function(){
       bunyan={
@@ -49,7 +49,6 @@ describe('logger', function () {
         .then(function(){
           expect(bunyan.log).to.have.been.called;
           expect(func.func).to.have.been.called;
-          console.log(bunyan.log.args)
           done();
         })
     })

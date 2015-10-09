@@ -21,7 +21,6 @@ function logger(bunyan) {
 
 logger.prototype.addTransport = function (func, type, level) {
   this.transport.addTransport(func, type, level);
-
 };
 
 logger.prototype.addContext = function (name, type) {
@@ -31,7 +30,6 @@ logger.prototype.addContext = function (name, type) {
 
 logger.prototype.logEntry = function (message, level) {
   var data=new logMessageType(message);
-  console.log(data.extraArgs.length)
   data.mergeContext(this.contextInstance);
 
   return p.resolve()

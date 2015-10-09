@@ -9,7 +9,6 @@ function api(bunyan,context,transport) {
   pubSub.call(this);
 
   if (arguments.length == 1 && arguments[0] instanceof api) {
-    console.log("here?,new up right?")
     //this.fullContext = _.cloneDeep(arguments[0].fullContext)
   }
 }

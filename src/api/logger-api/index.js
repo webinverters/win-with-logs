@@ -1,68 +1,68 @@
-//
-//
-//var logMessageType = require('../../data-types/log-message-type');
-//var transportType = require('../../data-types/transport-type');
-//var contextType = require('../../data-types/context-type');
-//
-//
-//function loggerApi(bunyan) {
-//  if (typeof bunyan !== "object") throw new Error("invalid bunyan")
-//
-//  this.bunyan = bunyan;
-//  this.context_data=new contextType;
-//  this.transport = new transportType;
-//
-//  //type should be able to pass itself as a parameter
-//  if (arguments.length == 1 && arguments[0] instanceof loggerApi) {
-//    this.bunyan = arguments[0].bunyan;//shouldn't need to make a copy of bunyan since it's a provider.
-//
-//    this.context_data = new contextType(arguments[0].context_data);
-//    this.transport = new transportType(arguments[0].transport);
-//  }
-//}
-//
-//loggerApi.prototype.add
-//
-//
-//loggerApi.prototype.log = function () {
-//};
-//loggerApi.prototype.warn = function () {
-//};
-//loggerApi.prototype.debug = function () {
-//};
-//loggerApi.prototype.error = function () {
-//};
-//loggerApi.prototype.fatal = function () {
-//};
-//loggerApi.prototype.context = function (name) {
-//
-//  var newContext = new contextType(this.context)
-//  newContext.addContext(name, "context")
-//  return new loggerApi(this.bunyan)
-//};
-//
-//loggerApi.prototype.function = function (name) {
-//  var newContext = new contextType(this.context)
-//  newContext.addContext(name, "function");
-//  return new loggerApi(this.bunyan)
-//};
-//loggerApi.prototype.method = function (name) {
-//  var newContext = new contextType(this.context)
-//  newContext.addContext(name, "method");
-//  return new loggerApi(this.bunyan)
-//};
-//loggerApi.prototype.module = function (name) {
-//  var newContext = new contextType(this.context)
-//  newContext.addContext(name, "module");
-//  return new loggerApi(this.bunyan)
-//};
-//
-//loggerApi.prototype.returnSuccess = function () {
-//  return new loggerApi
-//};
-//loggerApi.prototype.returnFailure = function () {
-//  return new loggerApi
-//};
-//
-//
-//module.exports = loggerApi;
+var logMessageType = require('../../data-types/log-message-type');
+var logger = require('../../class/logger')
+
+
+function loggerApi(bunyan, transport) {
+  if (typeof bunyan !== "object") throw new Error("invalid bunyan")
+  this.loggerInstance = new logger(bunyan);
+
+  if (transport) {
+    _.forEach(transport.actions, function (transportActions) {
+      this.loggerInstance.addTransport.apply(this.loggerInstance, transportActions)
+    }.bind(this))
+  }
+
+
+  //type should be able to pass itself as a parameter
+  if (arguments.length == 1 && arguments[0] instanceof loggerApi) {
+
+    this.loggerInstance = arguments[0].loggerInstance;
+  }
+}
+
+
+loggerApi.prototype.log = function () {
+  var m = new logMessageType(arguments);
+  return this.loggerInstance.logEntry(m, "log")
+};
+loggerApi.prototype.warn = function () {
+  var m = new logMessageType(arguments);
+  this.loggerInstance.logEntry(m, "warn")
+};
+loggerApi.prototype.debug = function () {
+  var m = new logMessageType(arguments);
+  this.loggerInstance.logEntry(m, "debug")
+};
+loggerApi.prototype.error = function () {
+  var m = new logMessageType(arguments);
+  this.loggerInstance.logEntry(m, "error")
+};
+loggerApi.prototype.fatal = function () {
+  var m = new logMessageType(arguments);
+  this.loggerInstance.logEntry(m, "fatal")
+};
+
+loggerApi.prototype.context = function (name) {
+  var newInstance = new loggerApi(this);
+  newInstance.loggerInstance.addContext(name, "function");
+  return newInstance
+};
+
+loggerApi.prototype.function = function (name) {
+  var newInstance = new loggerApi(this);
+  newInstance.loggerInstance.addContext(name, "function");
+  return newInstance
+};
+loggerApi.prototype.method = function (name) {
+  var newInstance = new loggerApi(this);
+  newInstance.loggerInstance.addContext(name, "function");
+  return newInstance
+};
+loggerApi.prototype.module = function (name) {
+  var newInstance = new loggerApi(this);
+  newInstance.loggerInstance.addContext(name, "function");
+  return newInstance
+};
+
+
+module.exports = loggerApi;
