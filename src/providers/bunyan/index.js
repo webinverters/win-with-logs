@@ -8,7 +8,6 @@ function bunyanLogger(_config) {
       var result = {
         message: JSON.stringify(data)
       }
-
       this.logPromise.resolve(result)
       this.logPromise = false;
     }

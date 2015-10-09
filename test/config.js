@@ -6,6 +6,7 @@ var chaiAsPromised = require("chai-as-promised");
 
 global._ = require('lodash');
 global.p = require('bluebird');
+p.longStackTraces()
 global.path = require('path');
 global.util = require('util');
 

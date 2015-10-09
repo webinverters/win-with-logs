@@ -1,5 +1,6 @@
 var logMessageType = require('../../data-types/log-message-type');
-var logger = require('../../class/logger')
+var transportType = require('../../data-types/transport-type');
+var logger = require('../../class/logger');
 
 /**
  * @class
@@ -8,9 +9,11 @@ function loggerApi(bunyan, transport) {
   if (typeof bunyan !== "object") throw new Error("invalid bunyan")
   this.loggerInstance = new logger(bunyan);
 
+  this.transport=new transportType;
   if (transport) {
-    _.forEach(transport.actions, function (transportActions) {
-      this.loggerInstance.addTransport.apply(this.loggerInstance, transportActions)
+    this.transport=transport;
+    _.forEach(this.transport.actions, function (transportActions) {
+      this.loggerInstance.addTransport.call(this.loggerInstance, transportActions.func,transportActions.type,transportActions.level)
     }.bind(this))
   }
 
@@ -19,6 +22,8 @@ function loggerApi(bunyan, transport) {
   if (arguments.length == 1 && arguments[0] instanceof loggerApi) {
 
     this.loggerInstance = arguments[0].loggerInstance;
+    this.transport=arguments[0].transport;
+    return
   }
 }
 
@@ -29,19 +34,19 @@ loggerApi.prototype.log = function () {
 };
 loggerApi.prototype.warn = function () {
   var m = new logMessageType(arguments);
-  this.loggerInstance.logEntry(m, "warn")
+  return this.loggerInstance.logEntry(m, "warn")
 };
 loggerApi.prototype.debug = function () {
   var m = new logMessageType(arguments);
-  this.loggerInstance.logEntry(m, "debug")
+  return this.loggerInstance.logEntry(m, "debug")
 };
 loggerApi.prototype.error = function () {
   var m = new logMessageType(arguments);
-  this.loggerInstance.logEntry(m, "error")
+  return this.loggerInstance.logEntry(m, "error")
 };
 loggerApi.prototype.fatal = function () {
   var m = new logMessageType(arguments);
-  this.loggerInstance.logEntry(m, "fatal")
+  return this.loggerInstance.logEntry(m, "fatal")
 };
 
 loggerApi.prototype.context = function (name) {

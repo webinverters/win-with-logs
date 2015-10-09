@@ -9,6 +9,7 @@ function logger(bunyan) {
   if (typeof bunyan !== "object") throw new Error("invalid bunyan")
 
   this.bunyan = bunyan;
+
   this.contextInstance = new contextType;
   this.transport = new transportType;
 
@@ -33,22 +34,22 @@ logger.prototype.addContext = function (name, type) {
 logger.prototype.logEntry = function (message, level) {
   var data=new logMessageType(message);
   data.mergeContext(this.contextInstance);
-
+  var that=this;
   return p.resolve()
     .bind(this)
     .then(function () {
-      return this.bunyan.log.apply(null,data.getArgs())
+      return this.bunyan.log.apply(this.bunyan,data.getArgs())
     })
     .then(function (bunyanResult) {
       var data = {
-        logString: bunyanResult,
+        logString: bunyanResult.message,
         args: message
       };
-      return p.map(this.transport.actions, function (transportItem) {
+      return p.map(that.transport.actions, function (transportItem) {
         //transportItem.type do something with it?
-        if (level == transportItem.level) {
+        //if (level == transportItem.level) {
           return transportItem.func(data)
-        }
+        //}
       })
     })
     .then(function () {

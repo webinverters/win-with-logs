@@ -4,7 +4,7 @@ var transportType = require('../../data-types/transport-type');
 
 describe('loggerApi', function () {
   it('world', function () {
-    var bunyan = {};
+    var bunyan = {log:sinon.stub().resolves("logData")};
 
     var log = new loggerApi(bunyan);
 
