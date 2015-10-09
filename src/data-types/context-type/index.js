@@ -1,3 +1,6 @@
+/**
+ * @class
+ */
 function context_type(param) {
   this.fullContext = param || {};
 

@@ -1,7 +1,9 @@
 var logMessageType = require('../../data-types/log-message-type');
 var logger = require('../../class/logger')
 
-
+/**
+ * @class
+ */
 function loggerApi(bunyan, transport) {
   if (typeof bunyan !== "object") throw new Error("invalid bunyan")
   this.loggerInstance = new logger(bunyan);

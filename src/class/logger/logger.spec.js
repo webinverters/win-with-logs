@@ -27,6 +27,8 @@ describe('logger', function () {
       })
   })
 
+
+
   describe('implementation',function(){
     var bunyan;
     beforeEach(function(){
@@ -52,7 +54,20 @@ describe('logger', function () {
           done();
         })
     })
+    it('throws an error',function(){
+      expect(function(){
+        new loggerApi()
+      }).to.throw("invalid bunyan")
+    })
+    it('can new itself up',function(){
+      function test(){
+      var bunyan={};
+      var m=new loggerApi(bunyan);
+      var n=new loggerApi(m);
+      }
+      expect(test()).to.not.throw
 
+    })
 
   })
 

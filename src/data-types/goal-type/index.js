@@ -1,3 +1,6 @@
+/**
+ * @class
+ */
 function goal(name) {
   this.name = name;
   this.time = new Date().getTime();

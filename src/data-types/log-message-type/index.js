@@ -1,5 +1,5 @@
 /**
- * The purpose of this module is to abstract away what we call to bunyan
+ * @class
  */
 function logMessage_type(msg, details) {
   this.msg = msg || false;

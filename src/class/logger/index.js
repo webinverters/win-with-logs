@@ -2,7 +2,9 @@ var logMessageType = require('../../data-types/log-message-type');
 var transportType = require('../../data-types/transport-type');
 var contextType = require('../../data-types/context-type');
 
-
+/**
+ * @class
+ */
 function logger(bunyan) {
   if (typeof bunyan !== "object") throw new Error("invalid bunyan")
 

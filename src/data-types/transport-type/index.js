@@ -1,6 +1,8 @@
+/**
+ * @class transportType
+ */
 function transport() {
   this.actions = [];
-
 
   //type should be able to pass itself as a parameter
   if (arguments.length == 1 && arguments[0] instanceof transport) {
@@ -8,8 +10,11 @@ function transport() {
   }
 }
 
-transport.prototype.addTransport = function (func,type, level) {
-  this.actions.push({func: func,type:type||"log", level: level || "debug"})
+transport.prototype.addTransport = function (func, logType, level) {
+  this.actions.push({func: func, type: logType || "log", level: level || "debug"})
 };
 
 module.exports = transport;
+
+
+

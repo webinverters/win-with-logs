@@ -3,7 +3,7 @@ var transportType = require('../../data-types/transport-type');
 
 
 describe('loggerApi', function () {
-  xit('world', function () {
+  it('world', function () {
     var bunyan = {};
 
     var log = new loggerApi(bunyan);
@@ -29,4 +29,18 @@ describe('loggerApi', function () {
     var log = new loggerApi(bunyan,m);
 
   })
+  it('basic usage',function(){
+    var bunyan = {log: sinon.stub().returns("logData")};
+    var log = new loggerApi(bunyan);
+    log.log()
+    log.warn();
+    log.fatal()
+    log.error()
+    log.debug()
+    log.context("hi")
+    log.function("hi")
+    log.method("hi")
+    log.module("hi")
+  })
+
 })
