@@ -1,5 +1,5 @@
 //var loggerApi=require('../data-structures').loggerApi
-var winWithLogs_api=require('../data-structures/win-with-logs-api')
+var winWithLogs_api=require('./win-with-logs-api')
 
 
 

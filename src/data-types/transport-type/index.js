@@ -8,8 +8,8 @@ function transport() {
   }
 }
 
-transport.prototype.addTransport = function (func, level) {
-  this.actions.push({func: func, level: level || "debug"})
+transport.prototype.addTransport = function (func,type, level) {
+  this.actions.push({func: func,type:type||"log", level: level || "debug"})
 };
 
 module.exports = transport;

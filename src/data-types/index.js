@@ -68,11 +68,7 @@ function log_config(component, app, env) {
 
 module.exports = {
   log_type: log_Type,
-  context:require('./context-type'),
   context_type:require('./context-type'),
   transports: require('./transport-type'),
-
-  file_config: file_config,
-  log_config: log_config,
-  log_args: log_args
+  goal_type:require('./goal-type')
 };

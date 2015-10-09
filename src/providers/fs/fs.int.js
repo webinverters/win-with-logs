@@ -1,6 +1,5 @@
 var m = require('./index');
 var exec = require('../../../test/helpers/exec')
-var fileConfig = require('../../data-structures').file_config;
 var fsTest = require('../../../test/helpers/checkFile');
 
 xdescribe('fsProvider', function () {
@@ -14,11 +13,11 @@ xdescribe('fsProvider', function () {
       maxLogFileSize: 100000,
       maxLogFiles: 5
     };
-     exec("rm -rf testing;")
-       .then(function(){
-         return exec('mkdir testing')
-       })
-       .then(done)
+    exec("rm -rf testing;")
+      .then(function () {
+        return exec('mkdir testing')
+      })
+      .then(done)
   });
   afterEach(function () {
     return exec("rm -rf testing;")
