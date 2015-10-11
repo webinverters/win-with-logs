@@ -1,40 +1,31 @@
-var goalApi=require('./index');
-var transportType=require('../../data-types/transport-type')
+var goalApi = require('./index');
+var transportType = require('../../data-types/transport-type')
 
-var transport=new transportType;
+var transport = new transportType;
+transport.addTransport(function (a) {
+  console.log(a.logString, a.args)
+}, "log", "debug")
 
 
-
-describe('goalApi tltl',function(){
+describe('goalApi ', function () {
   var bunyan
-  beforeEach(function(){
-    bunyan={
-      log:sinon.stub().resolves("logData")
-    }
-  })
-  it('happy path',function(){
+  beforeEach(function () {
+  });
+  it('happy path', function () {
 
 
+    var bunyan = {log: sinon.stub().resolves({message: "logData"})};
 
+    var m = new goalApi("goal", {}, {}, bunyan, transport)
 
-      var m = new goalApi("goal", bunyan)
-
-      m.log("hi")
-        //.then(function(){
-        //  return m.complete
-        //})
-        //.then(function(){
-        //  done();
-        //})
-      m.warn("hello");
-      m.debug("hi");
-      m.fatal("hi?");
-      m.error("it");
-      //
-      //m.complete("success");
-      //m.fail("failure");
-
-
+    m.log("hi")
+    m.warn("hello");
+    m.debug("hi");
+    m.fatal("hi?");
+    m.error("it");
+    //
+    m.complete("success");
+    m.fail("failure");
 
   })
 })

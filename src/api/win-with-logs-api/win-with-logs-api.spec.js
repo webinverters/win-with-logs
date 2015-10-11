@@ -2,6 +2,7 @@ var winWithLogs = require('./index');
 
 
 
+
 describe('win-with-logs', function () {
   before(function () {
     sinon.spy(console, "log")
@@ -122,10 +123,10 @@ describe('win-with-logs', function () {
 
 
     })
-    xdescribe('goal tracking', function () {
+    describe('goal tracking', function () {
 
       it('when logging a goal, it logs the duration of a goal duration on complete', function (done) {
-        var log = winWithLogs(config);
+        var log = new winWithLogs(config);
         var goal = log.goal('doStuff',
           {user: "user", data: "data"},
           {track: true, expireSecs: 0, retry: 'exponential', alert: 'backendFailure', alertOnlyIfRetryFails: true})
@@ -135,7 +136,7 @@ describe('win-with-logs', function () {
             return goal.log('Finished doCrazyStuff()')
           })
           .then(function () {
-            return goal.completeGoal()
+            return goal.complete()
           })
           .then(function (result) {
             expect(console.log.callCount).to.equal(2)

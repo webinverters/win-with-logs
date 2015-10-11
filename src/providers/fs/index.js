@@ -69,7 +69,7 @@ fileManager.prototype.deleteOldFiles = function () {
     }.bind(this))
   }
 
-  if (!deletedFiles)return this.current
+  if (!deletedFiles)return this.current;
 
   var highestint = _.max(_(files)
     .map(function (name) {
@@ -81,7 +81,6 @@ fileManager.prototype.deleteOldFiles = function () {
 
   if (highestint == -Infinity)return 0
   return highestint + 1
-
 };
 
 

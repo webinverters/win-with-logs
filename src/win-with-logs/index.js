@@ -1,5 +1,7 @@
 //var loggerApi=require('../data-structures').loggerApi
-var winWithLogs_api=require('./win-with-logs-api')
+var winWithLogs_api=require('../api/win-with-logs-api')
+
+//var winWithLogs_api=require('../api/winWithLogs_api')
 
 
 
@@ -8,22 +10,10 @@ module.exports=function(config){
   //validate config
 
 
-  var loggerInstance=new winWithLogs_api();
+
+  var loggerInstance=new winWithLogs_api(config);
 
 
-  //lots of convoluted code for just the convience of log.....
-  //var log=function(){};
-  //log.warn=function(){};
-  //log.error=function(){};
-  //log.debug=function(){};
-  //log.fatal=function(){};
-  //
-  //log.context=function(name){
-  //  return new loggerApi();
-  //};
-
-
-  //if config/do shit
   return loggerInstance;
 
 

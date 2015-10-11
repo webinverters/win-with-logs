@@ -1,6 +1,9 @@
 var logMessageType = require('../../data-types/log-message-type');
 var transportType = require('../../data-types/transport-type');
 var logger = require('../../class/logger');
+var _=require('lodash');
+
+var debug=require('../../helpers/debug');
 
 /**
  * @class
@@ -69,6 +72,18 @@ loggerApi.prototype.module = function (name) {
   var newInstance = new loggerApi(this);
   newInstance.loggerInstance.addContext(name, "function");
   return newInstance
+};
+
+loggerApi.prototype.rejectWithFailure=function(err){
+  var m = new logMessageType("failure", debug(err));
+  return this.loggerInstance.logEntry(m, "error")
+};
+loggerApi.prototype.returnSuccess=function(success){
+  var m = new logMessageType("success", success);
+  return this.loggerInstance.logEntry(m, "log")
+    .then(function(){
+      return success
+    })
 };
 
 

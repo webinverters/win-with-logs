@@ -1,4 +1,5 @@
 var context_type = require('./index')
+var type = require('./index')
 
 describe('context-type.spec.js', function () {
   it('main usage', function () {

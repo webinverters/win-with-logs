@@ -14,7 +14,7 @@ describe("win-with-logs", function () {
       env: "dev",
       component: "testComponents"
     });
-    return log("hello world!!!").then(function(){
+    return log.log("hello world!!!").then(function(){
       expect(console.log.callCount).to.equal(1)
       expect(console.log.calledWith(sinon.match("hello world"))).to.equal(true)
     })
