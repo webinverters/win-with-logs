@@ -9,6 +9,15 @@ var fsProvider=require('../../providers/fs');
 
 
 function api(config) {
+
+  if(config.app || config.env || config.component){
+
+    if (typeof config.app !== "string") throw new Error("invalid param");
+    if (typeof config.env !== "string") throw new Error("invalid param");
+    if (typeof config.component !== "string") throw new Error("invalid param");
+
+  }
+
   this.bunyanInstance = new bunyan(config);
 
   this.transportInstance = new transport;
