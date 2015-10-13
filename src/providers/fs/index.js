@@ -10,7 +10,8 @@ function fileManager(config) {
 
   this.current = this.deleteOldFiles();
   this.path = path.join(this.directory, this.name + this.current + ".log")
-  this.currentStream = fs.createWriteStream(this.path)
+  //this.currentStream = fs.createWriteStream(this.path)
+  fs.appendFileSync(this.path,"","utf8")
 
 }
 
@@ -21,17 +22,19 @@ fileManager.prototype.write = function (a) {
     this.rotateFile()
   }
 
-  var defer = p.defer();
-  this.currentStream.write(a, function () {
-    defer.resolve();
-  });
-  return defer.promise;
+  //var defer = p.defer();
+  //this.currentStream.write(a, function () {
+  //  defer.resolve();
+  //});
+  //return defer.promise;
+  fs.appendFileSync(this.path,a,"utf8")
+  return p.resolve(true)
 };
 
 fileManager.prototype.rotateFile = function () {
   this.current += 1;
   this.path = path.join(this.directory, this.name + this.current + ".log")
-  this.currentStream = fs.createWriteStream(this.path);
+  //this.currentStream = fs.createWriteStream(this.path);
 };
 
 fileManager.prototype.checkSize = function () {
