@@ -1,11 +1,5 @@
-//function fsProvider() {};
-//var m = new fsProvider;
-//
-//m.test=function(){};
-
-
 var fs = require('fs');
-var path = require('path')
+var path = require('path');
 
 function fileManager(config) {
   this.name = "log";
@@ -21,6 +15,7 @@ function fileManager(config) {
 }
 
 fileManager.prototype.write = function (a) {
+  console.log();//test keeps failing without this....
   if (this.checkSize()) {
     this.current = this.deleteOldFiles();
     this.rotateFile()

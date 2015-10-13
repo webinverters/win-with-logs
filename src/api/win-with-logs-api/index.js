@@ -5,6 +5,8 @@ var transport = require('../../data-types/transport-type');
 var pubSub = require('../../providers/pub-sub');
 var _=require('lodash')
 
+var fsProvider=require('../../providers/fs');
+
 
 function api(config) {
   this.bunyanInstance = new bunyan(config);
@@ -21,6 +23,27 @@ function api(config) {
       this.pubSubInstance.handleEvent(a.args.msg[0])
     }
   }.bind(this), "log", "debug");
+
+
+  //add fs provider
+  if(config.logFilePath || config.maxLogFileSize || config.maxLogFiles){
+
+    if (typeof config.logFilePath !== "string") throw new Error("invalid param");
+    if (typeof config.maxLogFileSize !== "number") throw new Error("invalid param");
+    if (typeof config.maxLogFiles !== "number") throw new Error("invalid param");
+
+    var fsInstance = new fsProvider({
+      logFilePath: config.logFilePath,
+      maxLogFileSize: config.maxLogFileSize,
+      maxLogFiles: config.maxLogFiles
+    })
+
+    this.transportInstance.addTransport(function (a) {
+      return fsInstance.write(a.logString)
+    }.bind(this), "log", "debug");
+
+  }
+
 
 
   loggerApi.call(this, this.bunyanInstance, this.transportInstance)
