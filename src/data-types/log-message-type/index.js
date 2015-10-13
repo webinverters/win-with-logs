@@ -1,5 +1,5 @@
 /**
- * @class
+ * @class logMessageType
  */
 function logMessage_type(msg, details) {
   this.msg = msg || false;

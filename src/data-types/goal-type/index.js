@@ -1,5 +1,5 @@
 /**
- * @class
+ * @class goal
  */
 function goal(name) {
   this.name = name;
