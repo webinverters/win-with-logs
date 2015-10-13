@@ -1,8 +1,7 @@
 var winWithLogs = require('./index');
 
-var exec = require('../../../test/helpers/exec')
+var exec = require('../../../test/helpers/exec');
 var fsTest = require('../../../test/helpers/checkFile');
-var fs = require('fs')
 
 describe('when passed a filesystem config', function () {
   beforeEach(function (done) {
