@@ -78,7 +78,7 @@ loggerApi.prototype.rejectWithFailure=function(err){
   var m = new logMessageType("failure", debug(err));
   return this.loggerInstance.logEntry(m, "error")
 };
-loggerApi.prototype.returnSuccess=function(success){
+loggerApi.prototype.result=function(success){
   var m = new logMessageType("success", success);
   return this.loggerInstance.logEntry(m, "log")
     .then(function(){

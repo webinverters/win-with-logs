@@ -12,93 +12,99 @@
 "use strict";
 
 var log = require('win-with-logs')({
+
   component: 'webservice',
   env: 'dev',
   app: 'test-app',
-  logFilePath: '.',
-  errorLogFilePath: '.',
-  eventLogFilePath: '.',
-  goalLogFilePath: '.',
-  maxLogFileSize: 100000,  // bytes
-  recipients: [
+
+  debug: false,  // debug mode.  Set to true for all features.
+
+  silent: false, // or true to disable console logging.
+
+  // Log Streams
+  streams: [
     {
-      name: 'Admin',
-      email: 'admin@company.com',
-      notifyTriggers: {  // triggers means that when the events occur, this recipient will be notified.
-        events: ['EVENT_TYPE1', 'EVENT_TYPE2'],
-        levels: 'critical'  // default
-      }
-    }],
+      path: 'blah',
+      logType: ''  // all, debug, log, event, warn, error, fatal, goal,
+      maxSizeMB: 1,
+      maxCount: 5,
+      formatter: function(chunk,done) {}  // NOT MVP,
+      hook: function(chunk,done) {}
+    }
+  ],
   robustKey: 'xxx',  // enables "Robustly.io" integration.
+
   cloudConfig: {
-    enableTrackedEvents: true,    // tracked events are queryable events stored in the cloud,
-    trackedEventSendInterval: 5,    // tracked events are sent to the cloud at this interval  (synchronizing event and streamed logs
+    enableTrackedEvents: true,    // tracked events are queryable events stored in the cloud, sent immediately.
     enableLogStreaming: true,     // enable logs to be stored on the cloud
     logSendInterval: 5,      // sends logs to the cloud every 5 seconds.
+    recipients: [
+      {
+        name: 'Admin',
+        email: 'admin@company.com',
+      }
+    ],
+    logEndpoint: '' // Robust doesn't require this, it has a default...
+    queryEndpoint: ''
+    // notifyTriggers: {  // triggers means that when the events occur, this recipient will be notified.
+    //   events: ['EVENT_TYPE1', 'EVENT_TYPE2'],
+    //   levels: 'critical'  // default,
+    //   recipient: 'Admin'
+    // }
   }
 });
 
 var log = function log() {}  // remember all functions are objects
 
-log.module('ModuleName', { })
 /**
- * Returns a log context appended with the module name and arguments.
+ * Creates a child logger with the context info appended to its context.
+ *
+ * @param  {[type]} contextInfo [description]
+ * @return {[type]}             [description]
+ */
+log.context = function(contextInfo) {
+
+}
+
+/**
+ * Returns a new log context appended with the module name details.
  *
  * @param moduleName
- * @param args
+ * @param details
+ * TODO: support details param.
  */
-log.module = function(moduleName, args) {
+log.module = function(moduleName, details) {
 
 };
 
 /**
- * Returns a log context appended with the method name and arguments.
- *
- * @param methodName
- * @param args
- * @param obj [Optional]
- */
-log.method = function(methodName, args, obj) {
-
-};
-log.function = log.method;
-
-/**
- * Logs the result and context information (to add more info to the context, check out log.method and log.module)
- * and resolves the resultValue
+ * Logs the result.  If this is a goal context, it marks the goal completed.
+ * Returns the result
  *
  * @param resultValue
  * @param msg
+ *
+ * TODO: Rename to result.  Also fix for goal contexts.
  */
-log.result = function(resultValue, msg) {
+log.result = function(result) {
 
 };
 
 /**
- * Returns a function which logs error information and rejects with the errCode specified in the errorReport
- *
- * @param errCode
- */
-log.rejectWithCode = function(errCode) {
-
-};
-
-
-// Logging API Docs:
-// All logging APIs resolve a promise which indicates whether or not the logging to cloud has completed.
-// log a tracked event (that you can query by)
-
-
-/**
- *
  * @note if details contains a goalName and goalId, then it will be logged against the failed goal if it exists.
+ * If you specify an @ symbol at the beginning of msg, it will cause the event queue to flush immediately.
  *
  * @param msg  If msg begins with an '@' symbol this becomes a tracked event.
  * @param details  There are some special properties in details that if provided can make the logs better.  But what are they all?
+ *
+ * @return Resolves a promise which resolves when all events have been flushed to persistent storage (or cloud), and all handlers have completed,
+ * TODO: needs to be a function object which can be called (log instead of logger.log).
+ * - FS needs to return promise when flushed
  */
 log = function(msg, details) {
 
 };
+log.log = log
 
 /**
  *
@@ -163,7 +169,6 @@ log.addEventHandler = function(eventLabel, handler, options) {
 
 };
 
-
 // Pub/Sub API example:
 
 // components can react to application events
@@ -175,6 +180,70 @@ log.addEventHandler('EVENT_LABEL', handler);
 log('EVENT_LABEL', {age:600})
 // ==== output =====:
 // 'EVENT_LABEL' {age:600}
+
+
+
+// === Goal Logging API: ==========
+
+
+/**
+ * Sets the log context details with the goalDetails and returns the goalDetails object
+ * with the "log" property set to the new log context so that the logs can be associated
+ * with the goal.
+ *
+ * @param goalName  A name for the goal which serves as the "goal type" for querying purposes.
+ * @param goalDetails.goalId  A unique identifier for this goal
+ *
+ * @example var goal = log.goal(goalName, {goalId: 'fileNameToBeProcessed'})
+ * TODO: goalId needs to be a GUID if it is not supplied by the user.
+ */
+log.goal = function(goalName, goalDetails) {
+
+};
+
+/**
+ * Logs a failed goal which saves it in a seperate, queryable goal tracking area.  (Failed goals are in there own table/log file)
+ * Failed goals are otherwise known as "incomplete goals".
+ *
+ * Logs the error.  Throws the error.  If it is a goal, it fails the goal.
+ *
+ * @param goalDetails
+ * @example method().catch(log.fail)
+ *
+ * TODO: implement
+ */
+log.fail = function(errReport) {
+
+};
+
+// Same as fail, but does not throw.
+// TODO: implement
+log.failSuppressed = function(errReport) {
+
+};
+
+/**
+ * Returns a function which takes as the first param an error or ErrorReport
+ * Logs error information and rejects with the errCode specified in the errorReport
+ *
+ * @param errCode
+ *
+ * @example method().catch(log.rejectWithCode('ERROR_CODE'))
+ * TODO: implement
+ */
+log.rejectWithCode = function(errCode) {
+  return function(err) {
+
+  }
+};
+
+
+
+
+
+// NOT MVP:
+
+
 
 
 // NON FUNCTIONAL REQUIREMENT:
@@ -237,38 +306,7 @@ log.query({
 })
 
 
-// === Goal Logging API: ==========
-var goal = log.goal({goalName: 'MyGoal', goalId: 'xyz'})
-/**
- * Sets the log context details with the goalDetails and returns the goalDetails object
- * with the "log" property set to the new log context so that the logs can be associated
- * with the goal.
- *
- * @param goalDetails.goalName  A name for the goal which serves as the "goal type" for querying purposes.
- * @param goalDetails.goalId  A unique identifier for this goal
- */
-log.goal = function(goalDetails) {
-
-};
-
-/**
- * Logs a failed goal which saves it in a seperate, queryable goal tracking area.  (Failed goals are in there own table/log file)
- * Failed goals are otherwise known as "incomplete goals".
- *
- * @param goalDetails
- */
-log.failedGoal = function(goalDetails) {
-
-};
-
-/**
- * If the goal already exists in failed-goals table, deletes it permenantly.
- *
- * @param goalDetails
- */
-log.completedGoal = function(goalDetails) {
-
-};
+// NOT MVP:
 
 /**
  * Possibly replaceable by log.queryEvent

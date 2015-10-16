@@ -53,7 +53,7 @@
     "bunyan-slack": "0.0.9",
     "jquery": "^2.1.4",
     "kinesis": "^1.2.0",
-    "lodash": "^3.9.1",
+    "lodash": "^3.10.1",
     "lz-string": "^1.4.4",
     "proxyquire": "^1.7.2",
     "request-promise": "^0.4.3",

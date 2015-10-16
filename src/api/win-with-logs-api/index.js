@@ -53,12 +53,7 @@ function api(config) {
 
   }
 
-
-
   loggerApi.call(this, this.bunyanInstance, this.transportInstance)
-
-
-
 }
 
 
@@ -75,4 +70,3 @@ api.prototype.addEventHandler = function (event, handler) {
 
 
 module.exports = api;
-

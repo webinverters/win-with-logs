@@ -120,11 +120,9 @@ describe('win-with-logs', function () {
             })
         })
       })
-
-
     })
-    describe('goal tracking', function () {
 
+    describe('goal tracking', function () {
       it('when logging a goal, it logs the duration of a goal duration on complete', function (done) {
         var log = new winWithLogs(config);
         var goal = log.goal('doStuff',

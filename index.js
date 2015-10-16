@@ -11,8 +11,9 @@
 
 'use strict';
 
-var winWithLogs = require('./src/win-with-logs');
+var winWithLogs = require('./src/api/win-with-logs-api');
 
+var _ = require('lodash');
 
 module.exports = function construct(config) {
   config = config ? config : {};
@@ -34,5 +35,5 @@ module.exports = function construct(config) {
     //streams: []  // advanced: custom streams can be subscribed for plugin support.
   });
 
-  return winWithLogs(config);
+  return new winWithLogs(config);
 };
