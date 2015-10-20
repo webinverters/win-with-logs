@@ -41,7 +41,8 @@ describe('methods', function () {
   var methods = [
     'log', 'warn', 'error', 'debug', 'fatal',
     'goal', 'context',
-    'result', 'fail', 'failSuppressed', 'rejectWithCode'
+    'result', 'fail', 'failSuppressed', 'rejectWithCode',
+    'addEventHandler'
   ];
 
   _.forEach(methods, function (prop) {

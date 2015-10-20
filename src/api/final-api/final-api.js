@@ -86,7 +86,9 @@ api.prototype.rejectWithCode = function (errCode) {
   }
 
 };
+api.prototype.addEventHandler = function (event,handler) {
 
+};
 
 api.prototype.goal = function (goalName, details) {
 
