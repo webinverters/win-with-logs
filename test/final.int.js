@@ -1,15 +1,71 @@
-var m = require('../index');
+var m = require('../src/api/final-api');
+var newUp = require('./helpers/newUp');
 
-describe('finaltl', function () {
-  it('world', function () {
+var validConfigs = {
+  basic: {component: 'test', env: 'dev', app: 'testapp'},
+  debugEnabled: {component: 'test', env: 'dev', app: 'testapp', debug: true},
+  debugDisabled: {component: 'test', env: 'dev', app: 'testapp', debug: false}
+};
 
-    var log = m({app: "abc", env: "aaa", component: "aaa"});
-    log.log("hi?", {});
-    log.warn("hi?", {});
-    log.debug("hi?", {});
-    log.fatal("hi?", {});
-    log.error("hi?", {})
+var invalidConfig = [
+  ["'empty Object'", {}, "invalid param"],
+  ["'missing component'", {env: "test", app: 'test'}, "invalid param"],
+  //["'missing component'", {component: "test", env: "test"}, "invalid param"],
+  ["'missing component'", {component: "test", app: "test"}, "invalid param"]
+];
+
+
+describe('winWithLogs constructor', function () {
+  describe('valid config files', function () {
+    _.forEach(validConfigs, function (config, configName) {
+      it('does not throw an error when passed a ' + configName + ' config', function () {
+        expect(function () {
+          var log = newUp(m, [config])
+        }).to.not.throw()
+      })
+    })
   });
+  describe('invalid config files', function () {
+    _.forEach(invalidConfig, function (config) {
+      it('does not throw an error when passed a ' + config[0] + ' config', function () {
+        expect(function () {
+          var log = newUp(m, [config[1]])
+        }).to.throw(config[2])
+      })
+    })
+  })
+});
+
+
+describe('methods', function () {
+  var methods = [
+    'log', 'warn', 'error', 'debug', 'fatal',
+    'goal', 'context',
+    'result', 'fail', 'failSuppressed', 'rejectWithCode'
+  ];
+
+  _.forEach(methods, function (prop) {
+    it('contains a method called : ' + prop, function () {
+      var log = m({app: "abc", env: "aaa", component: "aaa"});
+      expect(log).to.have.property(prop)
+      expect(log[prop]).to.be.a("function")
+    });
+    it('log.context has the following methods : '+prop,function(){
+      var log = m({app: "abc", env: "aaa", component: "aaa"});
+      var newContext=log.context({a:1});
+      expect(newContext).to.have.property(prop)
+      expect(newContext[prop]).to.be.a("function")
+    });
+    xit('log.goal has the following methods : '+prop,function(){
+      var log = m({app: "abc", env: "aaa", component: "aaa"});
+      var newContext=log.goal({a:1});
+      expect(newContext).to.have.property(prop)
+      expect(newContext[prop]).to.be.a("function")
+    })
+  });
+
+
+
   it('context', function () {
     var log = m({app: "abc", env: "aaa", component: "aaa"}).context({a: 1});
     log.log("hello?1");
@@ -34,29 +90,6 @@ describe('finaltl', function () {
         .catch(log.failSuppressed)
     }).to.not.throw()
 
-
-  })
-
-});
-
-
-describe('finaltl constructor', function () {
-
-  describe('valid config files', function () {
-    it('does not throw an error when a valid config is passed', function () {
-      expect(function () {
-        var log = m({app: "abc", env: "aaa", component: "aaa"});
-
-      }).to.not.throw()
-    })
-  })
-  describe('invalid config files', function () {
-    it('throws an error when an invalid config is passed', function () {
-      expect(function () {
-        var log = m({app: "abc", env: "aaa"});
-
-      }).to.throw()
-    })
 
   })
 

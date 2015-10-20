@@ -25,6 +25,8 @@ function apiFactory(config) {
     var temp2 = new PubSub(config);
 
     apiInstance = new Api(temp, temp2);
+  } else {
+    throw new Error("invalid param");
   }
 
   if (config.debug == true) {
@@ -34,8 +36,8 @@ function apiFactory(config) {
   }
 
   //add prettified logging to the console by default
-  //if (config.silent == false) {
-  if (true) {
+  if (config.silent == false) {
+  //if (true) {
     //add basic transports
 
 
