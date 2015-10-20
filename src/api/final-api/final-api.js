@@ -2,7 +2,7 @@ var finalType = require('./final-type');
 var Transport = finalType.Transport;//stores all actions and methods on logs.
 var RawLog = finalType.RawLog;//store a universal copy of logging, between processing and transports.
 var Context=finalType.Context;
-//var Goal=finalType.Goal;
+var Goal=finalType.Goal;
 
 
 function api(bunyan,pubSub) {
@@ -21,6 +21,10 @@ function api(bunyan,pubSub) {
     this.pubSubInstance=pubSub||false;
   }
 }
+api.addGoal=function(goal){
+  if(!(goal instanceof Goal))throw new Error('invalid goal specified');
+  this.goalInstance=goal;
+};
 
 
 
@@ -84,8 +88,15 @@ api.prototype.rejectWithCode = function (errCode) {
 };
 
 
-api.prototype.goal = function (goal, details) {
+api.prototype.goal = function (goalName, details) {
 
+  var temp = new api(this);
+  var goalContext=details||{};
+  goalContext.goalId=details ? details.goalId : _.uniqueId(new Date().getTime())
+  Context.addContext.call(temp, goalContext);
+  var goal=new Goal(goalName);
+  api.addGoal.call(temp,goal)
+  return temp;
 };
 
 

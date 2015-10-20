@@ -56,7 +56,7 @@ describe('methods', function () {
       expect(newContext).to.have.property(prop)
       expect(newContext[prop]).to.be.a("function")
     });
-    xit('log.goal has the following methods : '+prop,function(){
+    it('log.goal has the following methods : '+prop,function(){
       var log = m({app: "abc", env: "aaa", component: "aaa"});
       var newContext=log.goal({a:1});
       expect(newContext).to.have.property(prop)
