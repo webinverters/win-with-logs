@@ -53,7 +53,7 @@ function apiFactory(config) {
 
     } else {
       Transport.addAction.call(apiInstance, "trace", function (a) {
-        console.log(a.logString)
+        console.log.call(console,a.logString)
       });
     }
 

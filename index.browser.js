@@ -9,7 +9,9 @@ window.winWithLogs = function (config) {
   config = _.defaults(config, {
     name: 'DefaultComponent',
     app: 'DefaultApp',
-    env: 'dev'
+    env: 'dev',
+    isNode:false,
+    silent:false
   });
 
   var log = new winWithLogs(config);

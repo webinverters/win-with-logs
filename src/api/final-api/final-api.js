@@ -70,6 +70,9 @@ api.prototype.fail = function (error) {
 };
 api.prototype.failSuppressed = function (error) {
   return this.error("failure", {failure: error})
+    .then(function(){
+      return true;
+    })
 };
 api.prototype.rejectWithCode = function (errCode) {
   return function (err) {
