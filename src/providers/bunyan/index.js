@@ -1,14 +1,17 @@
 var Bunyan = require('bunyan');
-
-function bunyanLogger(_config) {
+/**
+ *
+ * @param _config
+ */
+function BunyanLogger(_config) {
   this.logPromise = false;
 
   var func = function (data) {
     if (this.logPromise) {
       var result = {
-        message: JSON.stringify(data)
-      }
-      this.logPromise.resolve(result)
+        message: data
+      };
+      this.logPromise.resolve(data);
       this.logPromise = false;
     }
   }.bind(this);
@@ -19,7 +22,7 @@ function bunyanLogger(_config) {
     name: '',
     streams: [
       {
-        level: 'debug',
+        level: 'trace',
         stream: {
           write: func
         },
@@ -35,12 +38,15 @@ function bunyanLogger(_config) {
   this.logger = Bunyan(config);
 }
 
-bunyanLogger.prototype.log = function (msg, details) {
+var allowedLogLevels = ["fatal", "error", "warn", "info", "debug", "trace"];
+
+BunyanLogger.prototype.log = function (level, msg, details) {
+  if (allowedLogLevels.indexOf(level) < 0)throw new Error("invalid log level");
   var defer = p.defer();
   this.logPromise = defer;
-  this.logger.debug(msg, details);
+  this.logger[level](msg, details);
   return defer.promise;
 };
 
 
-module.exports = bunyanLogger
+module.exports = BunyanLogger

@@ -1,4 +1,4 @@
-var winWithLogs = require('./src/api/win-with-logs-api');
+var winWithLogs = require('./src/api/final-api');
 
 window._ = require('lodash');
 window.p = require('bluebird');

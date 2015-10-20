@@ -3,7 +3,7 @@ var transportType = require('../../data-types/transport-type');
 var logger = require('../../class/logger');
 var _=require('lodash');
 
-var debug=require('../../helpers/debug');
+//var debug=require('../../helpers/debug');
 
 /**
  * @class

@@ -11,7 +11,7 @@
 
 'use strict';
 
-var winWithLogs = require('./src/api/win-with-logs-api');
+var winWithLogs = require('./src/api/final-api');
 
 var _ = require('lodash');
 
@@ -21,6 +21,8 @@ module.exports = function construct(config) {
     name: 'DefaultComponent',
     app: 'DefaultApp',
     env: 'dev',
+    isNode:true,
+    silent:false
     //logErrorFile: './',
     //logFilePath: './',
     //useLoggingGlobals: true,
