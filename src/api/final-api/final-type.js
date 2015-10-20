@@ -1,4 +1,4 @@
-var _=require('lodash');
+var _ = require('lodash');
 /**
  * Transport class
  * @param self
@@ -27,7 +27,6 @@ function Action(level, func) {
   this.level = level;
   this.func = func;
 }
-
 
 
 function RawLog(level, msg, details, context) {
@@ -67,10 +66,10 @@ Goal.addEntry = function (name) {
 };
 Goal.report = function (status) {
 
-  if(status=="success"){
+  if (status == "success") {
 
   }
-  if(status=="failure"){
+  if (status == "failure") {
 
   }
   return {
@@ -94,52 +93,57 @@ Context.addContext = function (object) {
 };
 
 
-module.exports={
-  Transport:Transport,
-  RawLog:RawLog,
-  Goal:Goal,
-  Context:Context
+module.exports = {
+  Transport: Transport,
+  RawLog: RawLog,
+  Goal: Goal,
+  Context: Context
 };
-
-
 
 
 //grab line of source....
-var e=function(e){
-  if(!e.stack) return{};
-  var line=e.stack.split('\n')[1];
+var e = function (e) {
+  if (!e.stack) return {};
+  var line = e.stack.split('\n')[1];
   return {
-    file:line.match(/at .+? \((.+?:)/)[1],
-    line:line.match(/:(.+?):/)[1],
-    func:line.match(/at (.+?) /)[1]
+    file: line.match(/at .+? \((.+?:)/)[1],
+    line: line.match(/:(.+?):/)[1],
+    func: line.match(/at (.+?) /)[1]
   }
 };
 
 
-
-function ErrorReport(err) {
+function ErrorReport(err, errorCode, context) {
   if (err instanceof Error) {
+    this.what = errorCode;
+    this.context = context;
+    this.rootCause = false;
+    this.history = [];
 
+    return
   }
-  this.what = "";
-  this.errorCode = "";
-  this.rootCause = "";
-}
+  if (err instanceof ErrorReport) {
+    this.what = err.what;
+    this.context = err.context;
+    this.rootCause = err.rootCause;
+    this.history = err.history;
+    return
+  }
+  throw new Error("Invalid Param, you must pass an error or errorReport")
+};
 
 //not needed yet?
 
 
 //
 //// logic for filtering log levels
-//var logLevels = ["fatal", "error", "warn", "log", "debug", "trace"];
+//var logLevels = ["fatal", "error", "warn", , "debug", "trace"];
 //function filterLogLevel(requestLevel, currentLevel) {
 //  var req = logLevels.indexOf(requestLevel);
 //  var cur = logLevels.indexOf(currentLevel);
 //  if (req < 0)return false;
 //  return req >= cur;
 //}
-
-
 
 
 //temp.log("debug", "hello", {a: 1}).then(function (a) {
