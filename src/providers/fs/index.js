@@ -2,7 +2,7 @@ var fs = require('fs');
 var path = require('path');
 
 function fileManager(config) {
-  this.name = "log";
+  this.name = "log",
   this.current = 0;
   this.directory = config.logFilePath;
   this.maxSize = config.maxLogFileSize
@@ -45,7 +45,7 @@ fileManager.prototype.deleteOldFiles = function () {
   var files =
     _(fs.readdirSync(this.directory))
       .filter(function (name) {
-        return name.indexOf("log") > -1
+        return name.indexOf(this.name) > -1
       }).value()
 
   files.sort(function (a, b) {

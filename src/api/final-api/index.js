@@ -4,11 +4,13 @@ var _ = require('lodash');
 //provider requirements;
 var BunyanProvider = require('../../providers/bunyan');
 var PubSub = require('../../providers/pub-sub');
+var FsProvider = require('../../providers/fs');
 
 
 var finalType = require('./final-type');
 var Transport = finalType.Transport
 var Api = require('./final-api').Api;
+
 
 
 function apiFactory(config) {
@@ -71,8 +73,19 @@ function apiFactory(config) {
   } else {
     if (typeof config.streams !== "object" || typeof config.streams.length !== "number") throw new Error("invalid params");
 
-    _.forEach(config.streams, function () {
-      //validate filePaths and add transport or custom transports.
+    _.forEach(config.streams, function (value) {
+
+      if(value.logFileName||value.logFilePath||value.maxLogFileSize ||value.maxLogFiles){
+
+        var fsInstance = new FsProvider(value);
+        console.log("adding new instance?")
+        Transport.addAction.call(apiInstance, "trace", function (a) {
+          fsInstance.write(a.logString);
+        });
+      }
+
+
+
 
     });
   }
