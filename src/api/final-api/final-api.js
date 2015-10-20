@@ -63,15 +63,13 @@ api.prototype.result = function (resultValue) {
     })
 };
 api.prototype.fail = function (error) {
-//for consistently, details is always an object.
   return this.error("failure", {failure: error})
     .then(function () {
-      return resultValue
+      throw error
     })
 };
 api.prototype.failSuppressed = function (error) {
-
-
+  return this.error("failure", {failure: error})
 };
 api.prototype.rejectWithCode = function (errCode) {
   return function (err) {

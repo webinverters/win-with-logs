@@ -87,10 +87,9 @@ describe('methods', function () {
     expect(function () {
       return p.resolve()
         .then(test)
-        .catch(log.failSuppressed)
+        .catch(function(e){
+          log.failSuppressed(e)
+        })
     }).to.not.throw()
-
-
   })
-
 });
