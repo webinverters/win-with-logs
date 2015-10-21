@@ -41,3 +41,11 @@ logger.debug("hello",{});
 log.result("hi").then(console.log);
 log.fail("hi").catch(console.log);
 log.failSuppressed("hi").then(console.log);
+
+
+
+
+log.addEventHandler("test",function(){
+  console.log("event being run!")
+});
+log.log("@test",{})
