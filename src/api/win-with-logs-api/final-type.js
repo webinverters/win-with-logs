@@ -92,6 +92,7 @@ Goal.report = function (status) {
   }
   return result;
 };
+Goal.prototype.addEntry = Goal.addEntry
 Goal.prototype.report = Goal.report
 
 

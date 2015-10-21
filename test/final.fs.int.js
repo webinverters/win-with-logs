@@ -84,7 +84,7 @@ describe('File system', function () {
     })
   });
 
-  describe('when exceeding max file count nowtl432', function () {
+  describe('when exceeding max file count', function () {
     beforeEach(function (done) {
       config.streams[0].maxLogFileSize = 100;
       config.streams[0].maxLogFiles = 2;
