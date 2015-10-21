@@ -51,20 +51,19 @@ describe('methods', function () {
       expect(log).to.have.property(prop)
       expect(log[prop]).to.be.a("function")
     });
-    it('log.context has the following methods : '+prop,function(){
+    it('log.context has the following methods : ' + prop, function () {
       var log = m({app: "abc", env: "aaa", component: "aaa"});
-      var newContext=log.context({a:1});
+      var newContext = log.context({a: 1});
       expect(newContext).to.have.property(prop)
       expect(newContext[prop]).to.be.a("function")
     });
-    it('log.goal has the following methods : '+prop,function(){
+    it('log.goal has the following methods : ' + prop, function () {
       var log = m({app: "abc", env: "aaa", component: "aaa"});
-      var newContext=log.goal({a:1});
+      var newContext = log.goal({a: 1});
       expect(newContext).to.have.property(prop)
       expect(newContext[prop]).to.be.a("function")
     })
   });
-
 
 
   it('context', function () {
@@ -73,13 +72,13 @@ describe('methods', function () {
     log.warn("hello?2");
     log.debug("hello3?", {});
     log.fatal("hello", {});
-    log.error("hello?", {})
+    log.error("hello?", {});
 
     log.result("123")
-  })
+  });
 
   it('catch error', function () {
-    var log = m({app: "abc", env: "aaa", component: "aaa"})
+    var log = m({app: "abc", env: "aaa", component: "aaa"});
 
     function test() {
       throw new Error("test")
@@ -88,7 +87,7 @@ describe('methods', function () {
     expect(function () {
       return p.resolve()
         .then(test)
-        .catch(function(e){
+        .catch(function (e) {
           log.failSuppressed(e)
         })
     }).to.not.throw()
