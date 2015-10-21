@@ -3,9 +3,9 @@ var _ = require('lodash');
 
 
 //Providers
-var BunyanProvider = require('../../providers/bunyan');
-var PubSub = require('../../providers/pub-sub');
-var FsProvider = require('../../providers/fs');
+var BunyanProvider = require('../providers/bunyan');
+var PubSub = require('../providers/pub-sub');
+var FsProvider = require('../providers/fs');
 
 
 //Types
@@ -34,6 +34,7 @@ function apiFactory(config) {
 
     var bunyanTemp = new BunyanProvider(config);
     var pubSubTemp = new PubSub(config);
+
 
     apiInstance = new Api(bunyanTemp, pubSubTemp);
 

@@ -1,4 +1,4 @@
-var m = require('../src/api/win-with-logs-api');
+var m = require('../src/win-with-logs');
 var newUp = require('./helpers/newUp');
 
 var config = {component: 'test', env: 'dev', app: 'testapp', isNode: true, silent: false, debug: false};
@@ -27,14 +27,12 @@ describe('goal logging', function () {
     log.fail("errorString")
       .catch(_.noop)
   })
-
-
 });
 
 
 
 
-var Goal = require('../src/api/win-with-logs-api/final-type').Goal;
+var Goal = require('../src/win-with-logs/final-type').Goal;
 describe('goal', function () {
   var clock;
   var goalName = "test";

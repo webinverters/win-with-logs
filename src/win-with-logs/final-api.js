@@ -132,7 +132,8 @@ api.prototype.fail = function (error) {
 api.prototype.rejectWithCode = function (errCode) {
   return function (err) {
     if (err instanceof Error) {
-      console.log("you have an error!!!")
+
+      //todo return error report
     }
   }
 

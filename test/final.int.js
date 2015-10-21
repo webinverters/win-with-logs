@@ -1,10 +1,10 @@
-var m = require('../src/api/win-with-logs-api');
+var m = require('../src/win-with-logs');
 var newUp = require('./helpers/newUp');
 
 var validConfigs = {
-  basic: {component: 'test', env: 'dev', app: 'testapp',debug:false,silent:false,isNode:true},
-  debugEnabled: {component: 'test', env: 'dev', app: 'testapp', debug: true,silent:false,isNode:true},
-  debugDisabled: {component: 'test', env: 'dev', app: 'testapp', debug: false,silent:false,isNode:true}
+  basic: {component: 'test', env: 'dev', app: 'testapp',debug:false,silent:false,isNode:false},
+  debugEnabled: {component: 'test', env: 'dev', app: 'testapp', debug: true,silent:false,isNode:false},
+  debugDisabled: {component: 'test', env: 'dev', app: 'testapp', debug: false,silent:false,isNode:false}
 };
 
 var invalidConfig = [
@@ -44,10 +44,11 @@ describe('methods', function () {
     'result', 'fail', 'failSuppressed', 'rejectWithCode',
     'addEventHandler'
   ];
-  var config={app: "abc", env: "aaa", component: "aaa",debug:false,silent:false,isNode:true}
+  //we are setting isNode to false for this test because we don't want to new up a pretty stream for each test.
+  var config={app: "abc", env: "aaa", component: "aaa",debug:false,silent:false,isNode:false}
 
   _.forEach(methods, function (prop) {
-    it('contains a method called : ' + prop, function () {
+    it('contains a method called  nowtl: ' + prop, function () {
       var log = m(config);
       expect(log).to.have.property(prop)
       expect(log[prop]).to.be.a("function")
