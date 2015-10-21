@@ -15,8 +15,8 @@ describe('goal logging nowtl492',function(){
     var logger=m(config);
     var log=logger.goal("test",{a:1})
     log.log("hello",{a:1});
-    log.log("hello",{a:1});
-    log.log("hello",{a:1});
+    log.log("hello",{a:2});
+    log.log("hello",{a:3});
     log.result("SuccessString")//expect logger to show history
 
   });
@@ -25,10 +25,12 @@ describe('goal logging nowtl492',function(){
 
     var logger=m(config);
     var log=logger.goal("test",{a:1})
-    log.log("hello");
-    log.log("hello");
-    log.log("hello");
+    log.log("hello",{a:1});
+    log.log("hello",{a:2});
+    log.log("hello",{a:3});
     log.fail("errorString")
       .catch(_.noop)
   })
+
+
 });

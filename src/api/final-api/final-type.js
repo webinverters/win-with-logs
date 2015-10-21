@@ -57,30 +57,39 @@ function Goal(name) {
   this.history = [];
 }
 
-Goal.addEntry = function (msg,details) {
+Goal.addEntry = function (msg, details) {
   this.history.push({
     log: msg,
-    logDetails:details,
+    logDetails: details,
     time: new Date().getTime() - this.time
   })
 
 };
 Goal.report = function (status) {
 
-  if (status == "success") {
+  var result = {
+    goal: this.name,
+    duration: new Date().getTime() - this.time,
+    history: this.history
+  };
 
+
+  //if success, show a merged object and show a reduce history
+  if (status == "success") {
+    result.details = _.foldl(this.history, function (a, b) {
+      return _.extend({}, a.logDetails, b.logDetails)
+    });
+    result.history = _.map(this.history, function (value) {
+      return value.log
+    })
   }
+
   if (status == "failure") {
 
   }
-  return {
-    goal: this.name,
-    duration: new Date().getTime() - this.time,
-    history: this.history,
-    details: {}//todo write a fold function to merge all details here.
-  }
+  return result;
 };
-Goal.prototype.report=Goal.report
+Goal.prototype.report = Goal.report
 
 
 function Context(self) {

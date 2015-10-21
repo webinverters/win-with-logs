@@ -75,7 +75,7 @@ api.prototype.result = function (resultValue) {
   var result = {successValue: resultValue};
 
   if (this.goalInstance) {
-    var resultGoal= this.goalInstance.report("failure")
+    var resultGoal= this.goalInstance.report("success")
     result.goalName=resultGoal.name;
     result.goalHistory=resultGoal.history;
     result.goalDuration=resultGoal.goalDuration;
