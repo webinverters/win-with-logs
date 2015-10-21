@@ -34,7 +34,12 @@ api.handleGoalIfItExist = function (msg,details) {
 
 //logger actions
 api.logIt = function (level, msg, details) {
-  var temp = new RawLog(level, msg, details, this.fullContext,this.goalInstance.goalContext);//new up a RawLog object to hold log data.
+  var goalObj={};
+  if(this.goalInstance){
+    goalObj=this.goalInstance.goalContext
+  }
+
+  var temp = new RawLog(level, msg, details, this.fullContext,goalObj);//new up a RawLog object to hold log data.
 
   //we do this so RawLog can take care of merging the context with details without messing up the context.
   return RawLog.processLogWithBunyan.call(temp, this.bunyanInstance)
@@ -70,6 +75,17 @@ api.prototype.context = function (obj) {
   Context.addContext.call(temp, obj);
   return temp;
 };
+
+api.prototype.module=function(moduleName,details){
+  var obj={
+    module:moduleName
+  };
+  obj= _.extend(obj,details);
+  var temp = new api(this);
+  Context.addContext.call(temp, obj);
+  return temp;
+}
+
 
 api.prototype.result = function (resultValue) {
   var result = {successValue: resultValue};

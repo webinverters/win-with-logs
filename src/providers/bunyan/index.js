@@ -1,8 +1,5 @@
 var Bunyan = require('bunyan');
-/**
- *
- * @param _config
- */
+
 function BunyanLogger(_config) {
   this.logPromise = false;
 

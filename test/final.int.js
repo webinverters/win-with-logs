@@ -1,4 +1,4 @@
-var m = require('../src/api/final-api');
+var m = require('../src/api/win-with-logs-api');
 var newUp = require('./helpers/newUp');
 
 var validConfigs = {

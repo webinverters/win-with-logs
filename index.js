@@ -11,7 +11,7 @@
 
 'use strict';
 
-var winWithLogs = require('./src/api/final-api');
+var winWithLogs = require('./src/api/win-with-logs-api');
 
 var _ = require('lodash');
 

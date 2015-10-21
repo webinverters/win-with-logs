@@ -1,72 +1,90 @@
-var loggerApi = require('../logger-api');
-var goalApi = require('../goal-api');
-var bunyan = require('../../providers/bunyan');
-var transport = require('../../data-types/transport-type');
-var pubSub = require('../../providers/pub-sub');
-var _=require('lodash')
-
-var fsProvider=require('../../providers/fs');
+var p = require('bluebird');
+var _ = require('lodash');
 
 
-function api(config) {
+//Providers
+var BunyanProvider = require('../../providers/bunyan');
+var PubSub = require('../../providers/pub-sub');
+var FsProvider = require('../../providers/fs');
 
-  if(config.app || config.env || config.component){
 
+//Types
+var finalType = require('./final-type');
+var Transport = finalType.Transport
+var Api = require('./final-api').Api;
+
+
+/**
+ * handles the logic of configs.
+ * @param config
+ * @returns {*}
+ */
+function apiFactory(config) {
+
+  var apiInstance;
+
+  //check for basic params and new up bunyan Provider
+  if (config.app || config.env || config.component) {
     if (typeof config.app !== "string") throw new Error("invalid param");
     if (typeof config.env !== "string") throw new Error("invalid param");
     if (typeof config.component !== "string") throw new Error("invalid param");
+    if (typeof config.silent !== "boolean") throw new Error("invalid param");
+    if (typeof config.debug !== "boolean") throw new Error("invalid param");
+    if (typeof config.isNode !== "boolean") throw new Error("invalid param");
 
+    var bunyanTemp = new BunyanProvider(config);
+    var pubSubTemp = new PubSub(config);
+
+    apiInstance = new Api(bunyanTemp, pubSubTemp);
+
+    Transport.addAction.call(apiInstance, "trace", function (a) {
+      if (typeof a.msg == "string" && a.msg[0] == "@") {
+        pubSubTemp.handleEvent(a.msg)
+      }
+    });
+
+  } else {
+    throw new Error("invalid param");
   }
 
-  this.bunyanInstance = new bunyan(config);
+  if (config.debug == true) console.log("do something");
 
-  this.transportInstance = new transport;
-  this.transportInstance.addTransport(function (a) {
-    console.log(a.logString)
-  }, "log", "debug")
-  this.pubSubInstance = new pubSub;
-
-
-  this.transportInstance.addTransport(function (a) {
-    if (a && a.args && a.args.msg && typeof a.args.msg[0] == "string" && a.args.msg[0][0] == "@") {
-      this.pubSubInstance.handleEvent(a.args.msg[0])
-    }
-  }.bind(this), "log", "debug");
-
-
-  //add fs provider
-  if(config.logFilePath || config.maxLogFileSize || config.maxLogFiles){
-
-    if (typeof config.logFilePath !== "string") throw new Error("invalid param");
-    if (typeof config.maxLogFileSize !== "number") throw new Error("invalid param");
-    if (typeof config.maxLogFiles !== "number") throw new Error("invalid param");
-
-    var fsInstance = new fsProvider({
-      logFilePath: config.logFilePath,
-      maxLogFileSize: config.maxLogFileSize,
-      maxLogFiles: config.maxLogFiles
-    })
-
-    this.transportInstance.addTransport(function (a) {
-      return fsInstance.write(a.logString)
-    }.bind(this), "log", "debug");
-
+  //add prettified logging to the console by default if we are using node
+  if (config.silent == false && config.isNode == true) {
+    var PrettyStream = require('bunyan-prettystream');
+    var prettyStdOut = new PrettyStream();
+    prettyStdOut.pipe(process.stdout);
+    Transport.addAction.call(apiInstance, "trace", function (a) {
+      prettyStdOut.write(a.logObject);
+    });
   }
 
-  loggerApi.call(this, this.bunyanInstance, this.transportInstance)
+  //add console.log by default if we are using a browser
+  if (config.silent == false && config.isNode == false) {
+    Transport.addAction.call(apiInstance, "trace", function (a) {
+      console.log.call(console, a.logString)
+    });
+  }
+
+  if (config.robustKey || config.cloudConfig) {
+    if (typeof config.robustKey !== "string") throw new Error("invalid param");
+    if (typeof config.cloudConfig !== "object") throw new Error("invalid param");
+  }
+
+  if (config.streams) {
+    if (typeof config.streams !== "object" || typeof config.streams.length !== "number") throw new Error("invalid params");
+    _.forEach(config.streams, function (value) {
+      if (value.logFileName || value.logFilePath || value.maxLogFileSize || value.maxLogFiles) {
+        var fsInstance = new FsProvider(value);
+        Transport.addAction.call(apiInstance, "trace", function (a) {
+          fsInstance.write(a.logString);
+        });
+      }
+    });
+  }
+
+  return apiInstance
 }
 
 
-api.prototype = _.extend({}, loggerApi.prototype)
-api.prototype.constructor = api;
-
-api.prototype.goal = function (goalName, prop1, prop2) {
-  var temp=new goalApi(goalName, prop1, prop2, this.bunyanInstance, this.transportInstance)
-  return temp;
-};
-api.prototype.addEventHandler = function (event, handler) {
-  this.pubSubInstance.addEventHandler(event, handler);
-};
-
-
-module.exports = api;
+module.exports = apiFactory;
