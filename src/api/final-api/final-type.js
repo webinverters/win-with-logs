@@ -29,7 +29,7 @@ function Action(level, func) {
 }
 
 
-function RawLog(level, msg, details, context) {
+function RawLog(level, msg, details, context,goalContext) {
   if (typeof level !== "string") throw new Error("invalid log level argument");
   if (typeof msg !== "string") throw new Error("invalid msg argument");
   if (typeof details !== "object" && typeof details !== "undefined") throw new Error("invalid details argument");
@@ -37,13 +37,14 @@ function RawLog(level, msg, details, context) {
   this.msg = msg;
   this.details = details || {};
   this.context = context || {};
+  this.goalContext = goalContext || {};
   this.logLevel = level;
   this.logObject = {};
   this.logString = "";
 }
 
 RawLog.processLogWithBunyan = function (bunyanInstance) {
-  var tempDetails = _.merge({}, this.context, this.details);
+  var tempDetails = _.merge({}, this.context,this.goalContext, this.details);
   return bunyanInstance.log(this.logLevel, this.msg, tempDetails)
     .then(function (result) {
       this.logObject = result;
@@ -51,7 +52,9 @@ RawLog.processLogWithBunyan = function (bunyanInstance) {
     }.bind(this))
 };
 
-function Goal(name) {
+function Goal(name, goalDetails) {
+  this.goalContext = goalDetails || {};
+
   this.name = name;
   this.time = new Date().getTime();
   this.history = [];

@@ -38,7 +38,7 @@ function apiFactory(config) {
     apiInstance = new Api(bunyanTemp, pubSubTemp);
 
     Transport.addAction.call(apiInstance, "trace", function (a) {
-      if(typeof a.msg=="string" && a.msg[0]=="@"){
+      if (typeof a.msg == "string" && a.msg[0] == "@") {
         pubSubTemp.handleEvent(a.msg)
       }
     });
@@ -47,10 +47,7 @@ function apiFactory(config) {
     throw new Error("invalid param");
   }
 
-  if (config.debug == true) {
-  }
-  if (config.debug == false) {
-  }
+  if (config.debug == true) console.log("do something");
 
   //add prettified logging to the console by default if we are using node
   if (config.silent == false && config.isNode == true) {
