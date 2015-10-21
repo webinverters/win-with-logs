@@ -3,6 +3,7 @@ var Transport = finalType.Transport;//stores all actions and methods on logs.
 var RawLog = finalType.RawLog;//store a universal copy of logging, between processing and transports.
 var Context = finalType.Context;
 var Goal = finalType.Goal;
+var ErrorReport=finalType.ErrorReport;
 
 
 function api(bunyan, pubSub) {
@@ -45,6 +46,8 @@ api.logIt = function (level, msg, details) {
   return RawLog.processLogWithBunyan.call(temp, this.bunyanInstance)
     .then(Transport.runActionsOnLogEntry.bind(this, temp));
 };
+
+
 
 
 api.prototype.log = function (msg, details) {
@@ -131,11 +134,16 @@ api.prototype.fail = function (error) {
 
 api.prototype.rejectWithCode = function (errCode) {
   return function (err) {
-    if (err instanceof Error) {
 
-      //todo return error report
-    }
-  }
+    var temp = new ErrorReport(err, errCode, this.fullContext);
+
+    return api.logIt.call(this, "error", "failure", temp)
+      .then(function () {
+        throw temp
+      })
+
+
+  }.bind(this)
 
 };
 api.prototype.addEventHandler = function (event, handler) {

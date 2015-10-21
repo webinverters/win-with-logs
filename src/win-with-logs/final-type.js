@@ -109,11 +109,35 @@ Context.addContext = function (object) {
 };
 
 
+
+
+function ErrorReport(err, errorCode, context) {
+  if (err instanceof Error) {
+    this.what = errorCode;
+    this.context = context||{}
+    this.rootCause = err;
+    this.history = [];
+
+    return
+  }
+  if (err instanceof ErrorReport) {
+    this.what = errorCode;
+    this.context = context;
+    this.rootCause = err.rootCause;
+    this.history = err.history;
+    this.history.push({what:err.what,context:err.context})
+    return
+  }
+  throw new Error("Invalid Param, you must pass an error or errorReport")
+};
+
+
 module.exports = {
   Transport: Transport,
   RawLog: RawLog,
   Goal: Goal,
-  Context: Context
+  Context: Context,
+  ErrorReport:ErrorReport
 };
 
 
@@ -128,25 +152,6 @@ var e = function (e) {
   }
 };
 
-
-function ErrorReport(err, errorCode, context) {
-  if (err instanceof Error) {
-    this.what = errorCode;
-    this.context = context;
-    this.rootCause = false;
-    this.history = [];
-
-    return
-  }
-  if (err instanceof ErrorReport) {
-    this.what = err.what;
-    this.context = err.context;
-    this.rootCause = err.rootCause;
-    this.history = err.history;
-    return
-  }
-  throw new Error("Invalid Param, you must pass an error or errorReport")
-};
 
 //not needed yet?
 
