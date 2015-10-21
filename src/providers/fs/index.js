@@ -10,6 +10,8 @@ function fileManager(config) {
 
   this.current = this.deleteOldFiles();
   this.path = path.join(this.directory, this.name + this.current + ".log")
+
+  this.deleteOldFiles();
   //this.currentStream = fs.createWriteStream(this.path)
   fs.appendFileSync(this.path,"","utf8")
 
@@ -17,6 +19,7 @@ function fileManager(config) {
 
 fileManager.prototype.write = function (a) {
   console.log();//test keeps failing without this....
+
   if (this.checkSize()) {
     this.current = this.deleteOldFiles();
     this.rotateFile()
@@ -42,10 +45,11 @@ fileManager.prototype.checkSize = function () {
 };
 
 fileManager.prototype.deleteOldFiles = function () {
+  var fileName=this.name;
   var files =
     _(fs.readdirSync(this.directory))
       .filter(function (name) {
-        return name.indexOf(this.name) > -1
+        return name.indexOf(fileName) > -1
       }).value()
 
   files.sort(function (a, b) {
