@@ -9,6 +9,8 @@ describe('File system', function () {
       app: "test",
       env: "dev",
       component: "testComponents",
+      silent:false,
+      debug:false,
       streams: [
         {
           logFileName: 'log',

@@ -2,9 +2,9 @@ var m = require('../src/api/final-api');
 var newUp = require('./helpers/newUp');
 
 var validConfigs = {
-  basic: {component: 'test', env: 'dev', app: 'testapp'},
-  debugEnabled: {component: 'test', env: 'dev', app: 'testapp', debug: true},
-  debugDisabled: {component: 'test', env: 'dev', app: 'testapp', debug: false}
+  basic: {component: 'test', env: 'dev', app: 'testapp',debug:false,silent:false},
+  debugEnabled: {component: 'test', env: 'dev', app: 'testapp', debug: true,silent:false},
+  debugDisabled: {component: 'test', env: 'dev', app: 'testapp', debug: false,silent:false}
 };
 
 var invalidConfig = [
@@ -44,21 +44,22 @@ describe('methods', function () {
     'result', 'fail', 'failSuppressed', 'rejectWithCode',
     'addEventHandler'
   ];
+  var config={app: "abc", env: "aaa", component: "aaa",debug:false,silent:false}
 
   _.forEach(methods, function (prop) {
     it('contains a method called : ' + prop, function () {
-      var log = m({app: "abc", env: "aaa", component: "aaa"});
+      var log = m(config);
       expect(log).to.have.property(prop)
       expect(log[prop]).to.be.a("function")
     });
     it('log.context has the following methods : ' + prop, function () {
-      var log = m({app: "abc", env: "aaa", component: "aaa"});
+      var log = m(config);
       var newContext = log.context({a: 1});
       expect(newContext).to.have.property(prop)
       expect(newContext[prop]).to.be.a("function")
     });
     it('log.goal has the following methods : ' + prop, function () {
-      var log = m({app: "abc", env: "aaa", component: "aaa"});
+      var log = m(config);
       var newContext = log.goal({a: 1});
       expect(newContext).to.have.property(prop)
       expect(newContext[prop]).to.be.a("function")
@@ -67,7 +68,7 @@ describe('methods', function () {
 
 
   it('context', function () {
-    var log = m({app: "abc", env: "aaa", component: "aaa"}).context({a: 1});
+    var log = m(config);
     log.log("hello?1");
     log.warn("hello?2");
     log.debug("hello3?", {});
@@ -78,7 +79,7 @@ describe('methods', function () {
   });
 
   it('catch error', function () {
-    var log = m({app: "abc", env: "aaa", component: "aaa"});
+    var log = m(config);
 
     function test() {
       throw new Error("test")

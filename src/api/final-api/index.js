@@ -1,17 +1,24 @@
 var p = require('bluebird');
 var _ = require('lodash');
 
-//provider requirements;
+
+//Providers
 var BunyanProvider = require('../../providers/bunyan');
 var PubSub = require('../../providers/pub-sub');
 var FsProvider = require('../../providers/fs');
 
 
+//Types
 var finalType = require('./final-type');
 var Transport = finalType.Transport
 var Api = require('./final-api').Api;
 
 
+/**
+ * handles the logic of configs.
+ * @param config
+ * @returns {*}
+ */
 function apiFactory(config) {
 
   var apiInstance;
@@ -21,6 +28,8 @@ function apiFactory(config) {
     if (typeof config.app !== "string") throw new Error("invalid param");
     if (typeof config.env !== "string") throw new Error("invalid param");
     if (typeof config.component !== "string") throw new Error("invalid param");
+    if (typeof config.silent !== "boolean") throw new Error("invalid param");
+    if (typeof config.debug !== "boolean") throw new Error("invalid param");
 
     var bunyanTemp = new BunyanProvider(config);
     var pubSubTemp = new PubSub(config);
