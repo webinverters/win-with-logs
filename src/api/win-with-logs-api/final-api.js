@@ -26,20 +26,20 @@ api.addGoal = function (goal) {
   this.goalInstance = goal;
 };
 
-api.handleGoalIfItExist = function (msg,details) {
+api.handleGoalIfItExist = function (msg, details) {
   if (this.goalInstance) {
-    Goal.addEntry.call(this.goalInstance, msg,details);
+    Goal.addEntry.call(this.goalInstance, msg, details);
   }
 };
 
 //logger actions
 api.logIt = function (level, msg, details) {
-  var goalObj={};
-  if(this.goalInstance){
-    goalObj=this.goalInstance.goalContext
+  var goalObj = {};
+  if (this.goalInstance) {
+    goalObj = this.goalInstance.goalContext
   }
 
-  var temp = new RawLog(level, msg, details, this.fullContext,goalObj);//new up a RawLog object to hold log data.
+  var temp = new RawLog(level, msg, details, this.fullContext, goalObj);//new up a RawLog object to hold log data.
 
   //we do this so RawLog can take care of merging the context with details without messing up the context.
   return RawLog.processLogWithBunyan.call(temp, this.bunyanInstance)
@@ -69,18 +69,17 @@ api.prototype.fatal = function (msg, details) {
 };
 
 
-
 api.prototype.context = function (obj) {
   var temp = new api(this);
   Context.addContext.call(temp, obj);
   return temp;
 };
 
-api.prototype.module=function(moduleName,details){
-  var obj={
-    module:moduleName
+api.prototype.module = function (moduleName, details) {
+  var obj = {
+    module: moduleName
   };
-  obj= _.extend(obj,details);
+  obj = _.extend(obj, details);
   var temp = new api(this);
   Context.addContext.call(temp, obj);
   return temp;
@@ -91,11 +90,11 @@ api.prototype.result = function (resultValue) {
   var result = {successValue: resultValue};
 
   if (this.goalInstance) {
-    var resultGoal= this.goalInstance.report("success")
-    result.goalName=resultGoal.name;
-    result.goalHistory=resultGoal.history;
-    result.goalDuration=resultGoal.goalDuration;
-    result.goalDetails=resultGoal.details;
+    var resultGoal = this.goalInstance.report("success")
+    result.goalName = resultGoal.name;
+    result.goalHistory = resultGoal.history;
+    result.goalDuration = resultGoal.goalDuration;
+    result.goalDetails = resultGoal.details;
   }
 
   return api.logIt.call(this, "debug", "success", result)
@@ -105,14 +104,14 @@ api.prototype.result = function (resultValue) {
 };
 
 api.prototype.failSuppressed = function (error) {
-  var result={failure:error};
+  var result = {failure: error};
   if (this.goalInstance) {
     //keep objects shallow if we ant to see them in the logs....
-    var resultGoal= this.goalInstance.report("failure")
-    result.goalName=resultGoal.name;
-    result.goalHistory=resultGoal.history;
-    result.goalDuration=resultGoal.goalDuration;
-    result.goalDetails=resultGoal.details;
+    var resultGoal = this.goalInstance.report("failure")
+    result.goalName = resultGoal.name;
+    result.goalHistory = resultGoal.history;
+    result.goalDuration = resultGoal.goalDuration;
+    result.goalDetails = resultGoal.details;
   }
   return api.logIt.call(this, "error", "failure", result)
     .then(function () {
@@ -139,18 +138,17 @@ api.prototype.rejectWithCode = function (errCode) {
 
 };
 api.prototype.addEventHandler = function (event, handler) {
-  this.pubSubInstance.addEventHandler(event,handler)
+  this.pubSubInstance.addEventHandler(event, handler)
 };
 
 api.prototype.goal = function (goalName, details) {
 
   var temp = new api(this);
   var goalContext = details || {};
-  if(!goalContext.goalId){
-    goalContext.goalId=_.uniqueId(new Date().getTime())
+  if (!goalContext.goalId) {
+    goalContext.goalId = _.uniqueId(new Date().getTime())
   }
-  console.log(goalContext)
-  Context.addContext.call(temp,goalContext);
+  Context.addContext.call(temp, goalContext);
   var goal = new Goal(goalName);
   api.addGoal.call(temp, goal);
   return temp;
