@@ -30,21 +30,27 @@ function apiFactory(config) {
     if (typeof config.component !== "string") throw new Error("invalid param");
     if (typeof config.silent !== "boolean") throw new Error("invalid param");
     if (typeof config.debug !== "boolean") throw new Error("invalid param");
+    if (typeof config.isNode !== "boolean") throw new Error("invalid param");
 
     var bunyanTemp = new BunyanProvider(config);
     var pubSubTemp = new PubSub(config);
 
     apiInstance = new Api(bunyanTemp, pubSubTemp);
+
+    Transport.addAction.call(apiInstance, "trace", function (a) {
+      if(typeof a.msg=="string" && a.msg[0]=="@"){
+        pubSubTemp.handleEvent(a.msg)
+      }
+    });
+
   } else {
     throw new Error("invalid param");
   }
 
   if (config.debug == true) {
   }
-  ;
   if (config.debug == false) {
   }
-  ;
 
   //add prettified logging to the console by default if we are using node
   if (config.silent == false && config.isNode == true) {

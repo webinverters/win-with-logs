@@ -11,7 +11,8 @@ window.winWithLogs = function (config) {
     app: 'DefaultApp',
     env: 'dev',
     isNode:false,
-    silent:false
+    silent:false,
+    debug:false
   });
 
   var log = new winWithLogs(config);

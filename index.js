@@ -22,19 +22,9 @@ module.exports = function construct(config) {
     app: 'DefaultApp',
     env: 'dev',
     isNode:true,
+    debug: config.env != 'prod' ? true : false,
     silent:false
-    //logErrorFile: './',
-    //logFilePath: './',
     //useLoggingGlobals: true,
-    //debug: config.env != 'prod' ? true : false,
-    //slackConfig: {
-    //  webhook_url: "",
-    //  channel: "",
-    //  username: "bot"
-    //},
-    //robustKey: '',
-    //cloudLogServerEndpoint: 'http://robustly.io/api/logs',
-    //streams: []  // advanced: custom streams can be subscribed for plugin support.
   });
 
   return new winWithLogs(config);

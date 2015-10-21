@@ -2,9 +2,9 @@ var m = require('../src/api/final-api');
 var newUp = require('./helpers/newUp');
 
 var validConfigs = {
-  basic: {component: 'test', env: 'dev', app: 'testapp',debug:false,silent:false},
-  debugEnabled: {component: 'test', env: 'dev', app: 'testapp', debug: true,silent:false},
-  debugDisabled: {component: 'test', env: 'dev', app: 'testapp', debug: false,silent:false}
+  basic: {component: 'test', env: 'dev', app: 'testapp',debug:false,silent:false,isNode:true},
+  debugEnabled: {component: 'test', env: 'dev', app: 'testapp', debug: true,silent:false,isNode:true},
+  debugDisabled: {component: 'test', env: 'dev', app: 'testapp', debug: false,silent:false,isNode:true}
 };
 
 var invalidConfig = [
@@ -44,7 +44,7 @@ describe('methods', function () {
     'result', 'fail', 'failSuppressed', 'rejectWithCode',
     'addEventHandler'
   ];
-  var config={app: "abc", env: "aaa", component: "aaa",debug:false,silent:false}
+  var config={app: "abc", env: "aaa", component: "aaa",debug:false,silent:false,isNode:true}
 
   _.forEach(methods, function (prop) {
     it('contains a method called : ' + prop, function () {
@@ -74,7 +74,6 @@ describe('methods', function () {
     log.debug("hello3?", {});
     log.fatal("hello", {});
     log.error("hello?", {});
-
     log.result("123")
   });
 
@@ -92,5 +91,15 @@ describe('methods', function () {
           log.failSuppressed(e)
         })
     }).to.not.throw()
+  })
+
+  it('pubSub',function(){
+    var log = m(config);
+    log.addEventHandler("test",function(){
+      console.log("da event!!")
+    });
+    log.log("@test",{})
+    log.warn("hello world?")
+
   })
 });

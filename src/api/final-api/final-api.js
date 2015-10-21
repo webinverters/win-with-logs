@@ -123,7 +123,7 @@ api.prototype.rejectWithCode = function (errCode) {
 
 };
 api.prototype.addEventHandler = function (event, handler) {
-
+  this.pubSubInstance.addEventHandler(event,handler)
 };
 
 api.prototype.goal = function (goalName, details) {
