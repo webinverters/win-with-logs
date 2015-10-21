@@ -76,9 +76,7 @@ function apiFactory(config) {
     _.forEach(config.streams, function (value) {
 
       if(value.logFileName||value.logFilePath||value.maxLogFileSize ||value.maxLogFiles){
-
         var fsInstance = new FsProvider(value);
-        console.log("adding new instance?")
         Transport.addAction.call(apiInstance, "trace", function (a) {
           fsInstance.write(a.logString);
         });

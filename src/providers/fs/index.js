@@ -30,7 +30,7 @@ fileManager.prototype.write = function (a) {
   //  defer.resolve();
   //});
   //return defer.promise;
-  fs.appendFileSync(this.path,a,"utf8")
+  fs.appendFileSync(this.path,a+"\n","utf8")
   return p.resolve(true)
 };
 
