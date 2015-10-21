@@ -146,7 +146,10 @@ api.prototype.goal = function (goalName, details) {
 
   var temp = new api(this);
   var goalContext = details || {};
-  goalContext.goalId = details ? details.goalId : _.uniqueId(new Date().getTime())
+  if(!goalContext.goalId){
+    goalContext.goalId=_.uniqueId(new Date().getTime())
+  }
+  console.log(goalContext)
   Context.addContext.call(temp,goalContext);
   var goal = new Goal(goalName);
   api.addGoal.call(temp, goal);
