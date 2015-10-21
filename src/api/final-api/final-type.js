@@ -57,9 +57,10 @@ function Goal(name) {
   this.history = [];
 }
 
-Goal.addEntry = function (name) {
+Goal.addEntry = function (msg,details) {
   this.history.push({
-    log: name,
+    log: msg,
+    logDetails:details,
     time: new Date().getTime() - this.time
   })
 
@@ -75,9 +76,11 @@ Goal.report = function (status) {
   return {
     goal: this.name,
     duration: new Date().getTime() - this.time,
-    history: this.history
+    history: this.history,
+    details: {}//todo write a fold function to merge all details here.
   }
 };
+Goal.prototype.report=Goal.report
 
 
 function Context(self) {

@@ -1,32 +1,36 @@
 var finalType = require('./final-type');
 var Transport = finalType.Transport;//stores all actions and methods on logs.
 var RawLog = finalType.RawLog;//store a universal copy of logging, between processing and transports.
-var Context=finalType.Context;
-var Goal=finalType.Goal;
+var Context = finalType.Context;
+var Goal = finalType.Goal;
 
 
-function api(bunyan,pubSub) {
+function api(bunyan, pubSub) {
 
-  var self=arguments[0];
+  var self = arguments[0];
   //makes a copy of itself
   if (self instanceof api) {
     Transport.call(this, self);
     Context.call(this, self);
     this.bunyanInstance = self.bunyanInstance;
-    this.pubSubInstance=self.pubSubInstance;
+    this.pubSubInstance = self.pubSubInstance;
   } else {
     Transport.call(this);//add transport to api
     Context.call(this);//add context to api
-    this.bunyanInstance = bunyan||false;
-    this.pubSubInstance=pubSub||false;
+    this.bunyanInstance = bunyan || false;
+    this.pubSubInstance = pubSub || false;
   }
 }
-api.addGoal=function(goal){
-  if(!(goal instanceof Goal))throw new Error('invalid goal specified');
-  this.goalInstance=goal;
+api.addGoal = function (goal) {
+  if (!(goal instanceof Goal))throw new Error('invalid goal specified');
+  this.goalInstance = goal;
 };
 
-
+api.handleGoalIfItExist = function (msg,details) {
+  if (this.goalInstance) {
+    Goal.addEntry.call(this.goalInstance, msg,details);
+  }
+};
 
 //logger actions
 api.logIt = function (level, msg, details) {
@@ -39,20 +43,28 @@ api.logIt = function (level, msg, details) {
 
 
 api.prototype.log = function (msg, details) {
+  api.handleGoalIfItExist.call(this, msg, details);
   return api.logIt.call(this, "debug", msg, details)
 };
 api.prototype.warn = function (msg, details) {
+  api.handleGoalIfItExist.call(this, msg, details);
   return api.logIt.call(this, "warn", msg, details)
 };
 api.prototype.error = function (msg, details) {
+  api.handleGoalIfItExist.call(this, msg, details);
   return api.logIt.call(this, "error", msg, details)
 };
 api.prototype.debug = function (msg, details) {
+  api.handleGoalIfItExist.call(this, msg, details);
   return api.logIt.call(this, "debug", msg, details)
 };
 api.prototype.fatal = function (msg, details) {
+  api.handleGoalIfItExist.call(this, msg, details);
   return api.logIt.call(this, "fatal", msg, details)
 };
+
+
+
 api.prototype.context = function (obj) {
   var temp = new api(this);
   Context.addContext.call(temp, obj);
@@ -60,24 +72,48 @@ api.prototype.context = function (obj) {
 };
 
 api.prototype.result = function (resultValue) {
-  //for consistently, details is always an object.
-  return this.log("success", {successValue: resultValue})
+  var result = {successValue: resultValue};
+
+  if (this.goalInstance) {
+    var resultGoal= this.goalInstance.report("failure")
+    result.goalName=resultGoal.name;
+    result.goalHistory=resultGoal.history;
+    result.goalDuration=resultGoal.goalDuration;
+    result.goalDetails=resultGoal.details;
+  }
+
+  return api.logIt.call(this, "debug", "success", result)
     .then(function () {
       return resultValue
     })
 };
+
+api.prototype.failSuppressed = function (error) {
+  var result={failure:error};
+  if (this.goalInstance) {
+    //keep objects shallow if we ant to see them in the logs....
+    var resultGoal= this.goalInstance.report("failure")
+    result.goalName=resultGoal.name;
+    result.goalHistory=resultGoal.history;
+    result.goalDuration=resultGoal.goalDuration;
+    result.goalDetails=resultGoal.details;
+  }
+  return api.logIt.call(this, "error", "failure", result)
+    .then(function () {
+      return true;
+    })
+};
+
 api.prototype.fail = function (error) {
-  return this.error("failure", {failure: error})
+  if (this.goal) {
+    //get goal result and added it to object.
+  }
+  return api.prototype.failSuppressed.call(this, error)
     .then(function () {
       throw error
     })
 };
-api.prototype.failSuppressed = function (error) {
-  return this.error("failure", {failure: error})
-    .then(function(){
-      return true;
-    })
-};
+
 api.prototype.rejectWithCode = function (errCode) {
   return function (err) {
     if (err instanceof Error) {
@@ -86,23 +122,22 @@ api.prototype.rejectWithCode = function (errCode) {
   }
 
 };
-api.prototype.addEventHandler = function (event,handler) {
+api.prototype.addEventHandler = function (event, handler) {
 
 };
 
 api.prototype.goal = function (goalName, details) {
 
   var temp = new api(this);
-  var goalContext=details||{};
-  goalContext.goalId=details ? details.goalId : _.uniqueId(new Date().getTime())
+  var goalContext = details || {};
+  goalContext.goalId = details ? details.goalId : _.uniqueId(new Date().getTime())
   Context.addContext.call(temp, goalContext);
-  var goal=new Goal(goalName);
-  api.addGoal.call(temp,goal)
+  var goal = new Goal(goalName);
+  api.addGoal.call(temp, goal);
   return temp;
 };
 
 
-
-module.exports={
-  Api:api
+module.exports = {
+  Api: api
 };
