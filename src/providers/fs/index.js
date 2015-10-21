@@ -75,7 +75,8 @@ fileManager.prototype.deleteOldFiles = function () {
 
   var highestint = _.max(_(files)
     .map(function (name) {
-      var count = name.match(/log(.+?)\.log/)
+      var regexTemp=new RegExp(fileName+'(.+?)\.log');
+      var count = name.match(regexTemp);
       if (!count)return 0;
       return parseInt(count[1])
     })
