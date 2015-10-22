@@ -6,6 +6,10 @@ var Goal = finalType.Goal;
 var ErrorReport=finalType.ErrorReport;
 
 
+module.exports = {
+  Api: api
+};
+
 function api(bunyan, pubSub) {
 
   var self = arguments[0];
@@ -141,11 +145,9 @@ api.prototype.rejectWithCode = function (errCode) {
       .then(function () {
         throw temp
       })
-
-
   }.bind(this)
-
 };
+
 api.prototype.addEventHandler = function (event, handler) {
   this.pubSubInstance.addEventHandler(event, handler)
 };
@@ -164,6 +166,10 @@ api.prototype.goal = function (goalName, details) {
 };
 
 
-module.exports = {
-  Api: api
-};
+// Extras:
+api.prototype.timestamp = function (kind) {
+  if (config.timestampFunc) return config.timestampFunc()
+  if (!kind) return new Date().toISOString()
+  if (kind=='epoch') return Math.floor(new Date().getTime()/1000)
+  if (kind=='epochmill') return new Date().getTime()
+}
