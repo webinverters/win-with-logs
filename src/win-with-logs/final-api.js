@@ -11,7 +11,6 @@ module.exports = {
 };
 
 function api(bunyan, pubSub) {
-
   var self = arguments[0];
   //makes a copy of itself
   if (self instanceof api) {
@@ -53,10 +52,13 @@ api.logIt = function (level, msg, details) {
 
 
 
-
+api.prototype.info = function (msg, details) {
+  api.handleGoalIfItExist.call(this, msg, details);
+  return api.logIt.call(this, "info", msg, details)
+};
 api.prototype.log = function (msg, details) {
   api.handleGoalIfItExist.call(this, msg, details);
-  return api.logIt.call(this, "debug", msg, details)
+  return api.logIt.call(this, "info", msg, details)
 };
 api.prototype.warn = function (msg, details) {
   api.handleGoalIfItExist.call(this, msg, details);
