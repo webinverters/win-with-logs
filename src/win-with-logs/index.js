@@ -27,7 +27,7 @@ function apiFactory(config) {
   if (config.app || config.env || config.component) {
     if (typeof config.app !== "string") throw new Error("invalid param");
     if (typeof config.env !== "string") throw new Error("invalid param");
-    if (typeof config.component !== "string") throw new Error("invalid param");
+    if (typeof config.component !== "string" && typeof config.name !== "string") throw new Error("invalid param");
     if (typeof config.silent !== "boolean") throw new Error("invalid param");
     if (typeof config.debug !== "boolean") throw new Error("invalid param");
     if (typeof config.isNode !== "boolean") throw new Error("invalid param");
