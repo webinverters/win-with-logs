@@ -329,10 +329,10 @@ module.exports = function construct(config, logProvider, bunyan, PrettyStream, T
       if (err) {
         details = _.merge({}, err.details || {},details)
       }
-      var errorReport = _.merge(thisErr,{what: what, details:details, err: err, context:context});
+      var errorReport = _.merge(thisErr,{what: what, details:details, err: err, context:context})
 
-      log.error(what, errorReport);
-      return errorReport;
+      log.error(what, errorReport)
+      return errorReport
     };
 
     log.timestamp = function (kind) {
