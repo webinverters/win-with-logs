@@ -11,18 +11,6 @@
 
 "use strict";
 
-/**
- * @module myModule
- * @summary: This module's purpose is to:
- *
- * @description:
- *
- * Author: Justin Mooser
- * Created On: 2015-05-23.
- * @license Apache-2.0
- */
-
-"use strict";
 
 // Note: no logging with log inside of a stream, considering it could result in an effective infinite recursion.
 module.exports = function construct(config, cb) {

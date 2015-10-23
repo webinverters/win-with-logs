@@ -13,9 +13,16 @@ int:
 coverage:
 	$(ISTANBUL) cover node_modules/.bin/_mocha -- ${MOCHA_ARGS} ${ARGS} ${UNIT_TEST_FILES} ${INT_TEST_FILES}
 
+dist:
+	gulp create-browser-version
+
+
+browser:
+	./node_modules/karma/bin/karma start karma.conf.js
+
 viewCov:
 	open coverage/lcov-report/index.html
 
 all: unit int
 
-.PHONY: unit int coverage viewCov all
+.PHONY: unit int coverage viewCov all dist
