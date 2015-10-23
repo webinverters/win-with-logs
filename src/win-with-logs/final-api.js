@@ -166,7 +166,7 @@ api.prototype.goal = function (goalName, details) {
   api.addGoal.call(temp, goal);
   return temp;
 };
-
+api.prototype.method = api.prototype.goal
 
 // Extras:
 api.prototype.timestamp = function (kind) {
@@ -175,3 +175,18 @@ api.prototype.timestamp = function (kind) {
   if (kind=='epoch') return Math.floor(new Date().getTime()/1000)
   if (kind=='epochmill') return new Date().getTime()
 }
+
+/**
+ * Creates an error report.
+ *
+ * Please try to pass err as a property fo details, since the
+ * third err param is being phased out.
+ *
+ * @param  {[type]} msg     [description]
+ * @param  {[type]} details [description]
+ * @param  {[type]} err     [description]
+ * @return {[type]}         [description]
+ */
+api.prototype.errorReport = function (msg, details, err) {
+  return new ErrorReport(err || details.err, msg, details)
+};

@@ -94,18 +94,21 @@ describe('methods', function () {
     }).to.not.throw()
   })
 
-  it('pubSub',function(){
+  it('pubSub',function() {
     var log = m(config);
     log.addEventHandler("test",function(){
       console.log("da event!!")
     });
     log.log("@test",{})
     log.warn("hello world?")
-
   })
 
   it('errorReport',function(done){
-    var config={app: "abc", env: "aaa", component: "aaa",debug:false,silent:false,isNode:true}
+    var config={
+      app: "abc", env: "aaa",
+      component: "aaa",debug:false,
+      silent:false,isNode:true
+    }
     function test(){
       throw new Error("bug")
     }
@@ -119,7 +122,21 @@ describe('methods', function () {
       .catch(log.rejectWithCode("hello2"))
       .catch(_.noop)
       .then(done)
+  })
 
+  describe('log.errorReport()', function() {
+    it('returns an error report object', function() {
+      var log=m(config)
 
+      expect(log.errorReport('SOME_ERROR', {param1: 'einstein'}))
+        .to.deep.equal({
+          what: 'SOME_ERROR',
+          context: {
+            param1: "einstein"
+          },
+          history: [],
+          rootCause: 'SOME_ERROR'
+        })
+    })
   })
 });

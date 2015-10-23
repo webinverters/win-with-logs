@@ -33,7 +33,6 @@ function RawLog(level, msg, details, context,goalContext) {
   if (typeof level !== "string") throw new Error("invalid log level argument");
   if (typeof msg !== "string") throw new Error("invalid msg argument");
 
-
   if (details && typeof details !== "object")
     details = {details: details}
 
@@ -115,24 +114,18 @@ Context.addContext = function (object) {
 
 
 function ErrorReport(err, errorCode, context) {
-  if (err instanceof Error) {
+  //if (err instanceof Error) {
     this.what = errorCode;
     this.context = context||{}
-    this.rootCause = err;
+    this.rootCause = err || this.what;
     this.history = [];
-
-    return
-  }
+  //}
   if (err instanceof ErrorReport) {
-    this.what = errorCode;
-    this.context = context;
     this.rootCause = err.rootCause;
     this.history = err.history;
     this.history.push({what:err.what,context:err.context})
-    return
   }
-  throw new Error("Invalid Param, you must pass an error or errorReport")
-};
+}
 
 
 module.exports = {
