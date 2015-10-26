@@ -1,7 +1,7 @@
 {
   "name": "win-with-logs",
   "main": "index.js",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "homepage": "https://github.com/webinverters/win-with-logs",
   "authors": [
     "robustly.io"
