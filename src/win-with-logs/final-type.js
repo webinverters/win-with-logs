@@ -123,8 +123,9 @@ function ErrorReport(err, errorCode, context) {
   if (err instanceof ErrorReport) {
     this.rootCause = err.rootCause;
     this.history = err.history;
-    this.history.push({what:err.what,context:err.context})
+    this.history.push(err)
   }
+  if (err) this.err = err
 }
 
 
