@@ -7,6 +7,10 @@ var log = require('./../index')({
 });
 
 
+log('FUCKING RIGHT')
+
+log = log.module('my module')
+
 log.fatal("hello");
 log.error("hello");
 log.warn("hello");

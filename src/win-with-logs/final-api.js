@@ -188,5 +188,6 @@ api.prototype.timestamp = function (kind) {
  * @return {[type]}         [description]
  */
 api.prototype.errorReport = function (msg, details, err) {
+  details = details || {}
   return new ErrorReport(err || details.err, msg, details)
 };

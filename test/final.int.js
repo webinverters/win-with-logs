@@ -109,14 +109,12 @@ describe('methods', function () {
       component: "aaa",debug:false,
       silent:false,isNode:true
     }
-    function test(){
-      throw new Error("bug")
-    }
+
 
     var log=m(config)
 
     return p.resolve()
-      .then(test)
+      .then(throwEx)
       .catch(log.rejectWithCode("hello"))
       .catch(log.rejectWithCode("hello1"))
       .catch(log.rejectWithCode("hello2"))
@@ -139,4 +137,29 @@ describe('methods', function () {
         })
     })
   })
+
+  describe('within a context', function() {
+    it('rejectWithCode works', function(done) {
+      var config={
+        app: "abc", env: "aaa",
+        component: "aaa",debug:false,
+        silent:false,isNode:true
+      }
+
+      var log=m(config)
+      log = log.module('test')
+
+      return p.resolve()
+        .then(throwEx)
+        .catch(log.rejectWithCode("CODE"))
+        .catch(function(err) {
+          expect(err.what).to.equal("CODE")
+        })
+    })
+  })
 });
+
+
+function throwEx(){
+  throw new Error("bug")
+}

@@ -18,8 +18,6 @@ function fileManager(config) {
 }
 
 fileManager.prototype.write = function (a) {
-  console.log();//test keeps failing without this....
-
   if (this.checkSize()) {
     this.current = this.deleteOldFiles();
     this.rotateFile()

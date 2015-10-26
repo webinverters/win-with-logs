@@ -27,5 +27,14 @@ module.exports = function construct(config) {
     //useLoggingGlobals: true,
   });
 
-  return new winWithLogs(config);
+  var log = winWithLogs(config);
+  var f = log.info.bind(log)
+
+  for(var x in log) {
+    if (_.isFunction(log[x])) {
+      f[x] = log[x].bind(log)
+    }
+  }
+
+  return f
 };
