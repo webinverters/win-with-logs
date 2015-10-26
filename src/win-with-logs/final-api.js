@@ -45,7 +45,9 @@ api.logIt = function (level, msg, details) {
 
   var temp = new RawLog(level, msg, details, this.fullContext, goalObj);//new up a RawLog object to hold log data.
 
-  //we do this so RawLog can take care of merging the context with details without messing up the context.
+  //we do this so RawLog can take care of merging the context
+  // with details without messing up the context.
+
   return RawLog.processLogWithBunyan.call(temp, this.bunyanInstance)
     .then(Transport.runActionsOnLogEntry.bind(this, temp));
 };

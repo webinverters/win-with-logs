@@ -139,21 +139,31 @@ describe('methods', function () {
   })
 
   describe('within a context', function() {
-    it('rejectWithCode works', function(done) {
+    var log
+    beforeEach(function() {
       var config={
         app: "abc", env: "aaa",
         component: "aaa",debug:false,
         silent:false,isNode:true
       }
 
-      var log=m(config)
-      log = log.module('test')
-
+      log=m(config)
+      log = log.module('test')  // sets up a new context.
+    })
+    it('rejectWithCode works', function(done) {
       return p.resolve()
         .then(throwEx)
         .catch(log.rejectWithCode("CODE"))
         .catch(function(err) {
           expect(err.what).to.equal("CODE")
+        })
+    })
+
+    it('xxx ctx.result works', function() {
+      return p.resolve('result')
+        .then(log.result)
+        .then(function(result) {
+          expect(result).to.equal('result')
         })
     })
   })
