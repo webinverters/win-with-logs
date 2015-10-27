@@ -154,7 +154,7 @@ api.prototype.fail = function (error) {
 api.prototype.rejectWithCode = function (errCode) {
   return function (err) {
     var errorReport = new ErrorReport(err, errCode, this.fullContext);
-    api.prototype.fail.call(this, errorReport)
+    return api.prototype.fail.call(this, errorReport)
   }.bind(this)
 };
 

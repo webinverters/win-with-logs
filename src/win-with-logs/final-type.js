@@ -112,7 +112,6 @@ Context.addContext = function (object) {
   this.result = this.result.bind(this)
   this.fail = this.fail.bind(this)
   this.failSuppressed = this.failSuppressed.bind(this)
-  this.rejectWithCode = this.rejectWithCode.bind(this)
 };
 
 function ErrorReport(err, errorCode, details) {
