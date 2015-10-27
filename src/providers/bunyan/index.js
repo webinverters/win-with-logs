@@ -42,28 +42,25 @@ BunyanLogger.prototype.log = function (level, msg, details, options) {
   var defer = p.defer();
   this.logPromise = defer;
 
-  if (level == 'error' || level == 'fatal') {
-    var err = details
-    if (err instanceof Error) {
-      this.logger[level]({err: err}, msg);
-    }
-    else if (!err.err) {
-      this.logger[level]({details:err}, msg)
-    }
-    else {
-      this.logger[level]({ details: err, err: err.err }, msg)
-    }
+  var logObject = {}
+
+  if (details instanceof Error) {
+    logObject.err = details
   } else {
-    if (options && !_.isObject(options)) throw "options must be an object"
-    if (options && _.isObject(options)) {
-      options.details = details
-      this.logger[level](options, msg)
-    }
-    else if (details)
-      this.logger[level]({details:details}, msg)
-    else
-      this.logger[level](msg)
+    logObject.details = details
   }
+
+  if (options && !_.isObject(options)) throw "options must be an object"
+
+  if (options && _.isObject(options)) {
+    lobObject = _.merge(logObject,options)
+  }
+
+  if (_.size(logObject) > 0)
+    this.logger[level](logObject, msg)
+  else
+    this.logger[level](msg)
+
 
   return defer.promise;
 };
