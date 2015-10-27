@@ -35,10 +35,8 @@ function BunyanLogger(_config) {
   this.logger = Bunyan(config);
 }
 
-var allowedLogLevels = ["fatal", "error", "warn", "info", "debug", "trace"];
-
 BunyanLogger.prototype.log = function (level, msg, details, options) {
-  if (allowedLogLevels.indexOf(level) < 0)throw new Error("invalid log level");
+  if (!this.logger[level])throw new Error("invalid log level:"+level);
   var defer = p.defer();
   this.logPromise = defer;
 

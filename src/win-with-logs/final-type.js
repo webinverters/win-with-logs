@@ -52,7 +52,13 @@ RawLog.processLogWithBunyan = function (bunyanInstance) {
   return bunyanInstance.log(this.logLevel, this.msg, this.details, this.opts)
     .then(function (result) {
       this.logObject = result
-      this.logString = JSON.stringify(result)
+      try {
+        this.logString = JSON.stringify(result)
+      }
+      catch (ex) {
+        console.log("CIRCULAR LOG OBJECT:", result)
+        throw ex
+      }
     }.bind(this))
 };
 
@@ -116,9 +122,14 @@ Context.addContext = function (object) {
 };
 
 function ErrorReport(err, errorCode, details) {
-
   this.what = errorCode;
-  this.details = details || {}
+  if (err && err.details && _.isObject(err.details))
+    this.details = err.details
+
+  if (_.isObject(details)) {
+    this.details = _.merge(this.details || {},details || {})
+  }
+
   this.history = [];
 
   if (err instanceof Error) {
@@ -131,7 +142,7 @@ function ErrorReport(err, errorCode, details) {
     this.rootCause = _.cloneDeep(err.rootCause)
     this.history = err.history
     this.details = _.merge(this.details, err.details)
-    this.history.push(err)
+    this.history.push(_.cloneDeep(err))
   }
 
   if (err) this.err = _.cloneDeep(err)
