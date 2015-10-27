@@ -15,17 +15,23 @@ function api(bunyan, pubSub) {
   this._id = 'wwl-'+_.uniqueId(new Date().getTime())
 
   //makes a copy of itself
-  if (self instanceof api) {
-    Transport.call(this, self);
-    Context.call(this, self);
-    this.bunyanInstance = self.bunyanInstance;
-    this.pubSubInstance = self.pubSubInstance;
+  var tempInstance={
+    apiType:true
+  };
+
+  if (self.apiType) {
+    Transport.call(tempInstance, self);
+    Context.call(tempInstance, self);
+    tempInstance.bunyanInstance = self.bunyanInstance;
+    tempInstance.pubSubInstance = self.pubSubInstance;
   } else {
-    Transport.call(this);//add transport to api
-    Context.call(this);//add context to api
-    this.bunyanInstance = bunyan || false;
-    this.pubSubInstance = pubSub || false;
+    Transport.call(tempInstance);//add transport to api
+    Context.call(tempInstance);//add context to api
+    tempInstance.bunyanInstance = bunyan || false;
+    tempInstance.pubSubInstance = pubSub || false;
   }
+  addApi(tempInstance)
+  return tempInstance
 }
 api.addGoal = function (goal) {
   if (!(goal instanceof Goal))throw new Error('invalid goal specified');
@@ -55,6 +61,12 @@ api.logIt = function (level, msg, details, options) {
 };
 
 
+function addApi(obj){
+  _.forEach(api.prototype,function(func,name){
+    obj[name]=func.bind(obj)
+  })
+}
+
 
 api.prototype.info = function (msg, details, options) {
   api.handleGoalIfItExist.call(this, msg, details);
@@ -83,7 +95,7 @@ api.prototype.fatal = function (msg, details, options) {
 
 
 api.prototype.context = function (obj) {
-  var temp = new api(this);
+  var temp = api(this);
   Context.addContext.call(temp, obj);
   return temp;
 };
@@ -93,7 +105,7 @@ api.prototype.module = function (moduleName, details) {
     module: moduleName
   };
   obj = _.extend(obj, details);
-  var temp = new api(this);
+  var temp = api(this);
   Context.addContext.call(temp, obj);
   return temp;
 }
@@ -152,7 +164,7 @@ api.prototype.addEventHandler = function (event, handler) {
 
 api.prototype.goal = function (goalName, details) {
 
-  var temp = new api(this);
+  var temp =  api(this);
   var goalContext = details || {};
   if (!goalContext.goalId) {
     goalContext.goalId = _.uniqueId(new Date().getTime())
