@@ -43,12 +43,13 @@ function RawLog(level, msg, details, context,goalContext, opts) {
   this.logLevel = level;
   this.logObject = {};
   this.logString = "";
-  this.opts = opts
+  this.opts = opts || {}
 }
 
 RawLog.processLogWithBunyan = function (bunyanInstance) {
-  var tempDetails = _.merge({}, this.context,this.goalContext, this.details);
-  return bunyanInstance.log(this.logLevel, this.msg, tempDetails, this.opts)
+  this.opts.context = this.context
+  this.opts.goalContext = this.goalContext
+  return bunyanInstance.log(this.logLevel, this.msg, this.details, this.opts)
     .then(function (result) {
       this.logObject = result
       this.logString = JSON.stringify(result)
