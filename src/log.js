@@ -302,10 +302,15 @@ module.exports = function construct(config, logProvider, bunyan, PrettyStream, T
           err: err,
         };
 
-        if (err)
-          error.rootCause = err.rootCause || (err.what ? err : _.clone(error));
+        if (err && err.rootCause)
+          error.rootCause = err.rootCause
+        else if (err && err.what)
+          error.rootCause = err.what
+        else if (err)
+          error.rootCause = err.toString()
 
         log.error(code, error)
+        
         throw error
       };
     };
