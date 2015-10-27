@@ -12,6 +12,8 @@ module.exports = {
 
 function api(bunyan, pubSub) {
   var self = arguments[0];
+  this._id = 'wwl-'+_.uniqueId(new Date().getTime())
+
   //makes a copy of itself
   if (self instanceof api) {
     Transport.call(this, self);
@@ -126,29 +128,21 @@ api.prototype.failSuppressed = function (error) {
   }
   return api.logIt.call(this, "error", "failure", result)
     .then(function () {
-      return true;
+      return error;
     })
 };
 
 api.prototype.fail = function (error) {
-  if (this.goal) {
-    //get goal result and added it to object.
-  }
   return api.prototype.failSuppressed.call(this, error)
-    .then(function () {
+    .then(function (error) {
       throw error
     })
 };
 
 api.prototype.rejectWithCode = function (errCode) {
   return function (err) {
-
-    var temp = new ErrorReport(err, errCode, this.fullContext);
-
-    return api.logIt.call(this, "error", "failure", temp)
-      .then(function () {
-        throw temp
-      })
+    var errorReport = new ErrorReport(err, errCode, this.fullContext);
+    api.prototype.fail.call(this, errorReport)
   }.bind(this)
 };
 
@@ -167,10 +161,7 @@ api.prototype.goal = function (goalName, details) {
   var goal = new Goal(goalName);
   api.addGoal.call(temp, goal);
 
-  // HACK to allow result to be passed into promise chain.
-  temp.result = temp.result.bind(temp)
-
-  return temp;
+  return temp
 };
 api.prototype.method = api.prototype.goal
 

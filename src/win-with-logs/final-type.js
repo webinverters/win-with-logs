@@ -71,6 +71,7 @@ Goal.addEntry = function (msg, details) {
   })
 };
 Goal.report = function (status) {
+
   var result = {
     goal: this.name,
     duration: new Date().getTime() - this.time,
@@ -106,10 +107,13 @@ function Context(self) {
 }
 Context.addContext = function (object) {
   this.fullContext = object
+
+  // HACK to allow result to be passed into promise chain.
+  this.result = this.result.bind(this)
+  this.fail = this.fail.bind(this)
+  this.failSuppressed = this.failSuppressed.bind(this)
+  this.rejectWithCode = this.rejectWithCode.bind(this)
 };
-
-
-
 
 function ErrorReport(err, errorCode, details) {
 
