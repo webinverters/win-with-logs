@@ -31,7 +31,10 @@ function Action(level, func) {
 
 function RawLog(level, msg, details, context,goalContext, opts) {
   if (typeof level !== "string") throw new Error("invalid log level argument");
-  if (typeof msg !== "string") throw new Error("invalid msg argument");
+  if (typeof msg !== "string") {
+    console.log('INVALID ARGUMENT:', msg, details)
+    throw new Error("invalid msg argument");
+  }
 
   if (details && typeof details !== "object")
     details = {details: details}

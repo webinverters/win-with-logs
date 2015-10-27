@@ -48,7 +48,10 @@ BunyanLogger.prototype.log = function (level, msg, details, options) {
     logObject.details = details
   }
 
-  if (options && !_.isObject(options)) throw "options must be an object"
+  if (options && !_.isObject(options)) {
+    console.log('DETECTED INVALID OPTIONS:', arguments)
+    throw "Options must be an object"
+  }
 
   if (options && _.isObject(options)) {
     lobObject = _.merge(logObject,options)
