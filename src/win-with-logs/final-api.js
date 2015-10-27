@@ -37,13 +37,13 @@ api.handleGoalIfItExist = function (msg, details) {
 };
 
 //logger actions
-api.logIt = function (level, msg, details) {
+api.logIt = function (level, msg, details, options) {
   var goalObj = {};
   if (this.goalInstance) {
     goalObj = this.goalInstance.goalContext
   }
 
-  var temp = new RawLog(level, msg, details, this.fullContext, goalObj);//new up a RawLog object to hold log data.
+  var temp = new RawLog(level, msg, details, this.fullContext, goalObj, options);//new up a RawLog object to hold log data.
 
   //we do this so RawLog can take care of merging the context
   // with details without messing up the context.
@@ -54,29 +54,29 @@ api.logIt = function (level, msg, details) {
 
 
 
-api.prototype.info = function (msg, details) {
+api.prototype.info = function (msg, details, options) {
   api.handleGoalIfItExist.call(this, msg, details);
-  return api.logIt.call(this, "info", msg, details)
+  return api.logIt.call(this, "info", msg, details, options)
 };
-api.prototype.log = function (msg, details) {
+api.prototype.log = function (msg, details, options) {
   api.handleGoalIfItExist.call(this, msg, details);
-  return api.logIt.call(this, "info", msg, details)
+  return api.logIt.call(this, "info", msg, details, options)
 };
-api.prototype.warn = function (msg, details) {
+api.prototype.warn = function (msg, details, options) {
   api.handleGoalIfItExist.call(this, msg, details);
-  return api.logIt.call(this, "warn", msg, details)
+  return api.logIt.call(this, "warn", msg, details, options)
 };
-api.prototype.error = function (msg, details) {
+api.prototype.error = function (msg, details, options) {
   api.handleGoalIfItExist.call(this, msg, details);
-  return api.logIt.call(this, "error", msg, details)
+  return api.logIt.call(this, "error", msg, details, options)
 };
-api.prototype.debug = function (msg, details) {
+api.prototype.debug = function (msg, details, options) {
   api.handleGoalIfItExist.call(this, msg, details);
-  return api.logIt.call(this, "debug", msg, details)
+  return api.logIt.call(this, "debug", msg, details, options)
 };
-api.prototype.fatal = function (msg, details) {
+api.prototype.fatal = function (msg, details, options) {
   api.handleGoalIfItExist.call(this, msg, details);
-  return api.logIt.call(this, "fatal", msg, details)
+  return api.logIt.call(this, "fatal", msg, details, options)
 };
 
 
@@ -166,6 +166,10 @@ api.prototype.goal = function (goalName, details) {
   Context.addContext.call(temp, goalContext);
   var goal = new Goal(goalName);
   api.addGoal.call(temp, goal);
+
+  // HACK to allow result to be passed into promise chain.
+  temp.result = temp.result.bind(temp)
+
   return temp;
 };
 api.prototype.method = api.prototype.goal

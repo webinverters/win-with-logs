@@ -129,7 +129,7 @@ describe('methods', function () {
       expect(log.errorReport('SOME_ERROR', {param1: 'einstein'}))
         .to.deep.equal({
           what: 'SOME_ERROR',
-          context: {
+          details: {
             param1: "einstein"
           },
           history: [],
@@ -147,7 +147,7 @@ describe('methods', function () {
         silent:false,isNode:true
       }
 
-      log=m(config)
+      log= m(config)
       log = log.module('test')  // sets up a new context.
     })
     it('rejectWithCode works', function(done) {
@@ -156,10 +156,11 @@ describe('methods', function () {
         .catch(log.rejectWithCode("CODE"))
         .catch(function(err) {
           expect(err.what).to.equal("CODE")
+          done()
         })
     })
 
-    it('xxx ctx.result works', function() {
+    it('ctx.result works', function() {
       return p.resolve('result')
         .then(log.result)
         .then(function(result) {

@@ -29,7 +29,7 @@ function Action(level, func) {
 }
 
 
-function RawLog(level, msg, details, context,goalContext) {
+function RawLog(level, msg, details, context,goalContext, opts) {
   if (typeof level !== "string") throw new Error("invalid log level argument");
   if (typeof msg !== "string") throw new Error("invalid msg argument");
 
@@ -43,13 +43,14 @@ function RawLog(level, msg, details, context,goalContext) {
   this.logLevel = level;
   this.logObject = {};
   this.logString = "";
+  this.opts = opts
 }
 
 RawLog.processLogWithBunyan = function (bunyanInstance) {
   var tempDetails = _.merge({}, this.context,this.goalContext, this.details);
-  return bunyanInstance.log(this.logLevel, this.msg, tempDetails)
+  return bunyanInstance.log(this.logLevel, this.msg, tempDetails, this.opts)
     .then(function (result) {
-      this.logObject = result;
+      this.logObject = result
       this.logString = JSON.stringify(result)
     }.bind(this))
 };
@@ -68,16 +69,13 @@ Goal.addEntry = function (msg, details) {
     logDetails: details,
     time: new Date().getTime() - this.time
   })
-
 };
 Goal.report = function (status) {
-
   var result = {
     goal: this.name,
     duration: new Date().getTime() - this.time,
     history: this.history
   };
-
 
   //if success, show a merged object and show a reduce history
   if (status == "success") {
@@ -113,19 +111,26 @@ Context.addContext = function (object) {
 
 
 
-function ErrorReport(err, errorCode, context) {
-  //if (err instanceof Error) {
-    this.what = errorCode;
-    this.context = context||{}
-    this.rootCause = err || this.what;
-    this.history = [];
-  //}
+function ErrorReport(err, errorCode, details) {
+
+  this.what = errorCode;
+  this.details = details || {}
+  this.history = [];
+
+  if (err instanceof Error) {
+    this.rootCause = err.message || err.toString()
+  } else {
+    this.rootCause = _.cloneDeep(errorCode)
+  }
+
   if (err instanceof ErrorReport) {
-    this.rootCause = err.rootCause;
-    this.history = err.history;
+    this.rootCause = _.cloneDeep(err.rootCause)
+    this.history = err.history
+    this.details = _.merge(this.details, err.details)
     this.history.push(err)
   }
-  if (err) this.err = err
+
+  if (err) this.err = _.cloneDeep(err)
 }
 
 
