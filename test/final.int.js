@@ -150,7 +150,7 @@ describe('methods', function () {
       log=m(config)
       log = log.module('test')  // sets up a new context.
     })
-    it('rejectWithCode works', function(done) {
+    it('rejectWithCode works', function() {
       return p.resolve()
         .then(throwEx)
         .catch(log.rejectWithCode("CODE"))

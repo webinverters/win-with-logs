@@ -38,7 +38,7 @@ function apiFactory(config) {
   var pubSubTemp = new PubSub(config);
 
 
-  apiInstance = new Api(bunyanTemp, pubSubTemp);
+  apiInstance = Api(bunyanTemp, pubSubTemp);
 
   Transport.addAction.call(apiInstance, "trace", function (a) {
     if (typeof a.msg == "string" && a.msg[0] == "@") {
