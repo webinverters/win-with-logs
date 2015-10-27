@@ -11,20 +11,27 @@ module.exports = {
 };
 
 function api(bunyan, pubSub) {
-
   var self = arguments[0];
+  this._id = 'wwl-'+_.uniqueId(new Date().getTime())
+
   //makes a copy of itself
-  if (self instanceof api) {
-    Transport.call(this, self);
-    Context.call(this, self);
-    this.bunyanInstance = self.bunyanInstance;
-    this.pubSubInstance = self.pubSubInstance;
+  var tempInstance={
+    apiType:true
+  };
+
+  if (self.apiType) {
+    Transport.call(tempInstance, self);
+    Context.call(tempInstance, self);
+    tempInstance.bunyanInstance = self.bunyanInstance;
+    tempInstance.pubSubInstance = self.pubSubInstance;
   } else {
-    Transport.call(this);//add transport to api
-    Context.call(this);//add context to api
-    this.bunyanInstance = bunyan || false;
-    this.pubSubInstance = pubSub || false;
+    Transport.call(tempInstance);//add transport to api
+    Context.call(tempInstance);//add context to api
+    tempInstance.bunyanInstance = bunyan || false;
+    tempInstance.pubSubInstance = pubSub || false;
   }
+  addApi(tempInstance)
+  return tempInstance
 }
 api.addGoal = function (goal) {
   if (!(goal instanceof Goal))throw new Error('invalid goal specified');
@@ -38,46 +45,57 @@ api.handleGoalIfItExist = function (msg, details) {
 };
 
 //logger actions
-api.logIt = function (level, msg, details) {
+api.logIt = function (level, msg, details, options) {
   var goalObj = {};
   if (this.goalInstance) {
     goalObj = this.goalInstance.goalContext
   }
 
-  var temp = new RawLog(level, msg, details, this.fullContext, goalObj);//new up a RawLog object to hold log data.
+  var temp = new RawLog(level, msg, details, this.fullContext, goalObj, options);//new up a RawLog object to hold log data.
 
-  //we do this so RawLog can take care of merging the context with details without messing up the context.
+  //we do this so RawLog can take care of merging the context
+  // with details without messing up the context.
+
   return RawLog.processLogWithBunyan.call(temp, this.bunyanInstance)
     .then(Transport.runActionsOnLogEntry.bind(this, temp));
 };
 
 
+function addApi(obj){
+  _.forEach(api.prototype,function(func,name){
+    obj[name]=func.bind(obj)
+  })
+}
 
 
-api.prototype.log = function (msg, details) {
+api.prototype.info = function (msg, details, options) {
   api.handleGoalIfItExist.call(this, msg, details);
-  return api.logIt.call(this, "debug", msg, details)
+  return api.logIt.call(this, "info", msg, details, options)
 };
-api.prototype.warn = function (msg, details) {
+api.prototype.log = function (msg, details, options) {
   api.handleGoalIfItExist.call(this, msg, details);
-  return api.logIt.call(this, "warn", msg, details)
+  return api.logIt.call(this, "info", msg, details, options)
 };
-api.prototype.error = function (msg, details) {
+api.prototype.warn = function (msg, details, options) {
   api.handleGoalIfItExist.call(this, msg, details);
-  return api.logIt.call(this, "error", msg, details)
+  return api.logIt.call(this, "warn", msg, details, options)
 };
-api.prototype.debug = function (msg, details) {
+api.prototype.error = function (msg, details, options) {
   api.handleGoalIfItExist.call(this, msg, details);
-  return api.logIt.call(this, "debug", msg, details)
+  return api.logIt.call(this, "error", msg, details, options)
 };
-api.prototype.fatal = function (msg, details) {
+api.prototype.debug = function (msg, details, options) {
   api.handleGoalIfItExist.call(this, msg, details);
-  return api.logIt.call(this, "fatal", msg, details)
+  return api.logIt.call(this, "debug", msg, details, options)
+};
+api.prototype.fatal = function (msg, details, options) {
+  api.handleGoalIfItExist.call(this, msg, details);
+  return api.logIt.call(this, "fatal", msg, details, options)
 };
 
 
 api.prototype.context = function (obj) {
-  var temp = new api(this);
+  var temp = api(this);
   Context.addContext.call(temp, obj);
   return temp;
 };
@@ -87,7 +105,7 @@ api.prototype.module = function (moduleName, details) {
     module: moduleName
   };
   obj = _.extend(obj, details);
-  var temp = new api(this);
+  var temp = api(this);
   Context.addContext.call(temp, obj);
   return temp;
 }
@@ -122,29 +140,21 @@ api.prototype.failSuppressed = function (error) {
   }
   return api.logIt.call(this, "error", "failure", result)
     .then(function () {
-      return true;
+      return error;
     })
 };
 
 api.prototype.fail = function (error) {
-  if (this.goal) {
-    //get goal result and added it to object.
-  }
   return api.prototype.failSuppressed.call(this, error)
-    .then(function () {
+    .then(function (error) {
       throw error
     })
 };
 
 api.prototype.rejectWithCode = function (errCode) {
   return function (err) {
-
-    var temp = new ErrorReport(err, errCode, this.fullContext);
-
-    return api.logIt.call(this, "error", "failure", temp)
-      .then(function () {
-        throw temp
-      })
+    var errorReport = new ErrorReport(err, errCode, this.fullContext);
+    return api.prototype.fail.call(this, errorReport)
   }.bind(this)
 };
 
@@ -154,7 +164,7 @@ api.prototype.addEventHandler = function (event, handler) {
 
 api.prototype.goal = function (goalName, details) {
 
-  var temp = new api(this);
+  var temp =  api(this);
   var goalContext = details || {};
   if (!goalContext.goalId) {
     goalContext.goalId = _.uniqueId(new Date().getTime())
@@ -162,9 +172,10 @@ api.prototype.goal = function (goalName, details) {
   Context.addContext.call(temp, goalContext);
   var goal = new Goal(goalName);
   api.addGoal.call(temp, goal);
-  return temp;
-};
 
+  return temp
+};
+api.prototype.method = api.prototype.goal
 
 // Extras:
 api.prototype.timestamp = function (kind) {
@@ -173,3 +184,19 @@ api.prototype.timestamp = function (kind) {
   if (kind=='epoch') return Math.floor(new Date().getTime()/1000)
   if (kind=='epochmill') return new Date().getTime()
 }
+
+/**
+ * Creates an error report.
+ *
+ * Please try to pass err as a property fo details, since the
+ * third err param is being phased out.
+ *
+ * @param  {[type]} msg     [description]
+ * @param  {[type]} details [description]
+ * @param  {[type]} err     [description]
+ * @return {[type]}         [description]
+ */
+api.prototype.errorReport = function (msg, details, err) {
+  details = details || {}
+  return new ErrorReport(err || details.err, msg, details)
+};

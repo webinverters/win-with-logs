@@ -70,8 +70,9 @@ describe('File system', function () {
     });
     it('creates a new log file', function (done) {
       var log = new winWithLogs(config);
-      return log.warn("hi")
+      return log.warn("hi")  // data layer adds meta data in excess of 100 bytes
         .then(function () {
+          // this call will exceed 100 bytes
           return log.log("hello")
         })
         .then(function () {
@@ -122,7 +123,3 @@ describe('File system', function () {
     })
   })
 });
-
-
-
-

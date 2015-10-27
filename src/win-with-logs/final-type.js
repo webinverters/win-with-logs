@@ -29,10 +29,15 @@ function Action(level, func) {
 }
 
 
-function RawLog(level, msg, details, context,goalContext) {
+function RawLog(level, msg, details, context,goalContext, opts) {
   if (typeof level !== "string") throw new Error("invalid log level argument");
-  if (typeof msg !== "string") throw new Error("invalid msg argument");
-  if (typeof details !== "object" && typeof details !== "undefined") throw new Error("invalid details argument");
+  if (typeof msg !== "string") {
+    console.log('INVALID ARGUMENT:', msg, details)
+    throw new Error("invalid msg argument");
+  }
+
+  if (details && typeof details !== "object")
+    details = {details: details}
 
   this.msg = msg;
   this.details = details || {};
@@ -41,14 +46,22 @@ function RawLog(level, msg, details, context,goalContext) {
   this.logLevel = level;
   this.logObject = {};
   this.logString = "";
+  this.opts = opts || {}
 }
 
 RawLog.processLogWithBunyan = function (bunyanInstance) {
-  var tempDetails = _.merge({}, this.context,this.goalContext, this.details);
-  return bunyanInstance.log(this.logLevel, this.msg, tempDetails)
+  this.opts.context = this.context
+  this.opts.goalContext = this.goalContext
+  return bunyanInstance.log(this.logLevel, this.msg, this.details, this.opts)
     .then(function (result) {
-      this.logObject = result;
-      this.logString = JSON.stringify(result)
+      this.logObject = result
+      try {
+        this.logString = JSON.stringify(result)
+      }
+      catch (ex) {
+        console.log("CIRCULAR LOG OBJECT:", result)
+        throw ex
+      }
     }.bind(this))
 };
 
@@ -66,7 +79,6 @@ Goal.addEntry = function (msg, details) {
     logDetails: details,
     time: new Date().getTime() - this.time
   })
-
 };
 Goal.report = function (status) {
 
@@ -75,7 +87,6 @@ Goal.report = function (status) {
     duration: new Date().getTime() - this.time,
     history: this.history
   };
-
 
   //if success, show a merged object and show a reduce history
   if (status == "success") {
@@ -106,30 +117,39 @@ function Context(self) {
 }
 Context.addContext = function (object) {
   this.fullContext = object
+
+  // HACK to allow result to be passed into promise chain.
+  this.result = this.result.bind(this)
+  this.fail = this.fail.bind(this)
+  this.failSuppressed = this.failSuppressed.bind(this)
 };
 
+function ErrorReport(err, errorCode, details) {
+  this.what = errorCode;
+  if (err && err.details && _.isObject(err.details))
+    this.details = err.details
 
+  if (_.isObject(details)) {
+    this.details = _.merge(this.details || {},details || {})
+  }
 
+  this.history = [];
 
-function ErrorReport(err, errorCode, context) {
   if (err instanceof Error) {
-    this.what = errorCode;
-    this.context = context||{}
-    this.rootCause = err;
-    this.history = [];
+    this.rootCause = err.message || err.toString()
+  } else {
+    this.rootCause = _.cloneDeep(errorCode)
+  }
 
-    return
-  }
   if (err instanceof ErrorReport) {
-    this.what = errorCode;
-    this.context = context;
-    this.rootCause = err.rootCause;
-    this.history = err.history;
-    this.history.push({what:err.what,context:err.context})
-    return
+    this.rootCause = _.cloneDeep(err.rootCause)
+    this.history = err.history
+    this.details = _.merge(this.details, err.details)
+    this.history.push(_.cloneDeep(err))
   }
-  throw new Error("Invalid Param, you must pass an error or errorReport")
-};
+
+  if (err) this.err = _.cloneDeep(err)
+}
 
 
 module.exports = {

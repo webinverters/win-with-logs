@@ -94,32 +94,84 @@ describe('methods', function () {
     }).to.not.throw()
   })
 
-  it('pubSub',function(){
+  it('pubSub',function() {
     var log = m(config);
     log.addEventHandler("test",function(){
       console.log("da event!!")
     });
     log.log("@test",{})
     log.warn("hello world?")
-
   })
 
   it('errorReport',function(done){
-    var config={app: "abc", env: "aaa", component: "aaa",debug:false,silent:false,isNode:true}
-    function test(){
-      throw new Error("bug")
+    var config={
+      app: "abc", env: "aaa",
+      component: "aaa",debug:false,
+      silent:false,isNode:true
     }
+
 
     var log=m(config)
 
     return p.resolve()
-      .then(test)
+      .then(throwEx)
       .catch(log.rejectWithCode("hello"))
       .catch(log.rejectWithCode("hello1"))
       .catch(log.rejectWithCode("hello2"))
       .catch(_.noop)
       .then(done)
+  })
 
+  describe('log.errorReport()', function() {
+    it('returns an error report object', function() {
+      var log=m(config)
 
+      expect(log.errorReport('SOME_ERROR', {param1: 'einstein'}))
+        .to.deep.equal({
+          what: 'SOME_ERROR',
+          details: {
+            param1: "einstein"
+          },
+          history: [],
+          rootCause: 'SOME_ERROR'
+        })
+    })
+  })
+
+  describe('within a context', function() {
+    var log
+    beforeEach(function() {
+      var config={
+        app: "abc", env: "aaa",
+        component: "aaa",debug:false,
+        silent:false,isNode:true
+      }
+
+      log= m(config)
+      log = log.module('test')  // sets up a new context.
+    })
+
+    it('rejectWithCode works', function(done) {
+      return p.resolve()
+        .then(throwEx)
+        .catch(log.rejectWithCode("CODE"))
+        .catch(function(err) {
+          expect(err.what).to.equal("CODE")
+          done()
+        })
+    })
+
+    it('ctx.result works', function() {
+      return p.resolve('result')
+        .then(log.result)
+        .then(function(result) {
+          expect(result).to.equal('result')
+        })
+    })
   })
 });
+
+
+function throwEx(){
+  throw new Error("bug")
+}

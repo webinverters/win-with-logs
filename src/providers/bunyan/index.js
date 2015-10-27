@@ -35,13 +35,34 @@ function BunyanLogger(_config) {
   this.logger = Bunyan(config);
 }
 
-var allowedLogLevels = ["fatal", "error", "warn", "info", "debug", "trace"];
-
-BunyanLogger.prototype.log = function (level, msg, details) {
-  if (allowedLogLevels.indexOf(level) < 0)throw new Error("invalid log level");
+BunyanLogger.prototype.log = function (level, msg, details, options) {
+  if (!this.logger[level])throw new Error("invalid log level:"+level);
   var defer = p.defer();
   this.logPromise = defer;
-  this.logger[level](msg, details);
+
+  var logObject = {}
+
+  if (details instanceof Error) {
+    logObject.err = details
+  } else {
+    logObject.details = details
+  }
+
+  if (options && !_.isObject(options)) {
+    console.log('DETECTED INVALID OPTIONS:', arguments)
+    throw "Options must be an object"
+  }
+
+  if (options && _.isObject(options)) {
+    lobObject = _.merge(logObject,options)
+  }
+
+  if (_.size(logObject) > 0)
+    this.logger[level](logObject, msg)
+  else
+    this.logger[level](msg)
+
+
   return defer.promise;
 };
 
