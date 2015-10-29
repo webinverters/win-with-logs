@@ -41,7 +41,7 @@ module.exports = function(config, deps) {
       promises: []
     }
 
-    if (details instanceof Error) {
+    if (details instanceof Error && !(details instanceof ErrorReport)) {
       logObject.err = details
     } else if (_.isObject(details) && details.err) {
       logObject.err = details.err
@@ -214,6 +214,10 @@ module.exports = function(config, deps) {
 
 function ErrorReport(err, errorCode, details) {
   var that = this
+
+  //this.message = errorCode;
+  //this.stack = Error().stack;
+
   this.what = errorCode;
   if (err && err.details && _.isObject(err.details))
     this.details = err.details
@@ -222,9 +226,9 @@ function ErrorReport(err, errorCode, details) {
     this.details = _.merge(this.details || {},details || {})
   }
 
-  this.history = [];
+  this.history = []
 
-  if (err instanceof Error) {
+  if ((err instanceof Error) && !(err instanceof ErrorReport)) {
     this.rootCause = err.message || err.toString()
     this.err = err
   } else if (err) {
@@ -234,7 +238,7 @@ function ErrorReport(err, errorCode, details) {
   }
 
   if (err instanceof ErrorReport) {
-    this.rootCause = _.cloneDeep(err.rootCause)
+    this.rootCause = err.rootCause
     this.details = _.merge(this.details, err.details)
     if (err.history && err.history.length > 0) {
       _.each(err.history, function(val) {
@@ -249,6 +253,9 @@ function ErrorReport(err, errorCode, details) {
   // enable root errors to bubble up to the top level error
   if (err && err.err) this.err = err.err
 }
+
+ErrorReport.prototype = Object.create(Error.prototype)
+ErrorReport.prototype.name = "ErrorReport";
 
 function Context(ctx) {
   return {

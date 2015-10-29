@@ -101,15 +101,13 @@ describe('win-with-logs', function() {
   describe('Error Reporting', function() {
     describe('log.errorReport()', function() {
       it('returns an error report object', function() {
-        expect(log.errorReport('SOME_ERROR', {param1: 'einstein'}))
-          .to.deep.equal({
-            what: 'SOME_ERROR',
-            details: {
-              param1: "einstein"
-            },
-            history: [],
-            rootCause: 'SOME_ERROR'
-          })
+        var er = log.errorReport('SOME_ERROR', {param1: 'einstein'})
+        expect(er.what).to.equal('SOME_ERROR')
+        expect(er.details).to.deep.equal({
+          param1: "einstein"
+        })
+        expect(er.history).to.deep.equal([])
+        expect(er.rootCause).to.equal('SOME_ERROR')
       })
 
       describe('multiple error reports are thrown', function() {
