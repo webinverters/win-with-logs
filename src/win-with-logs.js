@@ -14,6 +14,8 @@ var PrettyStream = require('bunyan-prettystream');
 var Logger = require('./logger')
 var RotatingFileMaxStream = require('./streams/rotating-file-max')
 var FinalStream = require('./streams/final-stream')
+var _ = require('lodash'),
+    p = require('bluebird')
 
 var logStreams = {
   "rotating-file-max": RotatingFileMaxStream

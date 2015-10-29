@@ -14,8 +14,9 @@
 
 var fs = require('fs'),
   path = require('path'),
-  Transform = require('stream').Transform,
-  p = require('bluebird');
+  Transform = require('stream').Transform
+var _ = require('lodash'),
+    p = require('bluebird')
 
 
 module.exports = function construct(config, streamPromises) {
@@ -27,7 +28,7 @@ module.exports = function construct(config, streamPromises) {
     logFilePath: '',
     logFileName: 'info.log'
   })
-  
+
   var currentState = {
     fileSize: 0,
     filePath: path.join(config.logFilePath, config.logFileName),

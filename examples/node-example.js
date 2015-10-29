@@ -41,9 +41,6 @@ logger.warn("hello",{});
 logger.log("hello",{});
 logger.debug("hello",{});
 
-
-
-
 p.resolve('the result')
   .then(log.result)
 

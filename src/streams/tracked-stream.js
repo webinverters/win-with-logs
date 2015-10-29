@@ -17,6 +17,9 @@ var fs = require('fs'),
   kinesis = require('kinesis'),
   KinesisStream = kinesis.KinesisStream;
 
+var _ = require('lodash'),
+    p = require('bluebird')
+
 
 module.exports = function construct(config, sewer) {
   config = config ? config : {};
@@ -29,7 +32,6 @@ module.exports = function construct(config, sewer) {
       secretAccessKey: config.secretAccessKey
     }
   });
-
 
   var Writable = require('stream').Writable,
     util = require('util');

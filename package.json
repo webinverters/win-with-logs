@@ -47,7 +47,6 @@
     "bunyan-prettystream": "^0.1.3",
     "bunyan-slack": "0.0.9",
     "kinesis": "^1.2.0",
-    "lodash": "^3.9.1",
-    "resilient": "^0.3.0"
+    "lodash": "^3.9.1"
   }
 }

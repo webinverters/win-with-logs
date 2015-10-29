@@ -1,7 +1,3 @@
-global._ = require('lodash')
-global.p = require('bluebird')
-
-
 var config = {
   app: "test",
   env: "dev",
