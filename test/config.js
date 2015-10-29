@@ -40,5 +40,6 @@ config.aws ={
 
 AWS.config.update(config.aws);
 
-
-
+global.throwEx = function(msg) {
+  throw new Error(msg)
+}

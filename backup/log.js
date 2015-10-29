@@ -310,7 +310,7 @@ module.exports = function construct(config, logProvider, bunyan, PrettyStream, T
           error.rootCause = err.toString()
 
         log.error(code, error)
-        
+
         throw error
       };
     };

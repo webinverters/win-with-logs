@@ -4,7 +4,6 @@ At the top of the file there should be a short introduction and/ or overview tha
 
 Code Example
 
-
 Motivation
 
 A short description of the motivation behind the creation and maintenance of the project. This should explain why the project exists.
@@ -17,8 +16,7 @@ API Reference
 
 Goals:
 
-The goal uid must be specifed like {GOAL_NAME}#{uid} Example: sayhello#100. Note they are seperated by a pound sign.
-Tests
+The goal uid must be specifed like {GOAL_NAME}#{uid} Example: sayhello#100. Note they are seperated by a pound sign. Tests
 
 npm install -g kinesalite
 
@@ -29,3 +27,7 @@ Let people know how they can dive into the project, include important links to t
 License
 
 A short snippet describing the license (MIT, Apache, etc.)
+
+# TODO:
+- move init.js to robustly
+- move event-processor to robustly
