@@ -8,8 +8,6 @@ describe('win-with-logs', function() {
 
   var streams = {
     logStream: function(line) {
-      //var fs = require('fs')
-      //fs.writeFileSync('logstream', line)
       console.log(line)
       streams.logStream.lastLine = line
     }
@@ -420,49 +418,104 @@ describe('win-with-logs', function() {
     })
   })
 
-  //
-  // describe('Event Handling', function() {
-  //   // it('pubSub',function() {
-  //   //   var log = m(config);
-  //   //   log.addEventHandler("test",function(){
-  //   //     console.log("da event!!")
-  //   //   });
-  //   //   log.log("@test",{})
-  //   //   log.warn("hello world?")
-  //   // })
-  // })
-  //
-  // describe('Child Contexts', function() {
-  //   var log
-  //   beforeEach(function() {
-  //     var config={
-  //       app: "abc", env: "aaa",
-  //       component: "aaa",debug:false,
-  //       silent:false,isNode:true
-  //     }
-  //
-  //     log= m(config)
-  //     log = log.module('test')  // sets up a new context.
-  //   })
-  //
-  //   it('ctx.rejectWithCode logs context info', function(done) {
-  //     return p.resolve()
-  //       .then(throwEx)
-  //       .catch(log.rejectWithCode("CODE"))
-  //       .catch(function(err) {
-  //         expect(err.what).to.equal("CODE")
-  //         done()
-  //       })
-  //   })
-  //
-  //   it('ctx.result logs context info', function() {
-  //     return p.resolve('result')
-  //       .then(log.result)
-  //       .then(function(result) {
-  //         expect(result).to.equal('result')
-  //       })
-  //   })
-  // })
-  //
-  // xdescribe('Log Querying')
+  describe('Event Handling', function() {
+    describe('log.addEventHandler()', function() {
+      var handler, handler2, handler3
+      beforeEach(function() {
+        handler = sinon.spy(), handler2 = sinon.spy(), handler3 = sinon.spy()
+        log.addEventHandler("Le Event", handler);
+        log.addEventHandler("Le Event", handler2);
+
+        log.addEventHandler("Other", handler3)
+      })
+
+      it('calls all event handlers for a given event.',function() {
+        return log('Le Event')
+          .then(function() {
+            expect(handler).to.have.been.deep.calledWith({eventName: 'Le Event', handled: false})
+            expect(handler2).to.have.been.deep.calledWith({eventName: 'Le Event', handled: false})
+            expect(handler3).to.not.have.been.called
+            return log('Other')
+          })
+          .then(function() {
+            expect(handler3).to.have.been.deep.calledWith({eventName: 'Other', handled: false})
+          })
+      })
+
+      it('calls handlers with details as arguments', function() {
+        return log('Le Event', {info: 'some info'})
+          .then(function() {
+            expect(handler).to.have.been.deep.calledWith({eventName: 'Le Event', handled: false},
+                {info: 'some info'})
+            expect(handler2).to.have.been.deep.calledWith({eventName: 'Le Event', handled: false},
+                {info: 'some info'})
+
+            expect(handler3).to.not.have.been.called
+          })
+      })
+
+      describe('event.handled is set to true by a handler in the chain', function() {
+        var handler, handler2, handler3
+        beforeEach(function() {
+          handler = sinon.spy(function(event) {
+            event.handled = true
+          }), handler2 = sinon.spy()
+          log.addEventHandler("Le Event", handler);
+          log.addEventHandler("Le Event", handler2);
+        })
+
+        it('does not call other event handlers in the chain.', function() {
+          return log('Le Event')
+            .then(function() {
+              expect(handler).to.have.been.deep.called
+              expect(handler2).to.not.have.been.called
+            })
+        })
+      })
+
+      describe('context.addEventHandler()', function() {
+        describe('events subscribed on base and child loggers', function() {
+          var handler, handler2, child
+          beforeEach(function() {
+            handler = sinon.spy(), handler2 = sinon.spy()
+            log.addEventHandler("Le Event", handler)
+            log.addEventHandler('Child Event', handler)
+
+            child = log.goal('child')
+            child.addEventHandler("Child Event", handler2)
+          })
+          it('does not trigger events subscribed on child logger', function() {
+            return log('Child Event')
+              .then(function() {
+                expect(handler2).not.to.have.been.called
+              })
+          })
+          it('bubbles events that dont exist on child to base logger', function() {
+            return child('Le Event', {info: 'data'})
+              .then(function() {
+                expect(handler).to.have.been.deep.calledWith({
+                  eventName: 'Le Event', handled: false
+                },{info: 'data'})
+              })
+          })
+          it('child can trigger events on child logger', function() {
+            return child('Child Event', {info: 'data'})
+              .then(function() {
+                expect(handler2).to.have.been.deep.calledWith({
+                  eventName: 'Child Event', handled: false
+                },{info: 'data'})
+              })
+          })
+          it('does not bubble to base logger', function() {
+            return child('Child Event', {info: 'data'})
+              .then(function() {
+                expect(handler).to.not.have.been.called
+              })
+          })
+        })
+      })
+    })
+  })
+
+  xdescribe('Log Querying', function() {})
 })

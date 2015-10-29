@@ -23,6 +23,7 @@ module.exports = function construct(config) {
     debug: false,
     robustKey: '',
     logStream: process.stdout,
+    logStreams: [],
     cloudLogServerEndpoint: 'http://robustly.io/api/logs',
     streams: []  // advanced: custom streams can be subscribed for plugin support.
   });
@@ -31,8 +32,6 @@ module.exports = function construct(config) {
   config.component = config.component || config.name
 
   var log = require('./src/win-with-logs')(config);
-
-  log.EventProcessor = require('./src/event-processor');
 
   var moduleLog = log.module('win-with-logs', {config: config})
   moduleLog.debug('Initialized.')

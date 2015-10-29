@@ -12,7 +12,6 @@ fsHelper.containLines=function(filePath,arrayoflines){
   arrayoflines=arrayoflines||[];
   var file=fs.readFileSync(filePath,"utf8").split('\n')
 
-console.log('FILE', file)
   var result=true;
   if(file.length<1) return false;
   if(file.length==1 && file[0]=='') return false;

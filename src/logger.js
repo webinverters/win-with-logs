@@ -17,10 +17,14 @@
  }
 
  var _ = require('lodash')
+ var p = require('bluebird')
 
 
 module.exports = function(config, deps) {
   var m = post.bind(null,'info'), _context = deps.context || {}
+  _context = _.defaults(_context, {
+    observers: {}
+  })
 
   var log = deps.log
 
@@ -33,6 +37,7 @@ module.exports = function(config, deps) {
 
     deps.logStreamCompletionPromises[logObject._id] = {
       finalDef: deferredStreamProcessing,
+      eventHandlingCompleted: m.processEventHandlers(msg, details, options),
       promises: []
     }
 
@@ -57,7 +62,7 @@ module.exports = function(config, deps) {
       lobObject = _.merge(logObject,options)
     }
 
-    if (config.debug) {
+    if (config.debug || level == 'error') {
       logObject.src = getCaller3Info()
     }
 
@@ -82,11 +87,13 @@ module.exports = function(config, deps) {
     if (contextInfo.module) {
       childLog = log.child({module:contextInfo.module.name})
     }
-    return module.exports(config, {
+    var newLogger = module.exports(config, {
       context: ctx,
       log: childLog,
       logStreamCompletionPromises: deps.logStreamCompletionPromises
     })
+    newLogger.parent = m
+    return newLogger
   };
 
   m.module = function(moduleName, params) {
@@ -170,6 +177,29 @@ module.exports = function(config, deps) {
       m.log('Finished.', _context)
     }
     return result
+  }
+
+  m.processEventHandlers = function(eventLabel, details, options) {
+    var event = {
+      eventName: eventLabel,
+      handled: false
+    };
+
+    //console.log('processing event:', eventLabel)
+    if (_context.observers[eventLabel]) {
+      //console.log('handling event:', eventLabel)
+      return p.map(_context.observers[eventLabel], function(cb) {
+        if (!event.handled) return cb(event, details);
+      }, {concurrency: 1})
+    } else if (m.parent) {
+      return m.parent.processEventHandlers(eventLabel, details, options)
+    }
+    return p.resolve()
+  }
+
+  m.addEventHandler = function(eventLabel, handler) {
+    _context.observers[eventLabel] = _context.observers[eventLabel] || [];
+    _context.observers[eventLabel].push(handler);
   }
 
   m.timestamp = function (kind) {
@@ -262,9 +292,9 @@ function getCaller3Info() {
 
 function Goal(name, goalDetails) {
   this.goalContext = goalDetails || {};
-  this.goalId = goalDetails.goalId
+  this.goalId = this.goalContext.goalId
 
-  if (!goalDetails.goalId) {
+  if (!this.goalContext.goalId) {
     this.goalId = _.uniqueId(new Date().getTime())
   }
 

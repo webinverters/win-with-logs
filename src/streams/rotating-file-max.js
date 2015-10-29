@@ -21,6 +21,13 @@ var fs = require('fs'),
 module.exports = function construct(config, streamPromises) {
   config = config ? config : {};
 
+  config = _.defaults(config, {
+    maxLogFileSize: 1024*1024,
+    maxLogFiles: 5,
+    logFilePath: '',
+    logFileName: 'info.log'
+  })
+  
   var currentState = {
     fileSize: 0,
     filePath: path.join(config.logFilePath, config.logFileName),
@@ -48,7 +55,7 @@ module.exports = function construct(config, streamPromises) {
     currentState.filePath = path.join(config.logFilePath, chooseFileName(config.logFileName))
 
     currentState.fd = fs.openSync(currentState.filePath, 'w+')
-    currentState.fileSize = fs.statSync(currentState.filePath).size
+    currentState.fileSize = 0 // fs.statSync(currentState.filePath).size
 
     rotationCount = ((rotationCount+1) % config.maxLogFiles)
     console.log('Log File Rotated:', currentState.filePath)

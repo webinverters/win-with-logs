@@ -6,44 +6,27 @@ var config = {
   app: "test",
   env: "dev",
   component: "testComponents",
-  streams: [
+  logStreams: [
     {
-      logFileName: 'log',
+      type: 'rotating-file-max',
       logFilePath: './examples/',
-      maxLogFileSize: 100000,
-      maxLogFiles: 5
+      maxLogFileSize: 1024,
+      maxLogFiles: 3
     }
-  ]
+  ],
+  debug: false
 };
 
 // create a wwl instance
 var log = require('./../index')(config);
 
+var count =0;
+setInterval(function() {
+  log.fatal("hello"+count);
+  log.error("hello"+count);
+  log.warn("hello"+count);
+  log.log("hello"+count);
+  log.debug("hello"+count);
 
-log.fatal("hello");
-log.error("hello");
-log.warn("hello");
-log.log("hello");
-log.debug("hello");
-
-
-var logger=log.context({a:1});
-
-logger.fatal("hello");
-logger.error("hello");
-logger.warn("hello");
-logger.log("hello");
-logger.debug("hello");
-
-logger.fatal("hello",{});
-logger.error("hello",{});
-logger.warn("hello",{});
-logger.log("hello",{});
-logger.debug("hello",{});
-
-
-
-
-log.result("hi").then(console.log);
-log.fail("hi").catch(console.log);
-log.failSuppressed("hi").then(console.log);
+  count++
+}, 150)
