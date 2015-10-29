@@ -22,3 +22,5 @@ docs
 *.log
 .env
 *.env
+testing
+backup

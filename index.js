@@ -12,44 +12,29 @@
 'use strict';
 
 var _ = require('lodash');
-var bunyan = require('bunyan');
-var PrettyStream = require('bunyan-prettystream');
-var TrackedStream = require('./src/tracked-stream');
 
 module.exports = function construct(config) {
   config = config ? config : {};
   config = _.defaults(config, {
-    name: 'DefaultComponent',
     app: 'DefaultApp',
+    component: 'DefaultComponent',
     env: 'dev',
-    errorFile: 'error.log',
-    logFile: 'trace.log',
-    useLoggingGlobals: true,
-    debug: config.env != 'prod' ? true : false,
-    //slackConfig: {
-    //  webhook_url: "",
-    //  channel: "",
-    //  username: "bot"
-    //},
+    silent: false, // if true, disables console logging
+    debug: false,
     robustKey: '',
+    logStream: process.stdout,
+    logStreams: [],
     cloudLogServerEndpoint: 'http://robustly.io/api/logs',
     streams: []  // advanced: custom streams can be subscribed for plugin support.
   });
 
-  if (config.name == 'DefaultComponent' || config.app=='DefaultApp') {
-    throw "win-with-logs: requires config to contain 'name' and 'app' properties.";
-  }
+  // alias config.component -> config.name
+  config.component = config.component || config.name
 
-  var stub = function() {return p.reject('robustKey missing')};
+  var log = require('./src/win-with-logs')(config);
 
-  var robustClient = { getLogs:stub , postLogEvents: stub }
-  if(config.robustKey) {
-    robustClient = require('./src/robust-client')(config);
-  }
-
-  var log = require('./src/log')(config, null, bunyan, PrettyStream, TrackedStream, robustClient);
-  log.EventProcessor = require('./src/event-processor');
-  //log.debug('WIN-WITH-LOGS Initialized', config)
+  var moduleLog = log.module('win-with-logs', {config: config})
+  moduleLog.debug('Initialized.')
 
   return log;
 };
