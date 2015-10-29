@@ -55,7 +55,7 @@ module.exports = function(config, deps) {
 
     if (options && !_.isObject(options)) {
       console.log('DETECTED INVALID OPTIONS:', arguments)
-      throw "Options must be an object"
+      throw new Error("Options must be an object")
     }
 
     if (options && _.isObject(options)) {
