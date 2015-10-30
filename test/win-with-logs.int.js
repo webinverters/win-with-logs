@@ -151,8 +151,7 @@ describe('win-with-logs', function() {
                 "isBad": false,
                 "paramC": "no idea"
               },
-              "rootCause": "bad news",
-              "err": {}
+              "rootCause": "bad news"
             },
             {
               "what": "FIRST_ERROR",
@@ -161,8 +160,7 @@ describe('win-with-logs', function() {
                 "isBad": false,
                 "paramC": "no idea again"
               },
-              "rootCause": "bad news",
-              "err": {}
+              "rootCause": "bad news"
             }
           ])
         })

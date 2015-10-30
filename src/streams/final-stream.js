@@ -39,9 +39,16 @@ module.exports = function construct(config, streamPromises) {
             logEventMeta.finalDef.resolve()
           })
           .catch(function(err) {
+            // finalDef = final defferred which needs to be called to resolve
+            // the promise returned from log()
             logEventMeta.finalDef.reject(err)
           })
-          .finally(done)
+          .finally(function() {
+            delete streamPromises[chunk._id]
+            done()
+          })
+        } else {
+          done()
         }
       })
   };

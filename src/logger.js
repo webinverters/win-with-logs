@@ -217,7 +217,7 @@ module.exports = function(config, deps) {
 function ErrorReport(err, errorCode, details) {
   var that = this
 
-  //this.message = errorCode;
+  this.message = errorCode;
   this.stack = Error().stack;
 
   this.what = errorCode;
@@ -240,19 +240,29 @@ function ErrorReport(err, errorCode, details) {
   }
 
   if (err instanceof ErrorReport) {
-    this.rootCause = err.rootCause
-    this.details = _.merge(this.details, err.details)
-    if (err.history && err.history.length > 0) {
-      _.each(err.history, function(val) {
-        delete val.history
-        delete val.stack
+    if (!err.err) {
+      this.rootCause = err.what
+      this.err = err
+    } else {
+      this.rootCause = err.rootCause
+      this.details = _.merge(this.details, err.details)
+      if (err.history && err.history.length > 0) {
+        _.each(err.history, function(val) {
+          delete val.history
+          delete val.stack
+          delete val.err
+          delete val.message
 
-        that.history.push(_.cloneDeep(val))
-      })
+          that.history.push(_.cloneDeep(val))
+        })
+      }
+      var tempErr = _.cloneDeep(err)
+      delete tempErr.history
+      delete tempErr.stack
+      delete tempErr.err
+      delete tempErr.message
+      this.history.push(tempErr)
     }
-    delete err.history
-    delete err.stack
-    this.history.push(_.cloneDeep(err))
   }
 
   // enable root errors to bubble up to the top level error
