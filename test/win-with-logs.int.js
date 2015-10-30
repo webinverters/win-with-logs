@@ -194,7 +194,7 @@ describe('win-with-logs', function() {
     })
 
     describe('throw a string', function() {
-      it('xxx logs the rootCause error', function() {
+      it('logs the rootCause error', function() {
         var goal = log.goal('logTheRootCauseError2')
         return p.resolve()
           .then(function() {

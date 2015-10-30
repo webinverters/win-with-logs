@@ -187,6 +187,7 @@ module.exports = function(config, deps) {
       var context = _.cloneDeep(_context)
       var goalReport = _context.goalInstance.report('succeeded', true)
       context.goalReport = goalReport
+      context.result = result
       delete context.goalInstance
       m.log('Finished '+goalReport.goalName, context)
     } else {
