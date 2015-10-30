@@ -112,7 +112,11 @@ module.exports = function(config, deps) {
 
   m.errorReport = function(msg, details, err) {
     details = details || {}
-    return new ErrorReport(err || details.err, msg, details)
+    err = err || details.err
+    if (!err) {
+      err = new Error(msg)
+    }
+    return new ErrorReport(err, msg, details)
   };
 
   function createGoal(goalName, params, opts) {
