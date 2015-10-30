@@ -140,17 +140,27 @@ module.exports = function(config, deps) {
   m.goal = createGoal.bind(m)
 
   m.failSuppressed = function (error) {
-    var result = {err: error};
-    if (_context.goalInstance) {
-      result.goalReport = _context.goalInstance.report("failed")
-      return m.error('FAILED_'+result.goalReport.codeName, result)
+    var result = {err: error, errorType: 'unknown'};
+    if (error instanceof ErrorReport) {
+      result = error
+    } else if (_.isString) {
+      result = m.errorReport(error, {err:new Error(error)})
+    } else if (error instanceof Error) {
+      result = m.errorReport(error.message, {err: error})
     }
 
-    return m.error('FAILURE', result)
+    if (_context.goalInstance) {
+      result.goalReport = _context.goalInstance.report("failed")
+      m.error('FAILED_'+result.goalReport.codeName, result)
+    } else {
+      m.error('FAILURE', result)
+    }
+
+    return result
   };
 
   m.fail = function(err) {
-    m.failSuppressed(err)
+    err = m.failSuppressed(err)
     if (_context.goalInstance) {
       var goalReport = _context.goalInstance.report("failed")
       _context.goalReport = goalReport
@@ -222,7 +232,6 @@ function ErrorReport(err, errorCode, details) {
   var that = this
 
   this.message = errorCode;
-  this.stack = Error().stack;
 
   this.what = errorCode;
   if (err && err.details && _.isObject(err.details))

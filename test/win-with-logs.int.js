@@ -178,6 +178,34 @@ describe('win-with-logs', function() {
         })
       })
     })
+
+    describe('throw an errorReport', function() {
+      it('logs the rootCause error', function() {
+        var goal = log.goal('logTheRootCauseError')
+        return p.resolve()
+          .then(function() {
+            throw log.errorReport('ROOT_CAUSE_ERROR_123')
+          })
+          .catch(goal.fail)
+          .catch(function() {
+            expect(streams.logStream.lastLine).to.contain('ROOT_CAUSE_ERROR_123')
+          })
+      })
+    })
+
+    describe('throw a string', function() {
+      it('xxx logs the rootCause error', function() {
+        var goal = log.goal('logTheRootCauseError2')
+        return p.resolve()
+          .then(function() {
+            throw 'ROOT_CAUSE_ERROR_123'
+          })
+          .catch(goal.fail)
+          .catch(function() {
+            expect(streams.logStream.lastLine).to.contain('ROOT_CAUSE_ERROR_123')
+          })
+      })
+    })
   })
 
 
