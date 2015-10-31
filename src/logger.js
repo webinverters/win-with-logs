@@ -171,8 +171,7 @@ module.exports = function(config, deps) {
 
   m.rejectWithCode = function(code) {
     return function(err) {
-      m.failSuppressed(err)
-
+      var err = m.failSuppressed(err)
       if (_context.goalInstance) {
         var goalReport = _context.goalInstance.report("failed")
         _context.goalReport = goalReport
@@ -254,12 +253,15 @@ function ErrorReport(err, errorCode, details) {
   }
 
   if (err instanceof ErrorReport) {
+    this.details = _.merge(this.details, err.details)
+    delete this.details.observers
+    delete this.details.goalInstance
+
     if (!err.err) {
       this.rootCause = err.what
       this.err = err
     } else {
       this.rootCause = err.rootCause
-      this.details = _.merge(this.details, err.details)
       if (err.history && err.history.length > 0) {
         _.each(err.history, function(val) {
           delete val.history
