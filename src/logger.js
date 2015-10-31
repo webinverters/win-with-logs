@@ -112,10 +112,14 @@ module.exports = function(config, deps) {
 
   m.errorReport = function(msg, details, err) {
     details = details || {}
+    
     err = err || details.err
     if (!err) {
       err = new Error(msg)
     }
+
+    if (details && details.err) delete details.err
+
     return new ErrorReport(err, msg, details)
   };
 
