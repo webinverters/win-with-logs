@@ -191,6 +191,19 @@ describe('win-with-logs', function() {
             expect(streams.logStream.lastLine).to.contain('ROOT_CAUSE_ERROR_123')
           })
       })
+
+      it('logs the rootCause error variation #2', function() {
+        var goal = log.goal('logTheRootCauseError')
+        return p.resolve()
+          .then(function() {
+            throw log.errorReport('Here is a message', null, new Error('Root Error Cause'))
+          })
+          .catch(goal.fail)
+          .catch(function(err) {
+            expect(err.rootCause).to.equal('Root Error Cause')
+            expect(streams.logStream.lastLine).to.contain('Root Error Cause')
+          })
+      })
     })
 
     describe('throw a string', function() {

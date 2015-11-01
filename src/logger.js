@@ -108,11 +108,11 @@ module.exports = function(config, deps) {
   m.fatal = post.bind(m, 'fatal')
   m.error = post.bind(m, 'error')
   m.warn = post.bind(m, 'warn')
-  m.log = post.bind('m', 'info')
+  m.log = post.bind(m, 'info')
 
   m.errorReport = function(msg, details, err) {
     details = details || {}
-    
+
     err = err || details.err
     if (!err) {
       err = new Error(msg)
@@ -262,7 +262,7 @@ function ErrorReport(err, errorCode, details) {
     delete this.details.goalInstance
 
     if (!err.err) {
-      this.rootCause = err.what
+      this.rootCause = err.rootCause || err.what
       this.err = err
     } else {
       this.rootCause = err.rootCause
