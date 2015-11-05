@@ -29,6 +29,7 @@ module.exports = function(config, deps) {
   var log = deps.log
 
   function post(level, msg, details, options) {
+    options = options || {}
     if (!log[level]) throw new Error("invalid log level:"+level);
     var deferredStreamProcessing = p.defer()
     var logObject = {
@@ -63,7 +64,7 @@ module.exports = function(config, deps) {
     }
 
     if (config.debug || level == 'error') {
-      logObject.src = getCaller3Info()
+      logObject.src = getCaller3Info(options.callDepth)
     }
 
     if (_.size(logObject) > 0)
@@ -109,6 +110,8 @@ module.exports = function(config, deps) {
   m.error = post.bind(m, 'error')
   m.warn = post.bind(m, 'warn')
   m.log = post.bind(m, 'info')
+  m.method = createGoal.bind(m)
+  m.goal = createGoal.bind(m)
 
   m.errorReport = function(msg, details, err) {
     details = details || {}
@@ -121,12 +124,12 @@ module.exports = function(config, deps) {
     if (details && details.err) delete details.err
 
     var report = new ErrorReport(err, msg, details)
-    m.error(msg, report)
+    m.error(msg, report,  {callDepth:2})
     return report
   };
 
   function createGoal(goalName, params, opts) {
-    m.log('Starting '+goalName, {params: params, options: opts})
+    m.log('Starting '+goalName, {params: params, options: opts}, {callDepth: 3})
 
     var newGoalInstance = new Goal(goalName, params)
 
@@ -142,9 +145,6 @@ module.exports = function(config, deps) {
     return newGoal
   }
 
-  m.method = createGoal.bind(m)
-  m.goal = createGoal.bind(m)
-
   m.failSuppressed = function (error) {
     var result = {err: error, errorType: 'unknown'};
     if (error instanceof ErrorReport) {
@@ -157,9 +157,9 @@ module.exports = function(config, deps) {
 
     if (_context.goalInstance) {
       result.goalReport = _context.goalInstance.report("failed")
-      m.error('FAILED_'+result.goalReport.codeName, result)
+      m.error('FAILED_'+result.goalReport.codeName, result, {callDepth: 2})
     } else {
-      m.error('FAILURE', result)
+      m.error('FAILURE', result,  {callDepth:2})
     }
 
     return result
@@ -194,9 +194,9 @@ module.exports = function(config, deps) {
       context.goalReport = goalReport
       context.result = result
       delete context.goalInstance
-      m.log('Finished '+goalReport.goalName, context)
+      m.log('Finished '+goalReport.goalName, context, {callDepth:2})
     } else {
-      m.log('Finished.', _context)
+      m.log('Finished.', _context, {callDepth:2})
     }
     return result
   }
@@ -305,7 +305,8 @@ function Context(ctx) {
   }
 }
 
-function getCaller3Info() {
+function getCaller3Info(level) {
+  level = level || 1
     if (this === undefined) {
       console.log('Cannot access caller info in strict mode.')
       // Cannot access caller info in 'strict' mode.
@@ -318,7 +319,7 @@ function getCaller3Info() {
     Error.captureStackTrace(this, getCaller3Info);
 
     Error.prepareStackTrace = function (_, stack) {
-        var caller = stack[1];
+        var caller = stack[level];
         if (sourceMapSupport) {
             caller = sourceMapSupport.wrapCallSite(caller);
         }
