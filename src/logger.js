@@ -76,6 +76,7 @@ module.exports = function(config, deps) {
           var stringify = require('json-stringify-safe')
           log[level](JSON.parse(stringify(logObject)), msg)
         }
+        else throw ex
       }
     }
     else
