@@ -46,7 +46,7 @@ module.exports = function(config, deps) {
       logObject.err = details
     } else if (_.isObject(details) && details.err) {
       logObject.err = details.err
-      details.err = undefined
+      //details.err = undefined
       logObject.details = details
     } else if (_.isObject(details)) {
       logObject.details = details
@@ -60,7 +60,8 @@ module.exports = function(config, deps) {
     }
 
     if (options && _.isObject(options)) {
-      lobObject = _.merge(logObject,options)
+      logObject = _.merge(logObject,options)
+      delete logObject.callDepth
     }
 
     if (config.debug || level == 'error') {
@@ -123,7 +124,7 @@ module.exports = function(config, deps) {
   m.method = createGoal.bind(m)
   m.goal = createGoal.bind(m)
 
-  m.errorReport = function(msg, details, err) {
+  m.errorReport = function(msg, details, err, __callDepth) {
     details = details || {}
 
     err = err || details.err
@@ -134,12 +135,12 @@ module.exports = function(config, deps) {
     if (details && details.err) delete details.err
 
     var report = new ErrorReport(err, msg, details)
-    m.error(msg, report,  {callDepth:2})
+    m.error(msg, report, {callDepth:__callDepth || 2})
     return report
   };
 
   function createGoal(goalName, params, opts) {
-    m.log('Starting '+goalName, {params: params, options: opts}, {callDepth: 3})
+    m.log('Starting '+goalName, {params: params, options: opts}, {callDepth: 2})
 
     var newGoalInstance = new Goal(goalName, params)
 
@@ -155,7 +156,7 @@ module.exports = function(config, deps) {
     return newGoal
   }
 
-  m.failSuppressed = function (error) {
+  m.failSuppressed = function (error, __callDepth) {
     var result = {err: error, errorType: 'unknown'};
     if (error instanceof ErrorReport) {
       result = error
@@ -167,9 +168,9 @@ module.exports = function(config, deps) {
 
     if (_context.goalInstance) {
       result.goalReport = _context.goalInstance.report("failed")
-      m.error('FAILED_'+result.goalReport.codeName, result, {callDepth: 2})
+      m.error('FAILED_'+result.goalReport.codeName, result, {callDepth: __callDepth || 2})
     } else {
-      m.error('FAILURE', result,  {callDepth:2})
+      m.error('FAILURE', result,  {callDepth: __callDepth || 2})
     }
 
     return result

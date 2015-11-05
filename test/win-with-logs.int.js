@@ -147,7 +147,6 @@ describe('win-with-logs', function() {
         })
 
         it('logs the root error correctly', function() {
-          log('Error Report', errorReport)
           expect(streams.logStream.lastLine).to.contain('Error: bad news')
           expect(streams.logStream.lastLine).to.contain('details: {')
           expect(streams.logStream.lastLine).to.contain('"what": "SECOND_ERROR"')
