@@ -17,7 +17,6 @@ module.exports = function construct(config) {
   config = config ? config : {};
   config = _.defaults(config, {
     app: 'DefaultApp',
-    component: 'DefaultComponent',
     env: 'dev',
     silent: false, // if true, disables console logging
     debug: false,
@@ -29,7 +28,7 @@ module.exports = function construct(config) {
   });
 
   // alias config.component -> config.name
-  config.component = config.component || config.name
+  config.component = config.component || config.name || ''
 
   var log = require('./src/win-with-logs')(config);
 

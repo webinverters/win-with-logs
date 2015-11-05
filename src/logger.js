@@ -120,7 +120,9 @@ module.exports = function(config, deps) {
 
     if (details && details.err) delete details.err
 
-    return new ErrorReport(err, msg, details)
+    var report = new ErrorReport(err, msg, details)
+    m.error(msg, report)
+    return report
   };
 
   function createGoal(goalName, params, opts) {
