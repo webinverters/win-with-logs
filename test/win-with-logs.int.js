@@ -98,6 +98,17 @@ describe('win-with-logs', function() {
     })
   })
 
+  describe('handle circular object logging', function() {
+    it('does not throw exception when logging circular object', function() {
+      var circle = {
+        name: 'awesome'
+      }
+      circle.brother = circle
+
+      expect(function() { log('Circle', circle) }).to.not.throw()
+    })
+  })
+
   describe('Error Reporting', function() {
     describe('log.errorReport()', function() {
       it('returns an error report object', function() {

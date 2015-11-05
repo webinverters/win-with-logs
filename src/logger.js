@@ -67,8 +67,17 @@ module.exports = function(config, deps) {
       logObject.src = getCaller3Info(options.callDepth)
     }
 
-    if (_.size(logObject) > 0)
-      log[level](logObject, msg)
+    if (_.size(logObject) > 0) {
+      try {
+        log[level](logObject, msg)
+      }
+      catch (ex) {
+        if (ex instanceof TypeError) {
+          var stringify = require('json-stringify-safe')
+          log[level](JSON.parse(stringify(logObject)), msg)
+        }
+      }
+    }
     else
       log[level](msg)
 
