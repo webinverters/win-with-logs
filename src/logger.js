@@ -160,7 +160,7 @@ module.exports = function(config, deps) {
     var result = {err: error, errorType: 'unknown'};
     if (error instanceof ErrorReport) {
       result = error
-    } else if (_.isString) {
+    } else if (_.isString(error)) {
       result = m.errorReport(error, {err:new Error(error)})
     } else if (error instanceof Error) {
       result = m.errorReport(error.message, {err: error})
