@@ -279,22 +279,6 @@ function ErrorReport(err, errorCode, details) {
       this.err = err
     } else {
       this.rootCause = err.rootCause
-      if (err.history && err.history.length > 0) {
-        _.each(err.history, function(val) {
-          delete val.history
-          delete val.stack
-          delete val.err
-          delete val.message
-
-          that.history.push(_.cloneDeep(val))
-        })
-      }
-      var tempErr = _.cloneDeep(err)
-      delete tempErr.history
-      delete tempErr.stack
-      delete tempErr.err
-      delete tempErr.message
-      this.history.push(tempErr)
     }
   }
 
