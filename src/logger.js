@@ -233,6 +233,7 @@ module.exports = function(config, deps) {
     _context.observers[eventLabel] = _context.observers[eventLabel] || [];
     _context.observers[eventLabel].push(handler);
   }
+  m.on = m.addEventHandler
 
   m.timestamp = function (kind) {
     if (config.timestampFunc) return config.timestampFunc()
