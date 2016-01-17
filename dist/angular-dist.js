@@ -19644,10 +19644,10 @@ module.exports = function(config, axios) {
     var json = JSON.parse(logEvent.toString())
     json.timestamp = json.time
     debug('result json:', json)
-    debugger
+
     return http.post('/', json)
-      .then(function(err) {
-        debug('BOOYEAH')
+      .then(function(res) {
+        debug('BOOYEAH', res)
       })
       .catch(function(err) {
         debug('Failed to send logs:', err)
