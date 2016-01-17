@@ -5,6 +5,7 @@ angular.module('robust-logs', [])
     window.p = window.Promise
     if (!window.axios) throw new Error('robust-logs: missing dependency "axios"')
     window.debug = function() {} || window.debug || console.log.bind(console)
+    console.log('Log Config', config)
     return require('./src/win-with-logs')(config, window.axios)
   }])
   .factory('log', ['Log', function(Log) {
