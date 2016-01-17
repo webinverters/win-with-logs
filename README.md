@@ -1,18 +1,21 @@
-Synopsis
+## Synopsis
 
-At the top of the file there should be a short introduction and/ or overview that explains what the project is. This description should match descriptions added for package managers (Gemspec, package.json, etc.)
+Here we have the logger.  
 
-Code Example
+## Code Example
 
-Motivation
+log.goal('goal name', startingConditions)
+log('event label', details)
+log.error('error code', errDetails)
 
-A short description of the motivation behind the creation and maintenance of the project. This should explain why the project exists.
+## Motivation
+Needed a consistent client and server logging api that was flexible and extensible.
 
-Installation
+## Installation
 
-Provide code examples and explanations of how to get the project.
+TODO: Provide code examples and explanations of how to get the project.
 
-API Reference
+## API Reference
 
 Goals:
 
@@ -20,12 +23,10 @@ The goal uid must be specifed like {GOAL_NAME}#{uid} Example: sayhello#100. Note
 
 npm install -g kinesalite
 
-Contributors
+## Contributors
 
 Let people know how they can dive into the project, include important links to things like issue trackers, irc, twitter accounts if applicable.
 
-License
+## License
 
 A short snippet describing the license (MIT, Apache, etc.)
-
-# TODO:

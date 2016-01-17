@@ -9,23 +9,22 @@
  * @license Apache-2.0
  */
 
-var bunyan = require('bunyan');
-var PrettyStream = require('bunyan-prettystream');
+var bunyan = require('bunyan')
+var PrettyStream = require('bunyan-prettystream')
 var Logger = require('./logger')
 var RotatingFileMaxStream = require('./streams/rotating-file-max')
 var FinalStream = require('./streams/final-stream')
-var _ = require('lodash'),
-    p = require('bluebird')
+var PluginStream = require('./streams/plugin-stream')
 
 var logStreams = {
   "rotating-file-max": RotatingFileMaxStream
 }
 
-module.exports = function(config) {
+module.exports = function(config, axios) {
   var m = new WinWithLogs()
 
   var logStreamCompletionPromises = {}
-
+  var _plugins = {}
   /**
    * Initializes the logger based on the configuration
    * provided.
@@ -36,7 +35,7 @@ module.exports = function(config) {
     var bunyanConf = {
       src: config.debug,
       name: config.component,
-      streams: config.streams
+      streams: config.streams || []
     }
 
     _.each(config.logStreams, function(stream) {
@@ -51,7 +50,7 @@ module.exports = function(config) {
       })
     })
 
-    if (!config.silent) {
+    if (!config.silent && !window) {
       var prettyStdOut = new PrettyStream();
       prettyStdOut.pipe(config.logStream);
       if (config.debug) {
@@ -68,6 +67,23 @@ module.exports = function(config) {
           stream: prettyStdOut           // log INFO and above to stdout
         });
       }
+    } else {
+      console.log('Detected we are running in browser.  Disabling prettystream.')
+      function MyRawStream() {}
+      MyRawStream.prototype.write = function (rec) {
+          console.log('[%s] %s: %s',
+              rec.time.toISOString(),
+              bunyan.nameFromLevel[rec.level],
+              rec.msg);
+      }
+
+      bunyanConf.streams.push(
+        {
+            name: 'browser-stream',
+            level: 'info',
+            stream: new MyRawStream(),
+            type: 'raw'
+        })
     }
 
     bunyanConf.streams.push({
@@ -76,6 +92,20 @@ module.exports = function(config) {
       type: 'raw',
       stream: FinalStream(config, logStreamCompletionPromises)
     })
+
+    if (config.plugins) {
+      if (config.plugins.loggly) {
+        console.log('Adding the loggly plugin.')
+        _plugins['loggly'] = require('./plugins/loggly-plugin')(config, axios)
+      }
+
+      bunyanConf.streams.push({
+        name: 'plugin',
+        level: 'debug',
+        type: 'raw',
+        stream: PluginStream(config, _plugins)
+      })
+    }
 
     var log = bunyan.createLogger(bunyanConf)
     log.on('error', function (err, stream) {
@@ -94,7 +124,8 @@ module.exports = function(config) {
   var logger = Logger(
     {debug: config.debug}, {
     log: log,
-    logStreamCompletionPromises: logStreamCompletionPromises
+    logStreamCompletionPromises: logStreamCompletionPromises,
+    plugins: _plugins
   })
 
   return logger

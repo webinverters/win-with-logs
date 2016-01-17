@@ -16,17 +16,15 @@
      sourceMapSupport = null;
  }
 
- var _ = require('lodash')
- var p = require('bluebird')
-
-
+var _plugins
 module.exports = function(config, deps) {
   var m = post.bind(null,'info'), _context = deps.context || {}
   _context = _.defaults(_context, {
     observers: {}
   })
-
   var log = deps.log
+  _plugins = deps.plugins || _plugins
+
 
   function post(level, msg, details, options) {
     options = options || {}
@@ -123,6 +121,7 @@ module.exports = function(config, deps) {
   m.log = post.bind(m, 'info')
   m.method = createGoal.bind(m)
   m.goal = createGoal.bind(m)
+  m.query = _plugins['loggly'].query
 
   m.errorReport = function(msg, details, err, __callDepth) {
     details = details || {}

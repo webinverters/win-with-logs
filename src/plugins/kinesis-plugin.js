@@ -53,17 +53,3 @@ module.exports = function construct(config, sewer) {
 
   return new TrackedStream();
 };
-
-/**
- * Returns the event label embedded in the string.
- *
- * The event label is defined as the first string before any spaces in the string.
- *
- * @param str
- */
-function extractEventLabel(str) {
-  if (str.indexOf(' ') > 0) {
-    return str.split(' ')[0];
-  }
-  else return str;
-}
