@@ -74,7 +74,7 @@ module.exports = function(config, axios) {
           console.log('[%s] %s: %s',
               rec.time.toISOString(),
               bunyan.nameFromLevel[rec.level],
-              rec.msg);
+              rec.msg, rec.details);
       }
 
       bunyanConf.streams.push(
