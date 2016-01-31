@@ -19929,6 +19929,8 @@ var logStreams = {
   "rotating-file-max": RotatingFileMaxStream
 }
 
+var isNotBrowser = (typeof module !== 'undefined' && this.module !== module)
+
 module.exports = function(config, axios) {
   var m = new WinWithLogs()
 
@@ -19959,7 +19961,8 @@ module.exports = function(config, axios) {
       })
     })
 
-    if (!config.silent && !window) {
+    // prettystream internally has issues running on the browser.
+    if (!config.silent && isNotBrowser) {
       var prettyStdOut = new PrettyStream();
       prettyStdOut.pipe(config.logStream);
       if (config.debug) {
