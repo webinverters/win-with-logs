@@ -121,7 +121,9 @@ module.exports = function(config, deps) {
   m.log = post.bind(m, 'info')
   m.method = createGoal.bind(m)
   m.goal = createGoal.bind(m)
-  m.query = _plugins['loggly'].query
+  m.query = _plugins['loggly'] ? _plugins['loggly'].query : function() {
+    throw new Error('log.query() not available.  Load a plugin that supports it.')
+  }
 
   m.errorReport = function(msg, details, err, __callDepth) {
     details = details || {}
