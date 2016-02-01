@@ -197,6 +197,13 @@ function createEventLogger(logger, context) {
     logger.child(logObject);
   };
 
+  var shim = function() {
+    return log
+  }
+  log.module = shim
+  log.goal = shim
+  log.method = shim
+
 
   // assign aliases:
   log.logFatal = log.fatal;
