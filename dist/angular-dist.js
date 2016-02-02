@@ -19963,7 +19963,7 @@ module.exports = function(config, axios) {
     })
 
     // prettystream internally has issues running on the browser.
-    if (!config.silent && !isBrowser) {
+    if (!config.silent && isNotBrowser) {
       var prettyStdOut = new PrettyStream();
       prettyStdOut.pipe(config.logStream);
       if (config.debug) {
