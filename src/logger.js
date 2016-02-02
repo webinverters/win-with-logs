@@ -248,8 +248,6 @@ module.exports = function(config, deps) {
 }
 
 function ErrorReport(err, errorCode, details) {
-  var that = this
-
   this.message = errorCode;
 
   this.what = errorCode;
@@ -260,7 +258,7 @@ function ErrorReport(err, errorCode, details) {
     this.details = _.merge(this.details || {},details || {})
   }
 
-  this.history = []
+  this.prevError = err
 
   if ((err instanceof Error) && !(err instanceof ErrorReport)) {
     this.rootCause = err.message || err.toString()

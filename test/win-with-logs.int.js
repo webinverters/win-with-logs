@@ -117,24 +117,23 @@ describe('win-with-logs', function() {
         expect(er.details).to.deep.equal({
           param1: "einstein"
         })
-        expect(er.history).to.deep.equal([])
         expect(er.rootCause).to.equal('SOME_ERROR')
       })
 
       describe('multiple error reports are thrown', function() {
-        var errorReport;
+        var errorReport, rootError, firstLevelError, secondLevelError
         beforeEach(function() {
-          var rootError = log.errorReport('ROOT_ERROR', {
+          rootError = log.errorReport('ROOT_ERROR', {
             param: 'bad param',
             isBad: true
           }, new Error('bad news'))
 
-          var firstLevelError = log.errorReport('FIRST_ERROR', {
+          firstLevelError = log.errorReport('FIRST_ERROR', {
             paramC: 'no idea',
             isBad: false
           }, rootError)
 
-          var secondLevelError = log.errorReport('SECOND_ERROR', {
+          secondLevelError = log.errorReport('SECOND_ERROR', {
             paramC: 'no idea again'
           }, firstLevelError)
 
@@ -153,26 +152,7 @@ describe('win-with-logs', function() {
         })
 
         it('keeps flattened report history', function() {
-          expect(errorReport.history).to.deep.equal([
-            {
-              "what": "ROOT_ERROR",
-              "details": {
-                "param": "bad param",
-                "isBad": false,
-                "paramC": "no idea"
-              },
-              "rootCause": "bad news"
-            },
-            {
-              "what": "FIRST_ERROR",
-              "details": {
-                "param": "bad param",
-                "isBad": false,
-                "paramC": "no idea again"
-              },
-              "rootCause": "bad news"
-            }
-          ])
+          expect(errorReport.prevError).to.equal(firstLevelError)
         })
 
         it('sets the correct rootCause', function() {
