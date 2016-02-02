@@ -203,7 +203,14 @@ function createEventLogger(logger, context) {
   log.module = shim
   log.goal = shim
   log.method = shim
-
+  log.result = function(result) {
+    return result
+  }
+  log.errorReport = function(msg, details) {
+    var err = new Error(msg)
+    err.details = details
+    return err
+  }
 
   // assign aliases:
   log.logFatal = log.fatal;
