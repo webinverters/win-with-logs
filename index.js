@@ -34,7 +34,7 @@
     if (!config.component) throw new Error('robust-logs: missing config.name')
     if (!config.app) throw new Error('robust-logs: missing config.app')
 
-    var log = require('./src/win-with-logs')(config, require('axios'));
+    var log = require('./src/win-with-logs')(config, require('axios'))
 
     debug('logging initialized.')
     return log;

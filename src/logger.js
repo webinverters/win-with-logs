@@ -104,14 +104,14 @@ module.exports = function(config, deps) {
     })
     newLogger.parent = m
     return newLogger
-  };
+  }
 
   m.module = function(moduleName, params) {
     return m.context({module: {
       name: moduleName,
       params: params
     }})
-  };
+  }
 
   m.debug = post.bind(m, 'debug')
   m.info = post.bind(m,'info')

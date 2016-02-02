@@ -20,9 +20,8 @@ var logStreams = {
   "rotating-file-max": RotatingFileMaxStream
 }
 
-var isBrowser = (typeof module !== 'undefined' && this.module !== module)
-
 module.exports = function(config, axios) {
+  var isNotBrowser = (typeof module !== 'undefined' && this.module !== module)
   var m = new WinWithLogs()
 
   var logStreamCompletionPromises = {}
@@ -89,13 +88,6 @@ module.exports = function(config, axios) {
         })
     }
 
-    bunyanConf.streams.push({
-      name: 'final',
-      level: 'debug',
-      type: 'raw',
-      stream: FinalStream(config, logStreamCompletionPromises)
-    })
-
     if (config.plugins) {
       if (config.plugins.loggly) {
         console.log('Adding the loggly plugin.')
@@ -110,10 +102,17 @@ module.exports = function(config, axios) {
       })
     }
 
+    bunyanConf.streams.push({
+      name: 'final',
+      level: 'debug',
+      type: 'raw',
+      stream: FinalStream(config, logStreamCompletionPromises)
+    })
+
     var log = bunyan.createLogger(bunyanConf)
     log.on('error', function (err, stream) {
       console.error('Log Stream Error:', err, stream);
-    });
+    })
 
     return log.child({
       app:config.app,
