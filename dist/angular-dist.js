@@ -19471,8 +19471,6 @@ module.exports = function(config, deps) {
 }
 
 function ErrorReport(err, errorCode, details) {
-  var that = this
-
   this.message = errorCode;
 
   this.what = errorCode;
@@ -19483,7 +19481,7 @@ function ErrorReport(err, errorCode, details) {
     this.details = _.merge(this.details || {},details || {})
   }
 
-  this.history = []
+  this.prevError = err
 
   if ((err instanceof Error) && !(err instanceof ErrorReport)) {
     this.rootCause = err.message || err.toString()
@@ -19921,7 +19919,6 @@ module.exports = function construct(config, streamPromises) {
  */
 
 var bunyan = require('bunyan')
-var PrettyStream = require('bunyan-prettystream')
 var Logger = require('./logger')
 var RotatingFileMaxStream = require('./streams/rotating-file-max')
 var FinalStream = require('./streams/final-stream')
@@ -19932,7 +19929,7 @@ var logStreams = {
 }
 
 module.exports = function(config, axios) {
-  var isNotBrowser = (typeof module !== 'undefined' && this.module !== module)
+  var isNotBrowser = (typeof module !== 'undefined' && this.module !== module && typeof window === 'undefined')
   var m = new WinWithLogs()
 
   var logStreamCompletionPromises = {}
@@ -19964,6 +19961,7 @@ module.exports = function(config, axios) {
 
     // prettystream internally has issues running on the browser.
     if (!config.silent && isNotBrowser) {
+      var PrettyStream = require('bunyan-prettystream')
       var prettyStdOut = new PrettyStream();
       prettyStdOut.pipe(config.logStream);
       if (config.debug) {

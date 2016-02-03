@@ -10,7 +10,6 @@
  */
 
 var bunyan = require('bunyan')
-var PrettyStream = require('bunyan-prettystream')
 var Logger = require('./logger')
 var RotatingFileMaxStream = require('./streams/rotating-file-max')
 var FinalStream = require('./streams/final-stream')
@@ -21,7 +20,7 @@ var logStreams = {
 }
 
 module.exports = function(config, axios) {
-  var isNotBrowser = (typeof module !== 'undefined' && this.module !== module)
+  var isNotBrowser = (typeof module !== 'undefined' && this.module !== module && typeof window === 'undefined')
   var m = new WinWithLogs()
 
   var logStreamCompletionPromises = {}
@@ -53,6 +52,7 @@ module.exports = function(config, axios) {
 
     // prettystream internally has issues running on the browser.
     if (!config.silent && isNotBrowser) {
+      var PrettyStream = require('bunyan-prettystream')
       var prettyStdOut = new PrettyStream();
       prettyStdOut.pipe(config.logStream);
       if (config.debug) {
