@@ -19436,6 +19436,10 @@ module.exports = function(config, deps) {
     return result
   }
 
+  m.setResult = function(result) {
+    return m.result(result)
+  }
+
   m.processEventHandlers = function(eventLabel, details, options) {
     var event = {
       eventName: eventLabel,
