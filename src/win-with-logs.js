@@ -70,22 +70,21 @@ module.exports = function(config, axios) {
         });
       }
     } else {
-      console.log('Detected we are running in browser.  Disabling prettystream.')
-      function MyRawStream() {}
-      MyRawStream.prototype.write = function (rec) {
-          console.log('[%s] %s: %s',
-              rec.time.toISOString(),
-              bunyan.nameFromLevel[rec.level],
-              rec.msg, rec.details);
-      }
-
-      bunyanConf.streams.push(
-        {
-            name: 'browser-stream',
-            level: 'info',
-            stream: new MyRawStream(),
-            type: 'raw'
-        })
+      console.log('Robust-logs: detected browser runtime.')
+      // function MyRawStream() {}
+      // MyRawStream.prototype.write = function (rec) {
+      //     console.log('[%s] %s: %s',
+      //         bunyan.nameFromLevel[rec.level],
+      //         rec.msg, rec.details);
+      // }
+      //
+      // bunyanConf.streams.push(
+      //   {
+      //       name: 'browser-stream',
+      //       level: 'info',
+      //       stream: new MyRawStream(),
+      //       type: 'raw'
+      //   })
     }
 
     if (config.plugins) {
@@ -124,7 +123,7 @@ module.exports = function(config, axios) {
   var log = m.setup(config)
 
   var logger = Logger(
-    {debug: config.debug}, {
+    {debug: config.debug, isNotBrowser: isNotBrowser}, {
     log: log,
     logStreamCompletionPromises: logStreamCompletionPromises,
     plugins: _plugins

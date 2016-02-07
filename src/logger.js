@@ -25,17 +25,29 @@ module.exports = function(config, deps) {
   var log = deps.log
   _plugins = deps.plugins || _plugins
 
+  function defer() {
+    var resolve, reject;
+    var promise = new Promise(function() {
+      resolve = arguments[0]
+      reject = arguments[1]
+    });
+    return {
+      resolve: resolve,
+      reject: reject,
+      promise: promise
+    }
+  }
 
   function post(level, msg, details, options) {
     options = options || {}
     if (!log[level]) throw new Error("invalid log level:"+level);
-    var deferredStreamProcessing = p.defer()
     var logObject = {
-      _id: parseInt(_.uniqueId())
-    }
+        _id: parseInt(_.uniqueId())
+      },
+      streamProcessingResolver = defer()
 
     deps.logStreamCompletionPromises[logObject._id] = {
-      finalDef: deferredStreamProcessing,
+      finalDef: streamProcessingResolver,
       eventHandlingCompleted: m.processEventHandlers(msg, details, options),
       promises: []
     }
@@ -66,6 +78,11 @@ module.exports = function(config, deps) {
       logObject.src = getCaller3Info(options.callDepth)
     }
 
+    if (!config.isNotBrowser && console) {
+      if (!console[level]) console[level] = console.log
+      console[level]('[%s] %s:', level, logObject.msg || msg, logObject.details)
+    }
+
     if (_.size(logObject) > 0) {
       try {
         log[level](logObject, msg)
@@ -88,7 +105,7 @@ module.exports = function(config, deps) {
       _context.goalInstance.history.push(logLine)
     }
 
-    return deferredStreamProcessing.promise
+    return streamProcessingResolver.promise
   }
 
   m.context = function(contextInfo) {

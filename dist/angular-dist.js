@@ -19248,17 +19248,29 @@ module.exports = function(config, deps) {
   var log = deps.log
   _plugins = deps.plugins || _plugins
 
+  function defer() {
+    var resolve, reject;
+    var promise = new Promise(function() {
+      resolve = arguments[0]
+      reject = arguments[1]
+    });
+    return {
+      resolve: resolve,
+      reject: reject,
+      promise: promise
+    }
+  }
 
   function post(level, msg, details, options) {
     options = options || {}
     if (!log[level]) throw new Error("invalid log level:"+level);
-    var deferredStreamProcessing = p.defer()
     var logObject = {
-      _id: parseInt(_.uniqueId())
-    }
+        _id: parseInt(_.uniqueId())
+      },
+      streamProcessingResolver = defer()
 
     deps.logStreamCompletionPromises[logObject._id] = {
-      finalDef: deferredStreamProcessing,
+      finalDef: streamProcessingResolver,
       eventHandlingCompleted: m.processEventHandlers(msg, details, options),
       promises: []
     }
@@ -19289,6 +19301,11 @@ module.exports = function(config, deps) {
       logObject.src = getCaller3Info(options.callDepth)
     }
 
+    if (!config.isNotBrowser && console) {
+      if (!console[level]) console[level] = console.log
+      console[level]('[%s] %s:', level, logObject.msg || msg, logObject.details)
+    }
+
     if (_.size(logObject) > 0) {
       try {
         log[level](logObject, msg)
@@ -19311,7 +19328,7 @@ module.exports = function(config, deps) {
       _context.goalInstance.history.push(logLine)
     }
 
-    return deferredStreamProcessing.promise
+    return streamProcessingResolver.promise
   }
 
   m.context = function(contextInfo) {
@@ -19983,22 +20000,21 @@ module.exports = function(config, axios) {
         });
       }
     } else {
-      console.log('Detected we are running in browser.  Disabling prettystream.')
-      function MyRawStream() {}
-      MyRawStream.prototype.write = function (rec) {
-          console.log('[%s] %s: %s',
-              rec.time.toISOString(),
-              bunyan.nameFromLevel[rec.level],
-              rec.msg, rec.details);
-      }
-
-      bunyanConf.streams.push(
-        {
-            name: 'browser-stream',
-            level: 'info',
-            stream: new MyRawStream(),
-            type: 'raw'
-        })
+      console.log('Robust-logs: detected browser runtime.')
+      // function MyRawStream() {}
+      // MyRawStream.prototype.write = function (rec) {
+      //     console.log('[%s] %s: %s',
+      //         bunyan.nameFromLevel[rec.level],
+      //         rec.msg, rec.details);
+      // }
+      //
+      // bunyanConf.streams.push(
+      //   {
+      //       name: 'browser-stream',
+      //       level: 'info',
+      //       stream: new MyRawStream(),
+      //       type: 'raw'
+      //   })
     }
 
     if (config.plugins) {
@@ -20037,7 +20053,7 @@ module.exports = function(config, axios) {
   var log = m.setup(config)
 
   var logger = Logger(
-    {debug: config.debug}, {
+    {debug: config.debug, isNotBrowser: isNotBrowser}, {
     log: log,
     logStreamCompletionPromises: logStreamCompletionPromises,
     plugins: _plugins
