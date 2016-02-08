@@ -53,7 +53,7 @@ module.exports = function(config, axios) {
     // prettystream internally has issues running on the browser.
     if (!config.silent && isNotBrowser) {
       var PrettyStream = require('bunyan-prettystream')
-      var prettyStdOut = new PrettyStream({mode=config.logMode || 'short'})
+      var prettyStdOut = new PrettyStream({mode:config.logMode || 'short'})
       prettyStdOut.pipe(config.logStream);
       if (config.debug) {
         bunyanConf.streams.push(
