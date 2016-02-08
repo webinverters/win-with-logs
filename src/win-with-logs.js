@@ -115,7 +115,7 @@ module.exports = function(config, axios) {
 
     return log.child({
       app:config.app,
-      part: config.component,
+      component: config.component,
       env: config.env
     })
   }

@@ -18,11 +18,14 @@
 
 var _plugins
 module.exports = function(config, deps) {
-  var m = post.bind(null,'info'), _context = deps.context || {}
+  var m = post.bind(null,'info'), _context = deps.context || {},
+    log = deps.log
+
   _context = _.defaults(_context, {
-    observers: {}
+    observers: {},
+    chain: config.module || ''
   })
-  var log = deps.log
+
   _plugins = deps.plugins || _plugins
 
   function defer() {
@@ -42,7 +45,7 @@ module.exports = function(config, deps) {
     options = options || {}
     if (!log[level]) throw new Error("invalid log level:"+level);
     var logObject = {
-        _id: parseInt(_.uniqueId())
+        _id: parseInt(_.uniqueId()),
       },
       streamProcessingResolver = defer()
 
@@ -78,9 +81,22 @@ module.exports = function(config, deps) {
       logObject.src = getCaller3Info(options.callDepth)
     }
 
+    var sourceInfo
+    if (options.source) {
+      function getErrorObject(){
+        try { throw Error('') } catch(err) { return err; }
+      }
+      var err = getErrorObject();
+      var caller_line = err.stack.split("\n")[4];
+      var index = caller_line.indexOf("at ");
+      var clean = caller_line.slice(index+2, caller_line.length);
+      sourceInfo = clean
+    }
     if (!config.isNotBrowser && console) {
       if (!console[level]) console[level] = console.log
-      console[level]('[%s] %s:', level, logObject.msg || msg, logObject.details)
+      if (sourceInfo) console[level]('[%s] %s:', _context.chain, logObject.msg || msg, logObject.details, sourceInfo)
+      else console[level]('[%s] %s:', _context.chain, logObject.msg || msg, logObject.details)
+      return
     }
 
     if (_.size(logObject) > 0) {
@@ -98,27 +114,24 @@ module.exports = function(config, deps) {
     else
       log[level](msg)
 
-    if (_context.goalInstance) {
-      var logLine = _.cloneDeep(logObject)
-      logLine.timestamp = m.timestamp('iso')
-      logLine.msg = msg
-      _context.goalInstance.history.push(logLine)
-    }
-
     return streamProcessingResolver.promise
   }
 
   m.context = function(contextInfo) {
-    var ctx = Context(_context).createChild(contextInfo)
-    var childLog = log
+    contextInfo.chain = _context.chain
+
     if (contextInfo.module) {
-      childLog = log.child({module:contextInfo.module.name})
+      contextInfo.chain = contextInfo.module.name
+    } else {
+      contextInfo.chain += '.'+contextInfo.name
     }
+
     var newLogger = module.exports(config, {
-      context: ctx,
-      log: childLog,
-      logStreamCompletionPromises: deps.logStreamCompletionPromises
-    })
+         log: log.child({chain: contextInfo.chain}),
+         logStreamCompletionPromises: deps.logStreamCompletionPromises,
+         context: _.extend(new Context(_context), contextInfo)
+       })
+
     newLogger.parent = m
     return newLogger
   }
@@ -153,6 +166,9 @@ module.exports = function(config, deps) {
     if (details && details.err) delete details.err
 
     var report = new ErrorReport(err, msg, details)
+    // this logs the error immediately and will likely cause multiple
+    // of the same error to apear in the logs since it is usually thrown.
+    // But that is OKAY b.c. errors need extra attention anyways.
     m.error(msg, report, {callDepth:__callDepth || 2})
     return report
   };
@@ -163,45 +179,36 @@ module.exports = function(config, deps) {
     var newGoalInstance = new Goal(goalName, params)
 
     var newGoal = m.context({
-      goalInstance: newGoalInstance
+      goalInstance: newGoalInstance,
+      name: goalName
     })
-
-    if (_context.goalInstance) {
-      _context.goalInstance.childGoals = _context.goalInstance.childGoals || []
-      _context.goalInstance.childGoals.push(newGoalInstance)
-    }
 
     return newGoal
   }
 
   m.failSuppressed = function (error, __callDepth) {
-    var result = {err: error, errorType: 'unknown'};
-    if (error instanceof ErrorReport) {
-      result = error
-    } else if (_.isString(error)) {
-      result = m.errorReport(error, {err:new Error(error)})
-    } else if (error instanceof Error) {
-      result = m.errorReport(error.message, {err: error})
-    }
+    var result = {err: error}
 
-    if (_context.goalInstance) {
+
+console.log('DETECTED GOAL ==== MOFUCKA CUNT ====')
+    if (_context && _context.goalInstance) {
       result.goalReport = _context.goalInstance.report("failed")
-      m.error('FAILED_'+result.goalReport.codeName, result, {callDepth: __callDepth || 2})
-    } else {
-      m.error('FAILURE', result,  {callDepth: __callDepth || 2})
     }
 
-    return result
-  };
+    if (error instanceof ErrorReport) {
+      result.message = error.message
+    } else if (_.isString(error)) {
+      result.message = error
+      result.err = new Error(error)
+    } else if (error instanceof Error) {
+      result.message = error.message
+    }
+
+    return m.errorReport(result.goalReport ? 'FAILED_'+result.goalReport.codeName : result.message, result, result.err, __callDepth)
+  }
 
   m.fail = function(err) {
-    err = m.failSuppressed(err)
-    if (_context.goalInstance) {
-      var goalReport = _context.goalInstance.report("failed")
-      _context.goalReport = goalReport
-      throw m.errorReport('FAILED_'+goalReport.codeName, _context, err)
-    }
-    throw m.errorReport('FAILED', _context, err)
+    throw m.failSuppressed(err)
   }
 
   m.rejectWithCode = function(code) {
@@ -218,14 +225,11 @@ module.exports = function(config, deps) {
 
   m.result = function(result) {
     if (_context && _context.goalInstance) {
-      var context = _.cloneDeep(_context)
-      var goalReport = _context.goalInstance.report('succeeded', true)
-      context.goalReport = goalReport
-      context.result = result
-      delete context.goalInstance
-      m.log('Finished '+goalReport.goalName, context, {callDepth:2})
+      m.log('Finished '+_context.goalInstance.name, {
+        goalReport: _context.goalInstance.report('succeeded', result)
+      }, {callDepth:2})
     } else {
-      m.log('Finished.', _context, {callDepth:2})
+      m.log('Result: ', _context, {callDepth:2})
     }
     return result
   }
@@ -311,14 +315,7 @@ ErrorReport.prototype = Object.create(Error.prototype)
 ErrorReport.prototype.name = "ErrorReport";
 
 function Context(ctx) {
-  return {
-    createChild: function(childCtx) {
-      // ctx.children = ctx.children || []
-      // ctx.children.push(childCtx)
-      //childCtx.parent = ctx
-      return childCtx
-    }
-  }
+  this.__parentContext = ctx
 }
 
 function getCaller3Info(level) {
@@ -361,7 +358,6 @@ function Goal(name, goalDetails) {
 
   this.name = name;
   this.creationTimeMS = new Date().getTime();
-  this.history = [];
 }
 
 
@@ -369,27 +365,17 @@ function Goal(name, goalDetails) {
  	return this.replace(/([A-Z])/g, function($1){return "_"+$1.toLowerCase();});
  };
 
-Goal.prototype.report = function (status, topLevelReport) {
+Goal.prototype.report = function (status, result) {
   var result = {
     goalId: this.goalId,
     goalName: this.name,
     codeName: this.name.replace('()','').toUnderscore().toUpperCase(),
     context: this.goalContext,
     duration: new Date().getTime() - this.creationTimeMS,
+    result: result,
     status: status
-  };
-
-  if (!topLevelReport) {
-    result.history = this.history
   }
-
-  //if success, show a merged object and show a reduce history
-  if (status == "succeeded") {
-    result.childGoalReports = []
-    _.each(this.childGoals, function(childGoal) {
-      result.childGoalReports.push(childGoal.report(status, true))
-    })
-  }
-
   return result;
-};
+}
+
+// the fed is in a position where all of it's visible actions look good.  And all of it's bad actions are invisible.

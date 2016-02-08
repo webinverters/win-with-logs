@@ -34,7 +34,7 @@ describe('win-with-logs', function() {
       it('outputs correctly', function() {
         log.debug('something happened')
         expect(streams.logStream.lastLine).to.contain('DEBUG')
-        expect(streams.logStream.lastLine).to.contain('(app=win-with-logs, part=int-test, env=test')
+        expect(streams.logStream.lastLine).to.contain('(app=win-with-logs, module=int-test, env=test')
         expect(streams.logStream.lastLine).to.contain('something happened')
       })
     })
@@ -42,7 +42,7 @@ describe('win-with-logs', function() {
       it('outputs correctly', function() {
         log.info('something happened')
         expect(streams.logStream.lastLine).to.contain('INFO')
-        expect(streams.logStream.lastLine).to.contain('(app=win-with-logs, part=int-test, env=test')
+        expect(streams.logStream.lastLine).to.contain('(app=win-with-logs, module=int-test, env=test')
         expect(streams.logStream.lastLine).to.contain('something happened')
       })
     })
@@ -50,7 +50,7 @@ describe('win-with-logs', function() {
       it('outputs correctly', function() {
         log('something happened')
         expect(streams.logStream.lastLine).to.contain('INFO')
-        expect(streams.logStream.lastLine).to.contain('(app=win-with-logs, part=int-test, env=test')
+        expect(streams.logStream.lastLine).to.contain('(app=win-with-logs, module=int-test, env=test')
         expect(streams.logStream.lastLine).to.contain('something happened')
       })
     })
@@ -58,7 +58,7 @@ describe('win-with-logs', function() {
       it('outputs correctly', function() {
         log.fatal('something happened')
         expect(streams.logStream.lastLine).to.contain('FATAL')
-        expect(streams.logStream.lastLine).to.contain('(app=win-with-logs, part=int-test, env=test')
+        expect(streams.logStream.lastLine).to.contain('(app=win-with-logs, module=int-test, env=test')
         expect(streams.logStream.lastLine).to.contain('something happened')
       })
     })
@@ -66,7 +66,7 @@ describe('win-with-logs', function() {
       it('outputs correctly', function() {
         log.warn('something happened')
         expect(streams.logStream.lastLine).to.contain('WARN')
-        expect(streams.logStream.lastLine).to.contain('(app=win-with-logs, part=int-test, env=test')
+        expect(streams.logStream.lastLine).to.contain('(app=win-with-logs, module=int-test, env=test')
         expect(streams.logStream.lastLine).to.contain('something happened')
       })
     })
@@ -74,7 +74,7 @@ describe('win-with-logs', function() {
       it('outputs correctly', function() {
         log.error('something happened')
         expect(streams.logStream.lastLine).to.contain('ERROR')
-        expect(streams.logStream.lastLine).to.contain('(app=win-with-logs, part=int-test, env=test')
+        expect(streams.logStream.lastLine).to.contain('(app=win-with-logs, module=int-test, env=test')
         expect(streams.logStream.lastLine).to.contain('something happened')
       })
       it('outputs error objects correctly with stack trace.', function() {
@@ -252,13 +252,6 @@ describe('win-with-logs', function() {
           expect(streams.logStream.lastLine).to.contain('INFO')
           expect(streams.logStream.lastLine).to.contain('"name": "wwl"')
         })
-        it('appends log entries to the current goal history', function() {
-          goal.log('This happened', {name: 'wwl'})
-          goal.log('Achieved this')
-          goal.failSuppressed(new Error('network died'))
-          expect(streams.logStream.lastLine).to.contain('"msg": "This happened"')
-          expect(streams.logStream.lastLine).to.contain('"msg": "Achieved this"')
-        })
       })
 
       describe('goal.result()', function() {
@@ -298,30 +291,6 @@ describe('win-with-logs', function() {
   describe('Goal Tracking', function() {
     verifyGoalTrackingWorks('method')
     verifyGoalTrackingWorks('goal')
-    describe('Child goal reporting', function() {
-      function subTask(goal) {
-        var subGoal = goal.goal('doSubTask()', {subTaskParam: 'abc'})
-        return p.resolve().delay(1000)
-          .then(function() {
-            subGoal.log('sub goal completed')
-            return 'sub goal result'
-          })
-          .then(subGoal.result)
-      }
-      var goal;
-      beforeEach(function() {
-        goal = log.goal('makeGoalHappen()', {param1: 'awesome'})
-      })
-
-      it('Reports the subgoal as part of goalReport.history', function() {
-        return subTask(goal)
-          .then(goal.result)
-          .then(function() {
-            expect(streams.logStream.lastLine).to.contain('"childGoalReports": [')
-            expect(streams.logStream.lastLine).to.contain('"goalName": "doSubTask()"')
-          })
-      })
-    })
   })
 
   describe('File Logging',function() {
