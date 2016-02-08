@@ -40,7 +40,7 @@ angular.module('robust-logs', [])
  * 
  */
 /**
- * bluebird build version 2.10.0
+ * bluebird build version 2.10.2
  * Features enabled: core, race, call_get, generators, map, nodeify, promisify, props, reduce, settle, some, cancel, using, filter, any, each, timers
 */
 !function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.Promise=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof _dereq_=="function"&&_dereq_;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof _dereq_=="function"&&_dereq_;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
@@ -3474,11 +3474,16 @@ function promisifyAll(obj, suffix, filter, promisifier) {
         var key = methods[i];
         var fn = methods[i+1];
         var promisifiedKey = key + suffix;
-        obj[promisifiedKey] = promisifier === makeNodePromisified
-                ? makeNodePromisified(key, THIS, key, fn, suffix)
-                : promisifier(fn, function() {
-                    return makeNodePromisified(key, THIS, key, fn, suffix);
-                });
+        if (promisifier === makeNodePromisified) {
+            obj[promisifiedKey] =
+                makeNodePromisified(key, THIS, key, fn, suffix);
+        } else {
+            var promisified = promisifier(fn, function() {
+                return makeNodePromisified(key, THIS, key, fn, suffix);
+            });
+            util.notEnumerableProp(promisified, "__isPromisified__", true);
+            obj[promisifiedKey] = promisified;
+        }
     }
     util.toFastProperties(obj);
     return obj;
@@ -4299,10 +4304,16 @@ var TimeoutError = Promise.TimeoutError;
 
 var afterTimeout = function (promise, message) {
     if (!promise.isPending()) return;
-    if (typeof message !== "string") {
-        message = "operation timed out";
+    
+    var err;
+    if(!util.isPrimitive(message) && (message instanceof Error)) {
+        err = message;
+    } else {
+        if (typeof message !== "string") {
+            message = "operation timed out";
+        }
+        err = new TimeoutError(message);
     }
-    var err = new TimeoutError(message);
     util.markAsOriginatingFromRejection(err);
     promise._attachExtraTrace(err);
     promise._cancel(err);
@@ -6775,68 +6786,7 @@ module.exports.RotatingFileStream = RotatingFileStream;
 module.exports.safeCycles = safeCycles;
 
 }).call(this,require('_process'),require("buffer").Buffer)
-},{"_process":29,"assert":15,"buffer":16,"events":20,"fs":14,"os":27,"safe-json-stringify":5,"util":49}],5:[function(require,module,exports){
-var hasProp = Object.prototype.hasOwnProperty;
-
-function throwsMessage(err) {
-	return '[Throws: ' + (err ? err.message : '?') + ']';
-}
-
-function safeGetValueFromPropertyOnObject(obj, property) {
-	if (hasProp.call(obj, property)) {
-		try {
-			return obj[property];
-		}
-		catch (err) {
-			return throwsMessage(err);
-		}
-	}
-
-	return obj[property];
-}
-
-function ensureProperties(obj) {
-	var seen = [ ]; // store references to objects we have seen before
-
-	function visit(obj) {
-		if (obj === null || typeof obj !== 'object') {
-			return obj;
-		}
-
-		if (seen.indexOf(obj) !== -1) {
-			return '[Circular]';
-		}
-		seen.push(obj);
-
-		if (typeof obj.toJSON === 'function') {
-			try {
-				return visit(obj.toJSON());
-			} catch(err) {
-				return throwsMessage(err);
-			}
-		}
-
-		if (Array.isArray(obj)) {
-			return obj.map(visit);
-		}
-
-		return Object.keys(obj).reduce(function(result, prop) {
-			// prevent faulty defined getter properties
-			result[prop] = visit(safeGetValueFromPropertyOnObject(obj, prop));
-			return result;
-		}, {});
-	};
-
-	return visit(obj);
-}
-
-module.exports = function(data) {
-	return JSON.stringify(ensureProperties(data));
-}
-
-module.exports.ensureProperties = ensureProperties;
-
-},{}],6:[function(require,module,exports){
+},{"_process":29,"assert":15,"buffer":16,"events":20,"fs":14,"os":27,"safe-json-stringify":7,"util":49}],5:[function(require,module,exports){
 exports = module.exports = stringify
 exports.getSerialize = serializer
 
@@ -6865,7 +6815,7 @@ function serializer(replacer, cycleReplacer) {
   }
 }
 
-},{}],7:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 (function (global){
 /**
  * @license
@@ -19220,6 +19170,67 @@ function serializer(replacer, cycleReplacer) {
 }.call(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],7:[function(require,module,exports){
+var hasProp = Object.prototype.hasOwnProperty;
+
+function throwsMessage(err) {
+	return '[Throws: ' + (err ? err.message : '?') + ']';
+}
+
+function safeGetValueFromPropertyOnObject(obj, property) {
+	if (hasProp.call(obj, property)) {
+		try {
+			return obj[property];
+		}
+		catch (err) {
+			return throwsMessage(err);
+		}
+	}
+
+	return obj[property];
+}
+
+function ensureProperties(obj) {
+	var seen = [ ]; // store references to objects we have seen before
+
+	function visit(obj) {
+		if (obj === null || typeof obj !== 'object') {
+			return obj;
+		}
+
+		if (seen.indexOf(obj) !== -1) {
+			return '[Circular]';
+		}
+		seen.push(obj);
+
+		if (typeof obj.toJSON === 'function') {
+			try {
+				return visit(obj.toJSON());
+			} catch(err) {
+				return throwsMessage(err);
+			}
+		}
+
+		if (Array.isArray(obj)) {
+			return obj.map(visit);
+		}
+
+		return Object.keys(obj).reduce(function(result, prop) {
+			// prevent faulty defined getter properties
+			result[prop] = visit(safeGetValueFromPropertyOnObject(obj, prop));
+			return result;
+		}, {});
+	};
+
+	return visit(obj);
+}
+
+module.exports = function(data) {
+	return JSON.stringify(ensureProperties(data));
+}
+
+module.exports.ensureProperties = ensureProperties;
+
 },{}],8:[function(require,module,exports){
 /**
  * @module logger
@@ -19603,7 +19614,7 @@ Goal.prototype.report = function (status, result) {
 
 // the fed is in a position where all of it's visible actions look good.  And all of it's bad actions are invisible.
 
-},{"json-stringify-safe":6}],9:[function(require,module,exports){
+},{"json-stringify-safe":5}],9:[function(require,module,exports){
 /**
  * @module loggly-plugin
  * @summary:
@@ -19798,7 +19809,7 @@ module.exports = function construct(config, plugins) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"bluebird":2,"buffer":16,"lodash":7,"stream":45,"util":49}],12:[function(require,module,exports){
+},{"bluebird":2,"buffer":16,"lodash":6,"stream":45,"util":49}],12:[function(require,module,exports){
 (function (Buffer){
 /**
  * @module rotating-file-max
@@ -19913,7 +19924,7 @@ module.exports = function construct(config, streamPromises) {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"bluebird":2,"buffer":16,"fs":14,"lodash":7,"path":28,"stream":45,"util":49}],13:[function(require,module,exports){
+},{"bluebird":2,"buffer":16,"fs":14,"lodash":6,"path":28,"stream":45,"util":49}],13:[function(require,module,exports){
 /**
  * @module win-with-logs
  * @summary: Provides logging client support, with a twist.
