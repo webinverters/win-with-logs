@@ -34,7 +34,7 @@ describe('win-with-logs', function() {
       it('outputs correctly', function() {
         log.debug('something happened')
         expect(streams.logStream.lastLine).to.contain('DEBUG')
-        expect(streams.logStream.lastLine).to.contain('(app=win-with-logs, module=int-test, env=test')
+        expect(streams.logStream.lastLine).to.contain('(app=win-with-logs, _component=int-test, env=test')
         expect(streams.logStream.lastLine).to.contain('something happened')
       })
     })
@@ -42,7 +42,7 @@ describe('win-with-logs', function() {
       it('outputs correctly', function() {
         log.info('something happened')
         expect(streams.logStream.lastLine).to.contain('INFO')
-        expect(streams.logStream.lastLine).to.contain('(app=win-with-logs, module=int-test, env=test')
+        expect(streams.logStream.lastLine).to.contain('(app=win-with-logs, _component=int-test, env=test')
         expect(streams.logStream.lastLine).to.contain('something happened')
       })
     })
@@ -50,7 +50,7 @@ describe('win-with-logs', function() {
       it('outputs correctly', function() {
         log('something happened')
         expect(streams.logStream.lastLine).to.contain('INFO')
-        expect(streams.logStream.lastLine).to.contain('(app=win-with-logs, module=int-test, env=test')
+        expect(streams.logStream.lastLine).to.contain('(app=win-with-logs, _component=int-test, env=test')
         expect(streams.logStream.lastLine).to.contain('something happened')
       })
     })
@@ -58,7 +58,7 @@ describe('win-with-logs', function() {
       it('outputs correctly', function() {
         log.fatal('something happened')
         expect(streams.logStream.lastLine).to.contain('FATAL')
-        expect(streams.logStream.lastLine).to.contain('(app=win-with-logs, module=int-test, env=test')
+        expect(streams.logStream.lastLine).to.contain('(app=win-with-logs, _component=int-test, env=test')
         expect(streams.logStream.lastLine).to.contain('something happened')
       })
     })
@@ -66,7 +66,7 @@ describe('win-with-logs', function() {
       it('outputs correctly', function() {
         log.warn('something happened')
         expect(streams.logStream.lastLine).to.contain('WARN')
-        expect(streams.logStream.lastLine).to.contain('(app=win-with-logs, module=int-test, env=test')
+        expect(streams.logStream.lastLine).to.contain('(app=win-with-logs, _component=int-test, env=test')
         expect(streams.logStream.lastLine).to.contain('something happened')
       })
     })
@@ -74,7 +74,7 @@ describe('win-with-logs', function() {
       it('outputs correctly', function() {
         log.error('something happened')
         expect(streams.logStream.lastLine).to.contain('ERROR')
-        expect(streams.logStream.lastLine).to.contain('(app=win-with-logs, module=int-test, env=test')
+        expect(streams.logStream.lastLine).to.contain('(app=win-with-logs, _component=int-test, env=test')
         expect(streams.logStream.lastLine).to.contain('something happened')
       })
       it('outputs error objects correctly with stack trace.', function() {

@@ -20031,7 +20031,7 @@ module.exports = function(config, axios) {
 
     return log.child({
       app:config.app,
-      component: config.component,
+      _component: config.component,
       env: config.env
     })
   }
