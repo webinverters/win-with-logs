@@ -147,6 +147,7 @@ module.exports = function(config, deps) {
   m.info = post.bind(m,'info')
   m.fatal = post.bind(m, 'fatal')
   m.error = post.bind(m, 'error')
+  m.logError = post.bind(m, 'error')
   m.warn = post.bind(m, 'warn')
   m.log = post.bind(m, 'info')
   m.method = createGoal.bind(m)
