@@ -19423,8 +19423,6 @@ module.exports = function(config, deps) {
   m.failSuppressed = function (error, __callDepth) {
     var result = {err: error}
 
-
-console.log('DETECTED GOAL ==== MOFUCKA CUNT ====')
     if (_context && _context.goalInstance) {
       result.goalReport = _context.goalInstance.report("failed")
     }
