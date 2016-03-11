@@ -27493,7 +27493,7 @@ module.exports = function(config, deps) {
   m.addEventHandler = function(eventLabel, handler) {
     _context.observers[eventLabel] = _context.observers[eventLabel] || [];
     _context.observers[eventLabel].push(handler);
-    _observers[eventLabel] = _observers[eventLabel]
+    _observers[eventLabel] = _observers[eventLabel] || []
     _observers[eventLabel].push(handler)
   }
 
