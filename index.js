@@ -18,8 +18,7 @@
   global.debug = require('debug')('robust-logs')
 
   module.exports = function construct(config) {
-    config = config ? config : {};
-    config = _.defaults(config, {
+    config = _.defaults(config.logging || config || {}, {
       env: 'dev',
       silent: false, // if true, disables console logging
       debug: false,

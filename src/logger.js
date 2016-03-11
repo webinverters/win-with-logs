@@ -16,7 +16,7 @@
      sourceMapSupport = null;
  }
 
-var _plugins
+var _plugins, _observers = {}
 module.exports = function(config, deps) {
   var m = post.bind(null,'info'), _context = deps.context || {},
     log = deps.log
@@ -28,6 +28,9 @@ module.exports = function(config, deps) {
 
   _plugins = deps.plugins || _plugins
 
+  // bluebird deprecated the defer() method, and I'm not sure how to
+  // refactor the code to use the new method so I"ll jsut add my own
+  // version of defer() for now.
   function defer() {
     var resolve, reject;
     var promise = new Promise(function() {
@@ -237,20 +240,32 @@ module.exports = function(config, deps) {
     return m.result(result)
   }
 
+
+  /**
+   * Checks for any event handlers that match this event label and runs them
+   * all.
+   *
+   * @param  {type} eventLabel description
+   * @param  {type} details    description
+   * @param  {type} options    description
+   * @return {type}            description
+   */
   m.processEventHandlers = function(eventLabel, details, options) {
     var event = {
       eventName: eventLabel,
       handled: false
     };
 
-    //console.log('processing event:', eventLabel)
     if (_context.observers[eventLabel]) {
-      //console.log('handling event:', eventLabel)
       return p.map(_context.observers[eventLabel], function(cb) {
         if (!event.handled) return cb(event, details);
       }, {concurrency: 1})
     } else if (m.parent) {
       return m.parent.processEventHandlers(eventLabel, details, options)
+    } else if (_observers[eventLabel]) {
+      return p.map(_observers[eventLabel], function(cb) {
+        if (!event.handled) return cb(event, details);
+      }, {concurrency: 1})
     }
     return p.resolve()
   }
@@ -258,7 +273,10 @@ module.exports = function(config, deps) {
   m.addEventHandler = function(eventLabel, handler) {
     _context.observers[eventLabel] = _context.observers[eventLabel] || [];
     _context.observers[eventLabel].push(handler);
+    _observers[eventLabel] = _observers[eventLabel]
+    _observers[eventLabel].push(handler)
   }
+
   m.on = m.addEventHandler
 
   m.timestamp = function (kind) {
