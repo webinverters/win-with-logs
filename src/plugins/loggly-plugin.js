@@ -1,4 +1,15 @@
 /**
+* @Author: Robustly.io <Auto>
+* @Date:   2016-03-17T00:23:08-04:00
+* @Email:  m0ser@robustly.io
+* @Last modified by:   Auto
+* @Last modified time: 2016-03-18T00:23:04-04:00
+* @License: Apache-2.0
+*/
+
+
+
+/**
  * @module loggly-plugin
  * @summary:
  *
@@ -37,13 +48,14 @@ module.exports = function(config, axios) {
       username: config.plugins.loggly.user,
       password: config.plugins.loggly.password
     },
-    baseURL: 'https://webinverters.loggly.com/apiv2/'
+    baseURL: config.plugins.loggly.baseURL
   })
 
   m.send = function(logEvent) {
     debug('converting log event to json')
     var json = JSON.parse(logEvent.toString())
     json.timestamp = json.time
+    delete json.time
     debug('result json:', json)
 
     return http.post('/', json)

@@ -27619,6 +27619,17 @@ Goal.prototype.report = function (status, result) {
 
 },{"json-stringify-safe":49}],53:[function(require,module,exports){
 /**
+* @Author: Robustly.io <Auto>
+* @Date:   2016-03-17T00:23:08-04:00
+* @Email:  m0ser@robustly.io
+* @Last modified by:   Auto
+* @Last modified time: 2016-03-18T00:23:04-04:00
+* @License: Apache-2.0
+*/
+
+
+
+/**
  * @module loggly-plugin
  * @summary:
  *
@@ -27657,13 +27668,14 @@ module.exports = function(config, axios) {
       username: config.plugins.loggly.user,
       password: config.plugins.loggly.password
     },
-    baseURL: 'https://webinverters.loggly.com/apiv2/'
+    baseURL: config.plugins.loggly.baseURL
   })
 
   m.send = function(logEvent) {
     debug('converting log event to json')
     var json = JSON.parse(logEvent.toString())
     json.timestamp = json.time
+    delete json.time
     debug('result json:', json)
 
     return http.post('/', json)
@@ -27929,6 +27941,17 @@ module.exports = function construct(config, streamPromises) {
 }).call(this,require("buffer").Buffer)
 },{"bluebird":46,"buffer":5,"fs":1,"lodash":50,"path":15,"stream":32,"util":43}],57:[function(require,module,exports){
 /**
+* @Author: Robustly.io <Auto>
+* @Date:   2016-03-24T04:30:48-04:00
+* @Email:  m0ser@robustly.io
+* @Last modified by:   Auto
+* @Last modified time: 2016-03-24T04:30:51-04:00
+* @License: Apache-2.0
+*/
+
+
+
+/**
  * @module win-with-logs
  * @summary: Provides logging client support, with a twist.
  *
@@ -27950,7 +27973,7 @@ var logStreams = {
 }
 
 module.exports = function(config, axios) {
-  var isNotBrowser = (typeof module !== 'undefined' && this.module !== module && typeof window === 'undefined')
+  var isNotBrowser = config.isNotBrowser || (typeof module !== 'undefined' && this.module !== module && typeof window === 'undefined')
   var m = new WinWithLogs()
 
   var logStreamCompletionPromises = {}

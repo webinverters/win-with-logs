@@ -1,3 +1,14 @@
+/**
+* @Author: Robustly.io <Auto>
+* @Date:   2016-03-18T00:21:34-04:00
+* @Email:  m0ser@robustly.io
+* @Last modified by:   Auto
+* @Last modified time: 2016-03-18T00:21:36-04:00
+* @License: Apache-2.0
+*/
+
+
+
 var randomstring = require("randomstring");
 
 describe('loggly integration', function() {
@@ -11,7 +22,8 @@ describe('loggly integration', function() {
         loggly: {
           token: process.env.LOGGING_TOKEN,
           user: process.env.LOGGING_USER,
-          password: process.env.LOGGING_PW
+          password: process.env.LOGGING_PW,
+          baseURL: 'https://webinverters.loggly.com/apiv2/'
         }
       }
     })

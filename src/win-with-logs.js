@@ -1,4 +1,15 @@
 /**
+* @Author: Robustly.io <Auto>
+* @Date:   2016-03-24T04:30:48-04:00
+* @Email:  m0ser@robustly.io
+* @Last modified by:   Auto
+* @Last modified time: 2016-03-24T04:30:51-04:00
+* @License: Apache-2.0
+*/
+
+
+
+/**
  * @module win-with-logs
  * @summary: Provides logging client support, with a twist.
  *
@@ -20,7 +31,7 @@ var logStreams = {
 }
 
 module.exports = function(config, axios) {
-  var isNotBrowser = (typeof module !== 'undefined' && this.module !== module && typeof window === 'undefined')
+  var isNotBrowser = config.isNotBrowser || (typeof module !== 'undefined' && this.module !== module && typeof window === 'undefined')
   var m = new WinWithLogs()
 
   var logStreamCompletionPromises = {}
