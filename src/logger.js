@@ -1,4 +1,15 @@
 /**
+* @Author: Robustly.io <Auto>
+* @Date:   2016-03-24T04:39:49-04:00
+* @Email:  m0ser@robustly.io
+* @Last modified by:   Auto
+* @Last modified time: 2016-05-06T10:41:37-04:00
+* @License: Apache-2.0
+*/
+
+
+
+/**
  * @module logger
  * @summary: Provides a logger instance.
  *
@@ -291,6 +302,7 @@ module.exports = function(config, deps) {
 
 function ErrorReport(err, errorCode, details) {
   this.message = errorCode;
+  this.code = err.code || errorCode
 
   this.what = errorCode;
   if (err && err.details && _.isObject(err.details))
