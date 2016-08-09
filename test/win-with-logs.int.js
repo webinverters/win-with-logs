@@ -29,7 +29,7 @@ describe('win-with-logs', function() {
     log = ModuleUnderTest(mConfig)
   })
 
-  describe('Console Logging', function() {
+  describe('@Console Logging', function() {
     describe('debug level', function() {
       it('outputs correctly', function() {
         log.debug('something happened')
