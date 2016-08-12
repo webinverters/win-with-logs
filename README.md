@@ -27,6 +27,10 @@ npm install -g kinesalite
 
 Let people know how they can dive into the project, include important links to things like issue trackers, irc, twitter accounts if applicable.
 
+## Release new version and publish
+
+./publish.sh "commit message"
+
 ## License
 
 A short snippet describing the license (MIT, Apache, etc.)
