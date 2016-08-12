@@ -17,8 +17,10 @@ var fs = require('fs'),
   kinesis = require('kinesis'),
   KinesisStream = kinesis.KinesisStream;
 
-var _ = require('lodash'),
-    p = require('bluebird')
+  var _ = require('lodash'),
+    p = require('bluebird'),
+    Promise = p,
+    debug = require('debug')('robust-logs')
 
 
 module.exports = function construct(config, sewer) {

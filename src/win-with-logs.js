@@ -19,6 +19,10 @@
  * Created On: 2015-10-28.
  * @license Apache-2.0
  */
+ var _ = require('lodash'),
+   p = require('bluebird'),
+   Promise = p,
+   debug = require('debug')('robust-logs')
 
 var bunyan = require('bunyan')
 var Logger = require('./logger')
@@ -65,7 +69,7 @@ module.exports = function(config, axios) {
     if (!config.silent && isNotBrowser) {
       var PrettyStream = require('bunyan-prettystream')
       var prettyStdOut = new PrettyStream({mode:config.logMode || 'short'})
-      prettyStdOut.pipe(config.logStream);
+      prettyStdOut.pipe(config.logStream == 'stdout' ? process.stdout : config.logStream)
       if (config.debug) {
         bunyanConf.streams.push(
           {
@@ -106,7 +110,7 @@ module.exports = function(config, axios) {
 
       bunyanConf.streams.push({
         name: 'plugin',
-        level: 'debug',
+        level: 'info',
         type: 'raw',
         stream: PluginStream(config, _plugins)
       })
@@ -125,9 +129,9 @@ module.exports = function(config, axios) {
     })
 
     return log.child({
-      app:config.app,
+      _app:config.app,
       _component: config.component,
-      env: config.env
+      _env: config.env
     })
   }
 

@@ -21,36 +21,39 @@ describe('loggly integration', function() {
       plugins: {
         loggly: {
           token: process.env.LOGGING_TOKEN,
-          user: process.env.LOGGING_USER,
-          password: process.env.LOGGING_PW,
-          baseURL: 'https://webinverters.loggly.com/apiv2/'
+          bufferSize: 5
         }
       }
     })
   })
 
-  describe('log.info', function() {
-    this.timeout(120000)
-    it('event is queryable.', function() {
+  describe('log()', function() {
+    // MANUAL EXPECT: manually check that 6 events in total were sent
+    // since the bufferSize is set to 5 in the config above.
+    it('buffers non errors until an error happens', function() {
       var logString = randomstring.generate({
             length: 12,
             charset: 'alphabetic'
           })
 
-      log.info(logString, {
-        somethingId: 1,
-        description: 'xyz123',
-        tag: 'AWESOME_MEASUREMENT',
-        measurement: Math.round(Math.random()*100)
+      _.each(_.range(10), function(i) {
+        log('TEST', {val: i})
       })
 
-      return p.delay(15000).then(function() {
-          return log.query('json.msg:'+logString, {})
-            .then(function(result) {
-              debug('RESULT=', result)
-              expect(result.length).to.equal(1)
-              expect(result[0].event.json.details.somethingId).to.equal(1)
-            })
+      return log.error('FAILURE_OCCURRED')
+        .delay(15000)
+        .then(function() {
+          log('RESULT:', arguments)
+        })
+    })
+
+    // MANUAL EXPECT: ensure WARN_TEST was sent to loggly, but not LOG_WARN
+    it('pushes warnings (and doesnt empty buffer)', function() {
+      log('LOG_WARN')
+      return log.warn('WARN_TEST')
+        .delay(15000)
+        .then(function() {
+          log('RESULT:', arguments)
         })
     })
   })

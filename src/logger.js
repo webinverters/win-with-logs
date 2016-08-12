@@ -27,6 +27,11 @@
      sourceMapSupport = null;
  }
 
+ var _ = require('lodash'),
+   p = require('bluebird'),
+   Promise = p,
+   debug = require('debug')('robust-logs')
+
 var _plugins, _observers = {}
 module.exports = function(config, deps) {
   var m = post.bind(null,'info'), _context = deps.context || {},
@@ -164,6 +169,7 @@ module.exports = function(config, deps) {
   m.logError = post.bind(m, 'error')
   m.warn = post.bind(m, 'warn')
   m.log = post.bind(m, 'info')
+  m.trace = post.bind(m,'trace')
   m.method = createGoal.bind(m)
   m.goal = createGoal.bind(m)
   m.query = _plugins['loggly'] ? _plugins['loggly'].query : function() {
@@ -236,7 +242,7 @@ module.exports = function(config, deps) {
     }
   }
 
-  m.result = function(result) {
+  m.pass = m.result = function(result) {
     if (_context && _context.goalInstance) {
       m.log('Finished '+_context.goalInstance.name, {
         goalReport: _context.goalInstance.report('succeeded', result)
@@ -246,11 +252,6 @@ module.exports = function(config, deps) {
     }
     return result
   }
-
-  m.setResult = function(result) {
-    return m.result(result)
-  }
-
 
   /**
    * Checks for any event handlers that match this event label and runs them

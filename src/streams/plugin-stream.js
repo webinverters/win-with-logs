@@ -28,7 +28,8 @@ module.exports = function construct(config, plugins) {
   util.inherits(PluginStream, Writable);
   PluginStream.prototype._write = function(chunk, encoding, done) {
     _.each(plugins, function(plugin,name) {
-      plugin.send((new Buffer(JSON.stringify(chunk))))
+      if (plugin.process) plugin.process(chunk)
+      if (plugin.send) plugin.send((new Buffer(JSON.stringify(chunk))))
     })
     done()
   }

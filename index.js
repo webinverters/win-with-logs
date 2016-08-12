@@ -12,17 +12,17 @@
 'use strict';
 
 
-  global._ = require('lodash')
-  global.p = require('bluebird')
-  global.Promise = p
-  global.debug = require('debug')('robust-logs')
+  var _ = require('lodash'),
+    p = require('bluebird'),
+    debug = require('debug')('robust-logs')
 
   module.exports = function construct(config) {
-    config = _.defaults(config.logging || config || {}, {
+    if (config && config.logging) config = config.logging
+    config = _.defaults(config || {}, {
       env: 'dev',
       silent: false, // if true, disables console logging
       debug: false,
-      logStream: process.stdout,
+      logStream: 'stdout',
       logStreams: [],
       streams: []  // advanced: custom streams can be subscribed for plugin support.
     });

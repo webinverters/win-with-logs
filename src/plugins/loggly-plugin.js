@@ -19,6 +19,12 @@
  * Created On: 2015-10-28.
  * @license Apache-2.0
  */
+ var _ = require('lodash'),
+   p = require('bluebird'),
+   Promise = p,
+   debug = require('debug')('robust-logs')
+   
+var FixedQueue = require('fixedqueue').FixedQueue
 
 module.exports = function(config, axios) {
   var m = new LogglyPlugin()
@@ -34,7 +40,7 @@ module.exports = function(config, axios) {
   debug('_tags:', _tags)
 
   var axiosConfig = {
-    baseURL: config.plugins.loggly.baseURL + config.plugins.loggly.token,
+    baseURL: config.plugins.loggly.baseURL + config.plugins.loggly.token + '/tag/bulk',
     //timeout: 1000,
     headers: {
       'X-LOGGLY-TAG': _tags,
@@ -42,23 +48,45 @@ module.exports = function(config, axios) {
     }
   }
 
-  var http = axios.create(axiosConfig)
-  var queryEndpoint = axios.create({
-    auth: {
-      username: config.plugins.loggly.user,
-      password: config.plugins.loggly.password
-    },
-    baseURL: config.plugins.loggly.baseURL
-  })
+  var queue = FixedQueue(config.plugins.loggly.bufferSize || 50)
 
-  m.send = function(logEvent) {
-    debug('converting log event to json')
-    var json = JSON.parse(logEvent.toString())
-    json.timestamp = json.time
-    delete json.time
-    debug('result json:', json)
+  function flushLogBuffer() {
+    // debug('QUEUE', queue)
+    var events = []
+    while(queue.length) {
+      events.push(queue.shift())
+    }
+    return events
+  }
 
-    return http.post('/', json)
+  m.process = function(logEvent) {
+    debug('Process:', logEvent)
+    logEvent.timestamp = logEvent.time
+    delete logEvent.time
+
+    // errors are sent with up to 5mb of previous events.
+    if(logEvent.level >= 50) {
+      var errorLog = flushLogBuffer()
+      // debug('ERROR LOG:', errorLog)
+      errorLog.push(logEvent)
+      return p.map(errorLog, function(logEvent) {
+        return sendToLoggly(logEvent)
+      }, {concurrency: 6})
+    }
+    // warnings are sent as individual events.
+    else if (logEvent.level == 40) {
+      sendToLoggly(logEvent)
+    }
+    else {
+      queue.enqueue(logEvent)
+    }
+  }
+
+  function sendToLoggly(logEvent) {
+    var http = axios.create(axiosConfig)
+
+    debug('SENDING', logEvent)
+    return http.post('/', logEvent)
       .then(function(res) {
         debug('BOOYEAH', res)
       })
@@ -68,6 +96,14 @@ module.exports = function(config, axios) {
       })
   }
 
+
+  var queryEndpoint = axios.create({
+    auth: {
+      username: config.plugins.loggly.user,
+      password: config.plugins.loggly.password
+    },
+    baseURL: config.plugins.loggly.baseURL
+  })
 /**
  * q	required	query string, check out the Search Query help
 
