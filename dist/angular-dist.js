@@ -8265,7 +8265,7 @@ angular.module('robust-logs', [])
     return Log
   }])
 
-},{"./src/win-with-logs":57}],46:[function(require,module,exports){
+},{"./src/win-with-logs":61}],46:[function(require,module,exports){
 (function (process,global){
 /* @preserve
  * The MIT License (MIT)
@@ -15149,7 +15149,418 @@ module.exports.RotatingFileStream = RotatingFileStream;
 module.exports.safeCycles = safeCycles;
 
 }).call(this,{"isBuffer":require("../../../../../.nvm/versions/node/v6.3.1/lib/node_modules/browserify/node_modules/is-buffer/index.js")},require('_process'))
-},{"../../../../../.nvm/versions/node/v6.3.1/lib/node_modules/browserify/node_modules/is-buffer/index.js":12,"_process":17,"assert":2,"events":9,"fs":1,"os":14,"safe-json-stringify":51,"stream":32,"util":43}],49:[function(require,module,exports){
+},{"../../../../../.nvm/versions/node/v6.3.1/lib/node_modules/browserify/node_modules/is-buffer/index.js":12,"_process":17,"assert":2,"events":9,"fs":1,"os":14,"safe-json-stringify":55,"stream":32,"util":43}],49:[function(require,module,exports){
+
+/**
+ * This is the web browser implementation of `debug()`.
+ *
+ * Expose `debug()` as the module.
+ */
+
+exports = module.exports = require('./debug');
+exports.log = log;
+exports.formatArgs = formatArgs;
+exports.save = save;
+exports.load = load;
+exports.useColors = useColors;
+exports.storage = 'undefined' != typeof chrome
+               && 'undefined' != typeof chrome.storage
+                  ? chrome.storage.local
+                  : localstorage();
+
+/**
+ * Colors.
+ */
+
+exports.colors = [
+  'lightseagreen',
+  'forestgreen',
+  'goldenrod',
+  'dodgerblue',
+  'darkorchid',
+  'crimson'
+];
+
+/**
+ * Currently only WebKit-based Web Inspectors, Firefox >= v31,
+ * and the Firebug extension (any Firefox version) are known
+ * to support "%c" CSS customizations.
+ *
+ * TODO: add a `localStorage` variable to explicitly enable/disable colors
+ */
+
+function useColors() {
+  // is webkit? http://stackoverflow.com/a/16459606/376773
+  return ('WebkitAppearance' in document.documentElement.style) ||
+    // is firebug? http://stackoverflow.com/a/398120/376773
+    (window.console && (console.firebug || (console.exception && console.table))) ||
+    // is firefox >= v31?
+    // https://developer.mozilla.org/en-US/docs/Tools/Web_Console#Styling_messages
+    (navigator.userAgent.toLowerCase().match(/firefox\/(\d+)/) && parseInt(RegExp.$1, 10) >= 31);
+}
+
+/**
+ * Map %j to `JSON.stringify()`, since no Web Inspectors do that by default.
+ */
+
+exports.formatters.j = function(v) {
+  return JSON.stringify(v);
+};
+
+
+/**
+ * Colorize log arguments if enabled.
+ *
+ * @api public
+ */
+
+function formatArgs() {
+  var args = arguments;
+  var useColors = this.useColors;
+
+  args[0] = (useColors ? '%c' : '')
+    + this.namespace
+    + (useColors ? ' %c' : ' ')
+    + args[0]
+    + (useColors ? '%c ' : ' ')
+    + '+' + exports.humanize(this.diff);
+
+  if (!useColors) return args;
+
+  var c = 'color: ' + this.color;
+  args = [args[0], c, 'color: inherit'].concat(Array.prototype.slice.call(args, 1));
+
+  // the final "%c" is somewhat tricky, because there could be other
+  // arguments passed either before or after the %c, so we need to
+  // figure out the correct index to insert the CSS into
+  var index = 0;
+  var lastC = 0;
+  args[0].replace(/%[a-z%]/g, function(match) {
+    if ('%%' === match) return;
+    index++;
+    if ('%c' === match) {
+      // we only are interested in the *last* %c
+      // (the user may have provided their own)
+      lastC = index;
+    }
+  });
+
+  args.splice(lastC, 0, c);
+  return args;
+}
+
+/**
+ * Invokes `console.log()` when available.
+ * No-op when `console.log` is not a "function".
+ *
+ * @api public
+ */
+
+function log() {
+  // this hackery is required for IE8/9, where
+  // the `console.log` function doesn't have 'apply'
+  return 'object' === typeof console
+    && console.log
+    && Function.prototype.apply.call(console.log, console, arguments);
+}
+
+/**
+ * Save `namespaces`.
+ *
+ * @param {String} namespaces
+ * @api private
+ */
+
+function save(namespaces) {
+  try {
+    if (null == namespaces) {
+      exports.storage.removeItem('debug');
+    } else {
+      exports.storage.debug = namespaces;
+    }
+  } catch(e) {}
+}
+
+/**
+ * Load `namespaces`.
+ *
+ * @return {String} returns the previously persisted debug modes
+ * @api private
+ */
+
+function load() {
+  var r;
+  try {
+    r = exports.storage.debug;
+  } catch(e) {}
+  return r;
+}
+
+/**
+ * Enable namespaces listed in `localStorage.debug` initially.
+ */
+
+exports.enable(load());
+
+/**
+ * Localstorage attempts to return the localstorage.
+ *
+ * This is necessary because safari throws
+ * when a user disables cookies/localstorage
+ * and you attempt to access it.
+ *
+ * @return {LocalStorage}
+ * @api private
+ */
+
+function localstorage(){
+  try {
+    return window.localStorage;
+  } catch (e) {}
+}
+
+},{"./debug":50}],50:[function(require,module,exports){
+
+/**
+ * This is the common logic for both the Node.js and web browser
+ * implementations of `debug()`.
+ *
+ * Expose `debug()` as the module.
+ */
+
+exports = module.exports = debug;
+exports.coerce = coerce;
+exports.disable = disable;
+exports.enable = enable;
+exports.enabled = enabled;
+exports.humanize = require('ms');
+
+/**
+ * The currently active debug mode names, and names to skip.
+ */
+
+exports.names = [];
+exports.skips = [];
+
+/**
+ * Map of special "%n" handling functions, for the debug "format" argument.
+ *
+ * Valid key names are a single, lowercased letter, i.e. "n".
+ */
+
+exports.formatters = {};
+
+/**
+ * Previously assigned color.
+ */
+
+var prevColor = 0;
+
+/**
+ * Previous log timestamp.
+ */
+
+var prevTime;
+
+/**
+ * Select a color.
+ *
+ * @return {Number}
+ * @api private
+ */
+
+function selectColor() {
+  return exports.colors[prevColor++ % exports.colors.length];
+}
+
+/**
+ * Create a debugger with the given `namespace`.
+ *
+ * @param {String} namespace
+ * @return {Function}
+ * @api public
+ */
+
+function debug(namespace) {
+
+  // define the `disabled` version
+  function disabled() {
+  }
+  disabled.enabled = false;
+
+  // define the `enabled` version
+  function enabled() {
+
+    var self = enabled;
+
+    // set `diff` timestamp
+    var curr = +new Date();
+    var ms = curr - (prevTime || curr);
+    self.diff = ms;
+    self.prev = prevTime;
+    self.curr = curr;
+    prevTime = curr;
+
+    // add the `color` if not set
+    if (null == self.useColors) self.useColors = exports.useColors();
+    if (null == self.color && self.useColors) self.color = selectColor();
+
+    var args = Array.prototype.slice.call(arguments);
+
+    args[0] = exports.coerce(args[0]);
+
+    if ('string' !== typeof args[0]) {
+      // anything else let's inspect with %o
+      args = ['%o'].concat(args);
+    }
+
+    // apply any `formatters` transformations
+    var index = 0;
+    args[0] = args[0].replace(/%([a-z%])/g, function(match, format) {
+      // if we encounter an escaped % then don't increase the array index
+      if (match === '%%') return match;
+      index++;
+      var formatter = exports.formatters[format];
+      if ('function' === typeof formatter) {
+        var val = args[index];
+        match = formatter.call(self, val);
+
+        // now we need to remove `args[index]` since it's inlined in the `format`
+        args.splice(index, 1);
+        index--;
+      }
+      return match;
+    });
+
+    if ('function' === typeof exports.formatArgs) {
+      args = exports.formatArgs.apply(self, args);
+    }
+    var logFn = enabled.log || exports.log || console.log.bind(console);
+    logFn.apply(self, args);
+  }
+  enabled.enabled = true;
+
+  var fn = exports.enabled(namespace) ? enabled : disabled;
+
+  fn.namespace = namespace;
+
+  return fn;
+}
+
+/**
+ * Enables a debug mode by namespaces. This can include modes
+ * separated by a colon and wildcards.
+ *
+ * @param {String} namespaces
+ * @api public
+ */
+
+function enable(namespaces) {
+  exports.save(namespaces);
+
+  var split = (namespaces || '').split(/[\s,]+/);
+  var len = split.length;
+
+  for (var i = 0; i < len; i++) {
+    if (!split[i]) continue; // ignore empty strings
+    namespaces = split[i].replace(/\*/g, '.*?');
+    if (namespaces[0] === '-') {
+      exports.skips.push(new RegExp('^' + namespaces.substr(1) + '$'));
+    } else {
+      exports.names.push(new RegExp('^' + namespaces + '$'));
+    }
+  }
+}
+
+/**
+ * Disable debug output.
+ *
+ * @api public
+ */
+
+function disable() {
+  exports.enable('');
+}
+
+/**
+ * Returns true if the given mode name is enabled, false otherwise.
+ *
+ * @param {String} name
+ * @return {Boolean}
+ * @api public
+ */
+
+function enabled(name) {
+  var i, len;
+  for (i = 0, len = exports.skips.length; i < len; i++) {
+    if (exports.skips[i].test(name)) {
+      return false;
+    }
+  }
+  for (i = 0, len = exports.names.length; i < len; i++) {
+    if (exports.names[i].test(name)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Coerce `val`.
+ *
+ * @param {Mixed} val
+ * @return {Mixed}
+ * @api private
+ */
+
+function coerce(val) {
+  if (val instanceof Error) return val.stack || val.message;
+  return val;
+}
+
+},{"ms":54}],51:[function(require,module,exports){
+var FixedQueue = function(s, startingValues) {
+  startingValues = (startingValues || [])
+  queue = Array.apply( null, startingValues );
+  queue.permittedAmount = s;
+  queue.trimTail    = FixedQueue.trimTail
+  queue.trimHead    = FixedQueue.trimHead
+  queue.push        = FixedQueue.push
+  queue.unshift     = FixedQueue.unshift
+  queue.splice      = FixedQueue.splice
+  queue.enqueue     = FixedQueue.enqueue
+  queue.dequeue     = FixedQueue.dequeue
+  FixedQueue.trimTail.call( queue );
+  return queue;
+};
+
+FixedQueue.trimTail = function() {
+  if (this.length <= this.fixedSize){ return; }
+  Array.prototype.splice.call(this,this.permittedAmount,(this.length - this.permittedAmount));
+};
+
+FixedQueue.trimHead = function() {
+  if (this.length <= this.fixedSize){ return; }
+  Array.prototype.splice.call(this,0,(this.length - this.permittedAmount));
+};
+
+FixedQueue.registerCallback = function( callbackName, trimMethod ){
+  var wrapper = function(){
+    var callback = Array.prototype[ callbackName ];
+    var result = callback.apply( this, arguments );
+    trimMethod.call( this );
+    return( result );
+  };
+  return wrapper;
+};
+
+FixedQueue.push    = FixedQueue.registerCallback("push",   FixedQueue.trimHead);
+FixedQueue.splice  = FixedQueue.registerCallback("splice", FixedQueue.trimTail);
+FixedQueue.unshift = FixedQueue.registerCallback("unshift",FixedQueue.trimTail);
+FixedQueue.enqueue = FixedQueue.push
+FixedQueue.dequeue = FixedQueue.unshift
+exports.FixedQueue = FixedQueue;
+},{}],52:[function(require,module,exports){
 exports = module.exports = stringify
 exports.getSerialize = serializer
 
@@ -15178,7 +15589,7 @@ function serializer(replacer, cycleReplacer) {
   }
 }
 
-},{}],50:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 (function (global){
 /**
  * @license
@@ -15194,7 +15605,7 @@ function serializer(replacer, cycleReplacer) {
   var undefined;
 
   /** Used as the semantic version number. */
-  var VERSION = '4.14.1';
+  var VERSION = '4.14.2';
 
   /** Used as the size to enable large array optimizations. */
   var LARGE_ARRAY_SIZE = 200;
@@ -15316,7 +15727,7 @@ function serializer(replacer, cycleReplacer) {
 
   /**
    * Used to match `RegExp`
-   * [syntax characters](http://ecma-international.org/ecma-262/6.0/#sec-patterns).
+   * [syntax characters](http://ecma-international.org/ecma-262/7.0/#sec-patterns).
    */
   var reRegExpChar = /[\\^$.*+?()[\]{}|]/g,
       reHasRegExpChar = RegExp(reRegExpChar.source);
@@ -15339,7 +15750,7 @@ function serializer(replacer, cycleReplacer) {
 
   /**
    * Used to match
-   * [ES template delimiters](http://ecma-international.org/ecma-262/6.0/#sec-template-literal-lexical-components).
+   * [ES template delimiters](http://ecma-international.org/ecma-262/7.0/#sec-template-literal-lexical-components).
    */
   var reEsTemplate = /\$\{([^\\}]*(?:\\.[^\\}]*)*)\}/g;
 
@@ -15448,9 +15859,9 @@ function serializer(replacer, cycleReplacer) {
   var contextProps = [
     'Array', 'Buffer', 'DataView', 'Date', 'Error', 'Float32Array', 'Float64Array',
     'Function', 'Int8Array', 'Int16Array', 'Int32Array', 'Map', 'Math', 'Object',
-    'Promise', 'Reflect', 'RegExp', 'Set', 'String', 'Symbol', 'TypeError',
-    'Uint8Array', 'Uint8ClampedArray', 'Uint16Array', 'Uint32Array', 'WeakMap',
-    '_', 'clearTimeout', 'isFinite', 'parseInt', 'setTimeout'
+    'Promise', 'RegExp', 'Set', 'String', 'Symbol', 'TypeError', 'Uint8Array',
+    'Uint8ClampedArray', 'Uint16Array', 'Uint32Array', 'WeakMap', '_', 'clearTimeout',
+    'isFinite', 'parseInt', 'setTimeout'
   ];
 
   /** Used to make template sourceURLs easier to identify. */
@@ -16311,7 +16722,7 @@ function serializer(replacer, cycleReplacer) {
   }
 
   /**
-   * Creates a function that invokes `func` with its first argument transformed.
+   * Creates a unary function that invokes `func` with its argument transformed.
    *
    * @private
    * @param {Function} func The function to wrap.
@@ -16464,7 +16875,6 @@ function serializer(replacer, cycleReplacer) {
 
     /** Built-in constructor references. */
     var Array = context.Array,
-        Date = context.Date,
         Error = context.Error,
         Math = context.Math,
         RegExp = context.RegExp,
@@ -16498,7 +16908,7 @@ function serializer(replacer, cycleReplacer) {
 
     /**
      * Used to resolve the
-     * [`toStringTag`](http://ecma-international.org/ecma-262/6.0/#sec-object.prototype.tostring)
+     * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
      * of values.
      */
     var objectToString = objectProto.toString;
@@ -16514,29 +16924,28 @@ function serializer(replacer, cycleReplacer) {
 
     /** Built-in value references. */
     var Buffer = moduleExports ? context.Buffer : undefined,
-        Reflect = context.Reflect,
         Symbol = context.Symbol,
         Uint8Array = context.Uint8Array,
-        enumerate = Reflect ? Reflect.enumerate : undefined,
+        getPrototype = overArg(Object.getPrototypeOf, Object),
         iteratorSymbol = Symbol ? Symbol.iterator : undefined,
         objectCreate = context.Object.create,
         propertyIsEnumerable = objectProto.propertyIsEnumerable,
         splice = arrayProto.splice,
         spreadableSymbol = Symbol ? Symbol.isConcatSpreadable : undefined;
 
-    /** Built-in method references that are mockable. */
-    var clearTimeout = function(id) { return context.clearTimeout.call(root, id); },
-        setTimeout = function(func, wait) { return context.setTimeout.call(root, func, wait); };
+    /** Mocked built-ins. */
+    var ctxClearTimeout = context.clearTimeout !== root.clearTimeout && context.clearTimeout,
+        ctxNow = context.Date && context.Date.now !== root.Date.now && context.Date.now,
+        ctxSetTimeout = context.setTimeout !== root.setTimeout && context.setTimeout;
 
     /* Built-in method references for those with the same name as other `lodash` methods. */
     var nativeCeil = Math.ceil,
         nativeFloor = Math.floor,
-        nativeGetPrototype = Object.getPrototypeOf,
         nativeGetSymbols = Object.getOwnPropertySymbols,
         nativeIsBuffer = Buffer ? Buffer.isBuffer : undefined,
         nativeIsFinite = context.isFinite,
         nativeJoin = arrayProto.join,
-        nativeKeys = Object.keys,
+        nativeKeys = overArg(Object.keys, Object),
         nativeMax = Math.max,
         nativeMin = Math.min,
         nativeParseInt = context.parseInt,
@@ -17384,6 +17793,31 @@ function serializer(replacer, cycleReplacer) {
     /*------------------------------------------------------------------------*/
 
     /**
+     * Creates an array of the enumerable property names of the array-like `value`.
+     *
+     * @private
+     * @param {*} value The value to query.
+     * @param {boolean} inherited Specify returning inherited property names.
+     * @returns {Array} Returns the array of property names.
+     */
+    function arrayLikeKeys(value, inherited) {
+      var result = (isArray(value) || isString(value) || isArguments(value))
+        ? baseTimes(value.length, String)
+        : [];
+
+      var length = result.length,
+          skipIndexes = !!length;
+
+      for (var key in value) {
+        if ((inherited || hasOwnProperty.call(value, key)) &&
+            !(skipIndexes && (key == 'length' || isIndex(key, length)))) {
+          result.push(key);
+        }
+      }
+      return result;
+    }
+
+    /**
      * Used by `_.defaults` to customize its `_.assignIn` use.
      *
      * @private
@@ -17419,7 +17853,7 @@ function serializer(replacer, cycleReplacer) {
 
     /**
      * Assigns `value` to `key` of `object` if the existing value is not equivalent
-     * using [`SameValueZero`](http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero)
+     * using [`SameValueZero`](http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero)
      * for equality comparisons.
      *
      * @private
@@ -17627,14 +18061,13 @@ function serializer(replacer, cycleReplacer) {
       if (object == null) {
         return !length;
       }
-      var index = length;
-      while (index--) {
-        var key = props[index],
+      object = Object(object);
+      while (length--) {
+        var key = props[length],
             predicate = source[key],
             value = object[key];
 
-        if ((value === undefined &&
-            !(key in Object(object))) || !predicate(value)) {
+        if ((value === undefined && !(key in object)) || !predicate(value)) {
           return false;
         }
       }
@@ -17661,7 +18094,7 @@ function serializer(replacer, cycleReplacer) {
      * @param {Function} func The function to delay.
      * @param {number} wait The number of milliseconds to delay invocation.
      * @param {Array} args The arguments to provide to `func`.
-     * @returns {number} Returns the timer id.
+     * @returns {number|Object} Returns the timer id or timeout object.
      */
     function baseDelay(func, wait, args) {
       if (typeof func != 'function') {
@@ -18006,12 +18439,7 @@ function serializer(replacer, cycleReplacer) {
      * @returns {boolean} Returns `true` if `key` exists, else `false`.
      */
     function baseHas(object, key) {
-      // Avoid a bug in IE 10-11 where objects with a [[Prototype]] of `null`,
-      // that are composed entirely of index properties, return `false` for
-      // `hasOwnProperty` checks of them.
-      return object != null &&
-        (hasOwnProperty.call(object, key) ||
-          (typeof object == 'object' && key in object && getPrototype(object) === null));
+      return object != null && hasOwnProperty.call(object, key);
     }
 
     /**
@@ -18385,38 +18813,45 @@ function serializer(replacer, cycleReplacer) {
     }
 
     /**
-     * The base implementation of `_.keys` which doesn't skip the constructor
-     * property of prototypes or treat sparse arrays as dense.
+     * The base implementation of `_.keys` which doesn't treat sparse arrays as dense.
      *
      * @private
      * @param {Object} object The object to query.
      * @returns {Array} Returns the array of property names.
      */
-    var baseKeys = overArg(nativeKeys, Object);
+    function baseKeys(object) {
+      if (!isPrototype(object)) {
+        return nativeKeys(object);
+      }
+      var result = [];
+      for (var key in Object(object)) {
+        if (hasOwnProperty.call(object, key) && key != 'constructor') {
+          result.push(key);
+        }
+      }
+      return result;
+    }
 
     /**
-     * The base implementation of `_.keysIn` which doesn't skip the constructor
-     * property of prototypes or treat sparse arrays as dense.
+     * The base implementation of `_.keysIn` which doesn't treat sparse arrays as dense.
      *
      * @private
      * @param {Object} object The object to query.
      * @returns {Array} Returns the array of property names.
      */
     function baseKeysIn(object) {
-      object = object == null ? object : Object(object);
+      if (!isObject(object)) {
+        return nativeKeysIn(object);
+      }
+      var isProto = isPrototype(object),
+          result = [];
 
-      var result = [];
       for (var key in object) {
-        result.push(key);
+        if (!(key == 'constructor' && (isProto || !hasOwnProperty.call(object, key)))) {
+          result.push(key);
+        }
       }
       return result;
-    }
-
-    // Fallback for IE < 9 with es6-shim.
-    if (enumerate && !propertyIsEnumerable.call({ 'valueOf': 1 }, 'valueOf')) {
-      baseKeysIn = function(object) {
-        return iteratorToArray(enumerate(object));
-      };
     }
 
     /**
@@ -18503,7 +18938,7 @@ function serializer(replacer, cycleReplacer) {
         return;
       }
       if (!(isArray(source) || isTypedArray(source))) {
-        var props = keysIn(source);
+        var props = baseKeysIn(source);
       }
       arrayEach(props || source, function(srcValue, key) {
         if (props) {
@@ -18870,6 +19305,9 @@ function serializer(replacer, cycleReplacer) {
      * @returns {Object} Returns `object`.
      */
     function baseSet(object, path, value, customizer) {
+      if (!isObject(object)) {
+        return object;
+      }
       path = isKey(path, object) ? [path] : castPath(path);
 
       var index = -1,
@@ -18878,20 +19316,19 @@ function serializer(replacer, cycleReplacer) {
           nested = object;
 
       while (nested != null && ++index < length) {
-        var key = toKey(path[index]);
-        if (isObject(nested)) {
-          var newValue = value;
-          if (index != lastIndex) {
-            var objValue = nested[key];
-            newValue = customizer ? customizer(objValue, key, nested) : undefined;
-            if (newValue === undefined) {
-              newValue = objValue == null
-                ? (isIndex(path[index + 1]) ? [] : {})
-                : objValue;
-            }
+        var key = toKey(path[index]),
+            newValue = value;
+
+        if (index != lastIndex) {
+          var objValue = nested[key];
+          newValue = customizer ? customizer(objValue, key, nested) : undefined;
+          if (newValue === undefined) {
+            newValue = isObject(objValue)
+              ? objValue
+              : (isIndex(path[index + 1]) ? [] : {});
           }
-          assignValue(nested, key, newValue);
         }
+        assignValue(nested, key, newValue);
         nested = nested[key];
       }
       return object;
@@ -19184,7 +19621,7 @@ function serializer(replacer, cycleReplacer) {
       object = parent(object, path);
 
       var key = toKey(last(path));
-      return !(object != null && baseHas(object, key)) || delete object[key];
+      return !(object != null && hasOwnProperty.call(object, key)) || delete object[key];
     }
 
     /**
@@ -19338,6 +19775,16 @@ function serializer(replacer, cycleReplacer) {
       end = end === undefined ? length : end;
       return (!start && end >= length) ? array : baseSlice(array, start, end);
     }
+
+    /**
+     * A simple wrapper around the global [`clearTimeout`](https://mdn.io/clearTimeout).
+     *
+     * @private
+     * @param {number|Object} id The timer id or timeout object of the timer to clear.
+     */
+    var clearTimeout = ctxClearTimeout || function(id) {
+      return root.clearTimeout(id);
+    };
 
     /**
      * Creates a clone of  `buffer`.
@@ -19832,7 +20279,7 @@ function serializer(replacer, cycleReplacer) {
     function createCtor(Ctor) {
       return function() {
         // Use a `switch` statement to work with class constructors. See
-        // http://ecma-international.org/ecma-262/6.0/#sec-ecmascript-function-objects-call-thisargument-argumentslist
+        // http://ecma-international.org/ecma-262/7.0/#sec-ecmascript-function-objects-call-thisargument-argumentslist
         // for more details.
         var args = arguments;
         switch (args.length) {
@@ -20520,7 +20967,7 @@ function serializer(replacer, cycleReplacer) {
         case regexpTag:
         case stringTag:
           // Coerce regexes to strings and treat strings, primitives and objects,
-          // as equal. See http://www.ecma-international.org/ecma-262/6.0/#sec-regexp.prototype.tostring
+          // as equal. See http://www.ecma-international.org/ecma-262/7.0/#sec-regexp.prototype.tostring
           // for more details.
           return object == (other + '');
 
@@ -20582,7 +21029,7 @@ function serializer(replacer, cycleReplacer) {
       var index = objLength;
       while (index--) {
         var key = objProps[index];
-        if (!(isPartial ? key in other : baseHas(other, key))) {
+        if (!(isPartial ? key in other : hasOwnProperty.call(other, key))) {
           return false;
         }
       }
@@ -20719,19 +21166,6 @@ function serializer(replacer, cycleReplacer) {
     }
 
     /**
-     * Gets the "length" property value of `object`.
-     *
-     * **Note:** This function is used to avoid a
-     * [JIT bug](https://bugs.webkit.org/show_bug.cgi?id=142792) that affects
-     * Safari on at least iOS 8.1-8.3 ARM64.
-     *
-     * @private
-     * @param {Object} object The object to query.
-     * @returns {*} Returns the "length" value.
-     */
-    var getLength = baseProperty('length');
-
-    /**
      * Gets the data for `map`.
      *
      * @private
@@ -20778,15 +21212,6 @@ function serializer(replacer, cycleReplacer) {
       var value = getValue(object, key);
       return baseIsNative(value) ? value : undefined;
     }
-
-    /**
-     * Gets the `[[Prototype]]` of `value`.
-     *
-     * @private
-     * @param {*} value The value to query.
-     * @returns {null|Object} Returns the `[[Prototype]]`.
-     */
-    var getPrototype = overArg(nativeGetPrototype, Object);
 
     /**
      * Creates an array of the own enumerable symbol properties of `object`.
@@ -20998,23 +21423,6 @@ function serializer(replacer, cycleReplacer) {
         case symbolTag:
           return cloneSymbol(object);
       }
-    }
-
-    /**
-     * Creates an array of index keys for `object` values of arrays,
-     * `arguments` objects, and strings, otherwise `null` is returned.
-     *
-     * @private
-     * @param {Object} object The object to query.
-     * @returns {Array|null} Returns index keys, else `null`.
-     */
-    function indexKeys(object) {
-      var length = object ? object.length : undefined;
-      if (isLength(length) &&
-          (isArray(object) || isString(object) || isArguments(object))) {
-        return baseTimes(length, String);
-      }
-      return null;
     }
 
     /**
@@ -21302,6 +21710,25 @@ function serializer(replacer, cycleReplacer) {
     }
 
     /**
+     * This function is like
+     * [`Object.keys`](http://ecma-international.org/ecma-262/7.0/#sec-object.keys)
+     * except that it includes inherited enumerable properties.
+     *
+     * @private
+     * @param {Object} object The object to query.
+     * @returns {Array} Returns the array of property names.
+     */
+    function nativeKeysIn(object) {
+      var result = [];
+      if (object != null) {
+        for (var key in Object(object)) {
+          result.push(key);
+        }
+      }
+      return result;
+    }
+
+    /**
      * Gets the parent value at `path` of `object`.
      *
      * @private
@@ -21368,6 +21795,18 @@ function serializer(replacer, cycleReplacer) {
         return baseSetData(key, value);
       };
     }());
+
+    /**
+     * A simple wrapper around the global [`setTimeout`](https://mdn.io/setTimeout).
+     *
+     * @private
+     * @param {Function} func The function to delay.
+     * @param {number} wait The number of milliseconds to delay invocation.
+     * @returns {number|Object} Returns the timer id or timeout object.
+     */
+    var setTimeout = ctxSetTimeout || function(func, wait) {
+      return root.setTimeout(func, wait);
+    };
 
     /**
      * Sets the `toString` method of `wrapper` to mimic the source of `reference`
@@ -21589,7 +22028,7 @@ function serializer(replacer, cycleReplacer) {
 
     /**
      * Creates an array of `array` values not included in the other given arrays
-     * using [`SameValueZero`](http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero)
+     * using [`SameValueZero`](http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero)
      * for equality comparisons. The order of result values is determined by the
      * order they occur in the first array.
      *
@@ -22092,7 +22531,7 @@ function serializer(replacer, cycleReplacer) {
 
     /**
      * Gets the index at which the first occurrence of `value` is found in `array`
-     * using [`SameValueZero`](http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero)
+     * using [`SameValueZero`](http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero)
      * for equality comparisons. If `fromIndex` is negative, it's used as the
      * offset from the end of `array`.
      *
@@ -22140,12 +22579,13 @@ function serializer(replacer, cycleReplacer) {
      * // => [1, 2]
      */
     function initial(array) {
-      return dropRight(array, 1);
+      var length = array ? array.length : 0;
+      return length ? baseSlice(array, 0, -1) : [];
     }
 
     /**
      * Creates an array of unique values that are included in all given arrays
-     * using [`SameValueZero`](http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero)
+     * using [`SameValueZero`](http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero)
      * for equality comparisons. The order of result values is determined by the
      * order they occur in the first array.
      *
@@ -22349,7 +22789,7 @@ function serializer(replacer, cycleReplacer) {
 
     /**
      * Removes all given values from `array` using
-     * [`SameValueZero`](http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero)
+     * [`SameValueZero`](http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero)
      * for equality comparisons.
      *
      * **Note:** Unlike `_.without`, this method mutates `array`. Use `_.remove`
@@ -22818,7 +23258,8 @@ function serializer(replacer, cycleReplacer) {
      * // => [2, 3]
      */
     function tail(array) {
-      return drop(array, 1);
+      var length = array ? array.length : 0;
+      return length ? baseSlice(array, 1, length) : [];
     }
 
     /**
@@ -22975,7 +23416,7 @@ function serializer(replacer, cycleReplacer) {
 
     /**
      * Creates an array of unique values, in order, from all given arrays using
-     * [`SameValueZero`](http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero)
+     * [`SameValueZero`](http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero)
      * for equality comparisons.
      *
      * @static
@@ -23056,7 +23497,7 @@ function serializer(replacer, cycleReplacer) {
 
     /**
      * Creates a duplicate-free version of an array, using
-     * [`SameValueZero`](http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero)
+     * [`SameValueZero`](http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero)
      * for equality comparisons, in which only the first occurrence of each
      * element is kept.
      *
@@ -23201,7 +23642,7 @@ function serializer(replacer, cycleReplacer) {
 
     /**
      * Creates an array excluding all given values using
-     * [`SameValueZero`](http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero)
+     * [`SameValueZero`](http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero)
      * for equality comparisons.
      *
      * **Note:** Unlike `_.pull`, this method returns a new array.
@@ -23772,6 +24213,11 @@ function serializer(replacer, cycleReplacer) {
      * Iteration is stopped once `predicate` returns falsey. The predicate is
      * invoked with three arguments: (value, index|key, collection).
      *
+     * **Note:** This method returns `true` for
+     * [empty collections](https://en.wikipedia.org/wiki/Empty_set) because
+     * [everything is true](https://en.wikipedia.org/wiki/Vacuous_truth) of
+     * elements of empty collections.
+     *
      * @static
      * @memberOf _
      * @since 0.1.0
@@ -24089,7 +24535,7 @@ function serializer(replacer, cycleReplacer) {
     /**
      * Checks if `value` is in `collection`. If `collection` is a string, it's
      * checked for a substring of `value`, otherwise
-     * [`SameValueZero`](http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero)
+     * [`SameValueZero`](http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero)
      * is used for equality comparisons. If `fromIndex` is negative, it's used as
      * the offset from the end of `collection`.
      *
@@ -24557,7 +25003,7 @@ function serializer(replacer, cycleReplacer) {
           return collection.size;
         }
       }
-      return keys(collection).length;
+      return baseKeys(collection).length;
     }
 
     /**
@@ -24669,9 +25115,9 @@ function serializer(replacer, cycleReplacer) {
      * }, _.now());
      * // => Logs the number of milliseconds it took for the deferred invocation.
      */
-    function now() {
-      return Date.now();
-    }
+    var now = ctxNow || function() {
+      return root.Date.now();
+    };
 
     /*------------------------------------------------------------------------*/
 
@@ -25212,7 +25658,7 @@ function serializer(replacer, cycleReplacer) {
      * **Note:** The cache is exposed as the `cache` property on the memoized
      * function. Its creation may be customized by replacing the `_.memoize.Cache`
      * constructor with one whose instances implement the
-     * [`Map`](http://ecma-international.org/ecma-262/6.0/#sec-properties-of-the-map-prototype-object)
+     * [`Map`](http://ecma-international.org/ecma-262/7.0/#sec-properties-of-the-map-prototype-object)
      * method interface of `delete`, `get`, `has`, and `set`.
      *
      * @static
@@ -25512,7 +25958,7 @@ function serializer(replacer, cycleReplacer) {
     /**
      * Creates a function that invokes `func` with the `this` binding of the
      * create function and an array of arguments much like
-     * [`Function#apply`](http://www.ecma-international.org/ecma-262/6.0/#sec-function.prototype.apply).
+     * [`Function#apply`](http://www.ecma-international.org/ecma-262/7.0/#sec-function.prototype.apply).
      *
      * **Note:** This method is based on the
      * [spread operator](https://mdn.io/spread_operator).
@@ -25859,7 +26305,7 @@ function serializer(replacer, cycleReplacer) {
 
     /**
      * Performs a
-     * [`SameValueZero`](http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero)
+     * [`SameValueZero`](http://ecma-international.org/ecma-262/7.0/#sec-samevaluezero)
      * comparison between two values to determine if they are equivalent.
      *
      * @static
@@ -26039,7 +26485,7 @@ function serializer(replacer, cycleReplacer) {
      * // => false
      */
     function isArrayLike(value) {
-      return value != null && isLength(getLength(value)) && !isFunction(value);
+      return value != null && isLength(value.length) && !isFunction(value);
     }
 
     /**
@@ -26139,8 +26585,7 @@ function serializer(replacer, cycleReplacer) {
      * @since 0.1.0
      * @category Lang
      * @param {*} value The value to check.
-     * @returns {boolean} Returns `true` if `value` is a DOM element,
-     *  else `false`.
+     * @returns {boolean} Returns `true` if `value` is a DOM element, else `false`.
      * @example
      *
      * _.isElement(document.body);
@@ -26198,12 +26643,14 @@ function serializer(replacer, cycleReplacer) {
           return !value.size;
         }
       }
+      var isProto = isPrototype(value);
       for (var key in value) {
-        if (hasOwnProperty.call(value, key)) {
+        if (hasOwnProperty.call(value, key) &&
+            !(isProto && key == 'constructor')) {
           return false;
         }
       }
-      return !(nonEnumShadows && keys(value).length);
+      return !(nonEnumShadows && nativeKeys(value).length);
     }
 
     /**
@@ -26222,8 +26669,7 @@ function serializer(replacer, cycleReplacer) {
      * @category Lang
      * @param {*} value The value to compare.
      * @param {*} other The other value to compare.
-     * @returns {boolean} Returns `true` if the values are equivalent,
-     *  else `false`.
+     * @returns {boolean} Returns `true` if the values are equivalent, else `false`.
      * @example
      *
      * var object = { 'a': 1 };
@@ -26252,8 +26698,7 @@ function serializer(replacer, cycleReplacer) {
      * @param {*} value The value to compare.
      * @param {*} other The other value to compare.
      * @param {Function} [customizer] The function to customize comparisons.
-     * @returns {boolean} Returns `true` if the values are equivalent,
-     *  else `false`.
+     * @returns {boolean} Returns `true` if the values are equivalent, else `false`.
      * @example
      *
      * function isGreeting(value) {
@@ -26287,8 +26732,7 @@ function serializer(replacer, cycleReplacer) {
      * @since 3.0.0
      * @category Lang
      * @param {*} value The value to check.
-     * @returns {boolean} Returns `true` if `value` is an error object,
-     *  else `false`.
+     * @returns {boolean} Returns `true` if `value` is an error object, else `false`.
      * @example
      *
      * _.isError(new Error);
@@ -26316,8 +26760,7 @@ function serializer(replacer, cycleReplacer) {
      * @since 0.1.0
      * @category Lang
      * @param {*} value The value to check.
-     * @returns {boolean} Returns `true` if `value` is a finite number,
-     *  else `false`.
+     * @returns {boolean} Returns `true` if `value` is a finite number, else `false`.
      * @example
      *
      * _.isFinite(3);
@@ -26394,16 +26837,15 @@ function serializer(replacer, cycleReplacer) {
     /**
      * Checks if `value` is a valid array-like length.
      *
-     * **Note:** This function is loosely based on
-     * [`ToLength`](http://ecma-international.org/ecma-262/6.0/#sec-tolength).
+     * **Note:** This method is loosely based on
+     * [`ToLength`](http://ecma-international.org/ecma-262/7.0/#sec-tolength).
      *
      * @static
      * @memberOf _
      * @since 4.0.0
      * @category Lang
      * @param {*} value The value to check.
-     * @returns {boolean} Returns `true` if `value` is a valid length,
-     *  else `false`.
+     * @returns {boolean} Returns `true` if `value` is a valid length, else `false`.
      * @example
      *
      * _.isLength(3);
@@ -26425,7 +26867,7 @@ function serializer(replacer, cycleReplacer) {
 
     /**
      * Checks if `value` is the
-     * [language type](http://www.ecma-international.org/ecma-262/6.0/#sec-ecmascript-language-types)
+     * [language type](http://www.ecma-international.org/ecma-262/7.0/#sec-ecmascript-language-types)
      * of `Object`. (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
      *
      * @static
@@ -26504,8 +26946,12 @@ function serializer(replacer, cycleReplacer) {
      * Performs a partial deep comparison between `object` and `source` to
      * determine if `object` contains equivalent property values.
      *
-     * **Note:** This method supports comparing the same values as `_.isEqual`
-     * and is equivalent to `_.matches` when `source` is partially applied.
+     * **Note:** This method is equivalent to `_.matches` when `source` is
+     * partially applied.
+     *
+     * Partial comparisons will match empty array and empty object `source`
+     * values against any array or object value, respectively. See `_.isEqual`
+     * for a list of supported value comparisons.
      *
      * @static
      * @memberOf _
@@ -26718,8 +27164,7 @@ function serializer(replacer, cycleReplacer) {
      * @since 0.8.0
      * @category Lang
      * @param {*} value The value to check.
-     * @returns {boolean} Returns `true` if `value` is a plain object,
-     *  else `false`.
+     * @returns {boolean} Returns `true` if `value` is a plain object, else `false`.
      * @example
      *
      * function Foo() {
@@ -26783,8 +27228,7 @@ function serializer(replacer, cycleReplacer) {
      * @since 4.0.0
      * @category Lang
      * @param {*} value The value to check.
-     * @returns {boolean} Returns `true` if `value` is a safe integer,
-     *  else `false`.
+     * @returns {boolean} Returns `true` if `value` is a safe integer, else `false`.
      * @example
      *
      * _.isSafeInteger(3);
@@ -27078,7 +27522,7 @@ function serializer(replacer, cycleReplacer) {
      * Converts `value` to an integer.
      *
      * **Note:** This method is loosely based on
-     * [`ToInteger`](http://www.ecma-international.org/ecma-262/6.0/#sec-tointeger).
+     * [`ToInteger`](http://www.ecma-international.org/ecma-262/7.0/#sec-tointeger).
      *
      * @static
      * @memberOf _
@@ -27112,7 +27556,7 @@ function serializer(replacer, cycleReplacer) {
      * array-like object.
      *
      * **Note:** This method is based on
-     * [`ToLength`](http://ecma-international.org/ecma-262/6.0/#sec-tolength).
+     * [`ToLength`](http://ecma-international.org/ecma-262/7.0/#sec-tolength).
      *
      * @static
      * @memberOf _
@@ -27341,13 +27785,7 @@ function serializer(replacer, cycleReplacer) {
      * // => { 'a': 1, 'b': 2, 'c': 3, 'd': 4 }
      */
     var assignIn = createAssigner(function(object, source) {
-      if (nonEnumShadows || isPrototype(source) || isArrayLike(source)) {
-        copyObject(source, keysIn(source), object);
-        return;
-      }
-      for (var key in source) {
-        assignValue(object, key, source[key]);
-      }
+      copyObject(source, keysIn(source), object);
     });
 
     /**
@@ -27956,7 +28394,7 @@ function serializer(replacer, cycleReplacer) {
      * Creates an array of the own enumerable property names of `object`.
      *
      * **Note:** Non-object values are coerced to objects. See the
-     * [ES spec](http://ecma-international.org/ecma-262/6.0/#sec-object.keys)
+     * [ES spec](http://ecma-international.org/ecma-262/7.0/#sec-object.keys)
      * for more details.
      *
      * @static
@@ -27981,23 +28419,7 @@ function serializer(replacer, cycleReplacer) {
      * // => ['0', '1']
      */
     function keys(object) {
-      var isProto = isPrototype(object);
-      if (!(isProto || isArrayLike(object))) {
-        return baseKeys(object);
-      }
-      var indexes = indexKeys(object),
-          skipIndexes = !!indexes,
-          result = indexes || [],
-          length = result.length;
-
-      for (var key in object) {
-        if (baseHas(object, key) &&
-            !(skipIndexes && (key == 'length' || isIndex(key, length))) &&
-            !(isProto && key == 'constructor')) {
-          result.push(key);
-        }
-      }
-      return result;
+      return isArrayLike(object) ? arrayLikeKeys(object) : baseKeys(object);
     }
 
     /**
@@ -28024,23 +28446,7 @@ function serializer(replacer, cycleReplacer) {
      * // => ['a', 'b', 'c'] (iteration order is not guaranteed)
      */
     function keysIn(object) {
-      var index = -1,
-          isProto = isPrototype(object),
-          props = baseKeysIn(object),
-          propsLength = props.length,
-          indexes = indexKeys(object),
-          skipIndexes = !!indexes,
-          result = indexes || [],
-          length = result.length;
-
-      while (++index < propsLength) {
-        var key = props[index];
-        if (!(skipIndexes && (key == 'length' || isIndex(key, length))) &&
-            !(key == 'constructor' && (isProto || !hasOwnProperty.call(object, key)))) {
-          result.push(key);
-        }
-      }
-      return result;
+      return isArrayLike(object) ? arrayLikeKeys(object, true) : baseKeysIn(object);
     }
 
     /**
@@ -30220,8 +30626,12 @@ function serializer(replacer, cycleReplacer) {
      * object and `source`, returning `true` if the given object has equivalent
      * property values, else `false`.
      *
-     * **Note:** The created function supports comparing the same values as
-     * `_.isEqual` is equivalent to `_.isMatch` with `source` partially applied.
+     * **Note:** The created function is equivalent to `_.isMatch` with `source`
+     * partially applied.
+     *
+     * Partial comparisons will match empty array and empty object `source`
+     * values against any array or object value, respectively. See `_.isEqual`
+     * for a list of supported value comparisons.
      *
      * @static
      * @memberOf _
@@ -30248,7 +30658,9 @@ function serializer(replacer, cycleReplacer) {
      * value at `path` of a given object to `srcValue`, returning `true` if the
      * object value is equivalent, else `false`.
      *
-     * **Note:** This method supports comparing the same values as `_.isEqual`.
+     * **Note:** Partial comparisons will match empty array and empty object
+     * `srcValue` values against any array or object value, respectively. See
+     * `_.isEqual` for a list of supported value comparisons.
      *
      * @static
      * @memberOf _
@@ -31789,7 +32201,134 @@ function serializer(replacer, cycleReplacer) {
 }.call(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],51:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
+/**
+ * Helpers.
+ */
+
+var s = 1000;
+var m = s * 60;
+var h = m * 60;
+var d = h * 24;
+var y = d * 365.25;
+
+/**
+ * Parse or format the given `val`.
+ *
+ * Options:
+ *
+ *  - `long` verbose formatting [false]
+ *
+ * @param {String|Number} val
+ * @param {Object} options
+ * @return {String|Number}
+ * @api public
+ */
+
+module.exports = function(val, options){
+  options = options || {};
+  if ('string' == typeof val) return parse(val);
+  return options.long
+    ? long(val)
+    : short(val);
+};
+
+/**
+ * Parse the given `str` and return milliseconds.
+ *
+ * @param {String} str
+ * @return {Number}
+ * @api private
+ */
+
+function parse(str) {
+  str = '' + str;
+  if (str.length > 10000) return;
+  var match = /^((?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|years?|yrs?|y)?$/i.exec(str);
+  if (!match) return;
+  var n = parseFloat(match[1]);
+  var type = (match[2] || 'ms').toLowerCase();
+  switch (type) {
+    case 'years':
+    case 'year':
+    case 'yrs':
+    case 'yr':
+    case 'y':
+      return n * y;
+    case 'days':
+    case 'day':
+    case 'd':
+      return n * d;
+    case 'hours':
+    case 'hour':
+    case 'hrs':
+    case 'hr':
+    case 'h':
+      return n * h;
+    case 'minutes':
+    case 'minute':
+    case 'mins':
+    case 'min':
+    case 'm':
+      return n * m;
+    case 'seconds':
+    case 'second':
+    case 'secs':
+    case 'sec':
+    case 's':
+      return n * s;
+    case 'milliseconds':
+    case 'millisecond':
+    case 'msecs':
+    case 'msec':
+    case 'ms':
+      return n;
+  }
+}
+
+/**
+ * Short format for `ms`.
+ *
+ * @param {Number} ms
+ * @return {String}
+ * @api private
+ */
+
+function short(ms) {
+  if (ms >= d) return Math.round(ms / d) + 'd';
+  if (ms >= h) return Math.round(ms / h) + 'h';
+  if (ms >= m) return Math.round(ms / m) + 'm';
+  if (ms >= s) return Math.round(ms / s) + 's';
+  return ms + 'ms';
+}
+
+/**
+ * Long format for `ms`.
+ *
+ * @param {Number} ms
+ * @return {String}
+ * @api private
+ */
+
+function long(ms) {
+  return plural(ms, d, 'day')
+    || plural(ms, h, 'hour')
+    || plural(ms, m, 'minute')
+    || plural(ms, s, 'second')
+    || ms + ' ms';
+}
+
+/**
+ * Pluralization helper.
+ */
+
+function plural(ms, n, name) {
+  if (ms < n) return;
+  if (ms < n * 1.5) return Math.floor(ms / n) + ' ' + name;
+  return Math.ceil(ms / n) + ' ' + name + 's';
+}
+
+},{}],55:[function(require,module,exports){
 var hasProp = Object.prototype.hasOwnProperty;
 
 function throwsMessage(err) {
@@ -31850,7 +32389,7 @@ module.exports = function(data) {
 
 module.exports.ensureProperties = ensureProperties;
 
-},{}],52:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
 /**
 * @Author: Robustly.io <Auto>
 * @Date:   2016-03-24T04:39:49-04:00
@@ -31879,6 +32418,11 @@ module.exports.ensureProperties = ensureProperties;
  } catch (_) {
      sourceMapSupport = null;
  }
+
+ var _ = require('lodash'),
+   p = require('bluebird'),
+   Promise = p,
+   debug = require('debug')('robust-logs')
 
 var _plugins, _observers = {}
 module.exports = function(config, deps) {
@@ -32017,6 +32561,7 @@ module.exports = function(config, deps) {
   m.logError = post.bind(m, 'error')
   m.warn = post.bind(m, 'warn')
   m.log = post.bind(m, 'info')
+  m.trace = post.bind(m,'trace')
   m.method = createGoal.bind(m)
   m.goal = createGoal.bind(m)
   m.query = _plugins['loggly'] ? _plugins['loggly'].query : function() {
@@ -32089,7 +32634,7 @@ module.exports = function(config, deps) {
     }
   }
 
-  m.result = function(result) {
+  m.pass = m.result = function(result) {
     if (_context && _context.goalInstance) {
       m.log('Finished '+_context.goalInstance.name, {
         goalReport: _context.goalInstance.report('succeeded', result)
@@ -32099,11 +32644,6 @@ module.exports = function(config, deps) {
     }
     return result
   }
-
-  m.setResult = function(result) {
-    return m.result(result)
-  }
-
 
   /**
    * Checks for any event handlers that match this event label and runs them
@@ -32262,7 +32802,7 @@ Goal.prototype.report = function (status, result) {
 
 // the fed is in a position where all of it's visible actions look good.  And all of it's bad actions are invisible.
 
-},{"json-stringify-safe":49}],53:[function(require,module,exports){
+},{"bluebird":46,"debug":49,"json-stringify-safe":52,"lodash":53}],57:[function(require,module,exports){
 /**
 * @Author: Robustly.io <Auto>
 * @Date:   2016-03-17T00:23:08-04:00
@@ -32284,6 +32824,12 @@ Goal.prototype.report = function (status, result) {
  * Created On: 2015-10-28.
  * @license Apache-2.0
  */
+ var _ = require('lodash'),
+   p = require('bluebird'),
+   Promise = p,
+   debug = require('debug')('robust-logs')
+   
+var FixedQueue = require('fixedqueue').FixedQueue
 
 module.exports = function(config, axios) {
   var m = new LogglyPlugin()
@@ -32299,7 +32845,7 @@ module.exports = function(config, axios) {
   debug('_tags:', _tags)
 
   var axiosConfig = {
-    baseURL: config.plugins.loggly.baseURL + config.plugins.loggly.token,
+    baseURL: config.plugins.loggly.baseURL + config.plugins.loggly.token + '/tag/bulk',
     //timeout: 1000,
     headers: {
       'X-LOGGLY-TAG': _tags,
@@ -32307,23 +32853,45 @@ module.exports = function(config, axios) {
     }
   }
 
-  var http = axios.create(axiosConfig)
-  var queryEndpoint = axios.create({
-    auth: {
-      username: config.plugins.loggly.user,
-      password: config.plugins.loggly.password
-    },
-    baseURL: config.plugins.loggly.baseURL
-  })
+  var queue = FixedQueue(config.plugins.loggly.bufferSize || 50)
 
-  m.send = function(logEvent) {
-    debug('converting log event to json')
-    var json = JSON.parse(logEvent.toString())
-    json.timestamp = json.time
-    delete json.time
-    debug('result json:', json)
+  function flushLogBuffer() {
+    // debug('QUEUE', queue)
+    var events = []
+    while(queue.length) {
+      events.push(queue.shift())
+    }
+    return events
+  }
 
-    return http.post('/', json)
+  m.process = function(logEvent) {
+    debug('Process:', logEvent)
+    logEvent.timestamp = logEvent.time
+    delete logEvent.time
+
+    // errors are sent with up to 5mb of previous events.
+    if(logEvent.level >= 50) {
+      var errorLog = flushLogBuffer()
+      // debug('ERROR LOG:', errorLog)
+      errorLog.push(logEvent)
+      return p.map(errorLog, function(logEvent) {
+        return sendToLoggly(logEvent)
+      }, {concurrency: 6})
+    }
+    // warnings are sent as individual events.
+    else if (logEvent.level == 40) {
+      sendToLoggly(logEvent)
+    }
+    else {
+      queue.enqueue(logEvent)
+    }
+  }
+
+  function sendToLoggly(logEvent) {
+    var http = axios.create(axiosConfig)
+
+    debug('SENDING', logEvent)
+    return http.post('/', logEvent)
       .then(function(res) {
         debug('BOOYEAH', res)
       })
@@ -32333,6 +32901,14 @@ module.exports = function(config, axios) {
       })
   }
 
+
+  var queryEndpoint = axios.create({
+    auth: {
+      username: config.plugins.loggly.user,
+      password: config.plugins.loggly.password
+    },
+    baseURL: config.plugins.loggly.baseURL
+  })
 /**
  * q	required	query string, check out the Search Query help
 
@@ -32369,7 +32945,7 @@ module.exports = function(config, axios) {
 
 function LogglyPlugin() {  }
 
-},{}],54:[function(require,module,exports){
+},{"bluebird":46,"debug":49,"fixedqueue":51,"lodash":53}],58:[function(require,module,exports){
 /**
  * @module final-stream
  * @summary: This stream runs after all other streams to resolve promises etc...
@@ -32428,7 +33004,7 @@ module.exports = function construct(config, streamPromises) {
   return new FinalStream();
 };
 
-},{"bluebird":46,"fs":1,"path":15,"stream":32,"util":43}],55:[function(require,module,exports){
+},{"bluebird":46,"fs":1,"path":15,"stream":32,"util":43}],59:[function(require,module,exports){
 (function (Buffer){
 /**
  * @module myModule
@@ -32460,7 +33036,8 @@ module.exports = function construct(config, plugins) {
   util.inherits(PluginStream, Writable);
   PluginStream.prototype._write = function(chunk, encoding, done) {
     _.each(plugins, function(plugin,name) {
-      plugin.send((new Buffer(JSON.stringify(chunk))))
+      if (plugin.process) plugin.process(chunk)
+      if (plugin.send) plugin.send((new Buffer(JSON.stringify(chunk))))
     })
     done()
   }
@@ -32469,7 +33046,7 @@ module.exports = function construct(config, plugins) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"bluebird":46,"buffer":6,"lodash":50,"stream":32,"util":43}],56:[function(require,module,exports){
+},{"bluebird":46,"buffer":6,"lodash":53,"stream":32,"util":43}],60:[function(require,module,exports){
 (function (Buffer){
 /**
  * @module rotating-file-max
@@ -32584,7 +33161,8 @@ module.exports = function construct(config, streamPromises) {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"bluebird":46,"buffer":6,"fs":1,"lodash":50,"path":15,"stream":32,"util":43}],57:[function(require,module,exports){
+},{"bluebird":46,"buffer":6,"fs":1,"lodash":53,"path":15,"stream":32,"util":43}],61:[function(require,module,exports){
+(function (process){
 /**
 * @Author: Robustly.io <Auto>
 * @Date:   2016-03-24T04:30:48-04:00
@@ -32606,6 +33184,10 @@ module.exports = function construct(config, streamPromises) {
  * Created On: 2015-10-28.
  * @license Apache-2.0
  */
+ var _ = require('lodash'),
+   p = require('bluebird'),
+   Promise = p,
+   debug = require('debug')('robust-logs')
 
 var bunyan = require('bunyan')
 var Logger = require('./logger')
@@ -32652,7 +33234,7 @@ module.exports = function(config, axios) {
     if (!config.silent && isNotBrowser) {
       var PrettyStream = require('bunyan-prettystream')
       var prettyStdOut = new PrettyStream({mode:config.logMode || 'short'})
-      prettyStdOut.pipe(config.logStream);
+      prettyStdOut.pipe(config.logStream == 'stdout' ? process.stdout : config.logStream)
       if (config.debug) {
         bunyanConf.streams.push(
           {
@@ -32693,7 +33275,7 @@ module.exports = function(config, axios) {
 
       bunyanConf.streams.push({
         name: 'plugin',
-        level: 'debug',
+        level: 'info',
         type: 'raw',
         stream: PluginStream(config, _plugins)
       })
@@ -32712,9 +33294,9 @@ module.exports = function(config, axios) {
     })
 
     return log.child({
-      app:config.app,
+      _app:config.app,
       _component: config.component,
-      env: config.env
+      _env: config.env
     })
   }
 
@@ -32732,5 +33314,6 @@ module.exports = function(config, axios) {
 
 function WinWithLogs() {}
 
-},{"./logger":52,"./plugins/loggly-plugin":53,"./streams/final-stream":54,"./streams/plugin-stream":55,"./streams/rotating-file-max":56,"bunyan":48,"bunyan-prettystream":47}]},{},[45])(45)
+}).call(this,require('_process'))
+},{"./logger":56,"./plugins/loggly-plugin":57,"./streams/final-stream":58,"./streams/plugin-stream":59,"./streams/rotating-file-max":60,"_process":17,"bluebird":46,"bunyan":48,"bunyan-prettystream":47,"debug":49,"lodash":53}]},{},[45])(45)
 });
