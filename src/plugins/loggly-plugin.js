@@ -23,7 +23,7 @@
    p = require('bluebird'),
    Promise = p,
    debug = require('debug')('robust-logs')
-   
+
 var FixedQueue = require('fixedqueue').FixedQueue
 
 module.exports = function(config, axios) {
@@ -61,11 +61,13 @@ module.exports = function(config, axios) {
 
   m.process = function(logEvent) {
     debug('Process:', logEvent)
-    logEvent.timestamp = logEvent.time
-    delete logEvent.time
+
+    if (_.isString(logEvent._tags) && _.includes(logEvent._tags.split(','), 'GOAL')) {
+      sendToLoggly(logEvent)
+    }
 
     // errors are sent with up to 5mb of previous events.
-    if(logEvent.level >= 50) {
+    else if(logEvent.level >= 50) {
       var errorLog = flushLogBuffer()
       // debug('ERROR LOG:', errorLog)
       errorLog.push(logEvent)
@@ -83,12 +85,16 @@ module.exports = function(config, axios) {
   }
 
   function sendToLoggly(logEvent) {
+    if (logEvent._tags) axiosConfig.headers['X-LOGGLY-TAG'] += ','+logEvent._tags
     var http = axios.create(axiosConfig)
 
-    debug('SENDING', logEvent)
+    if (logEvent.err) logEvent.err = JSON.stringify(logEvent.err, Object.getOwnPropertyNames(logEvent.err))
+
+    debug('Sending logEvent...', logEvent)
+
     return http.post('/', logEvent)
       .then(function(res) {
-        debug('BOOYEAH', res)
+        debug('Loggly responds...', res)
       })
       .catch(function(err) {
         debug('Failed to send logs:', err)

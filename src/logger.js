@@ -62,9 +62,19 @@ module.exports = function(config, deps) {
 
   function post(level, msg, details, options) {
     options = options || {}
-    if (!log[level]) throw new Error("invalid log level:"+level);
+    if (!_.isObject(options)) {
+      details.options = options
+      options = {}
+    }
+
+    if (!log[level]) {
+      log.trace({msg:'Invalid log level',arg: level})
+      level = 'info'
+    }
+
     var logObject = {
         _id: parseInt(_.uniqueId()),
+        _tags: options.tags
       },
       streamProcessingResolver = defer()
 
@@ -86,13 +96,10 @@ module.exports = function(config, deps) {
       logObject.details = {details: details}
     }
 
-    if (options && !_.isObject(options)) {
-      console.log('DETECTED INVALID OPTIONS:', arguments)
-      throw new Error("Options must be an object")
-    }
+    if (logObject.details) delete logObject.details.err
 
-    if (options && _.isObject(options)) {
-      logObject = _.merge(logObject,options)
+    if (_.isObject(options.custom)) {
+      logObject = _.merge(logObject,options.custom)
       delete logObject.callDepth
     }
 
@@ -123,6 +130,7 @@ module.exports = function(config, deps) {
         log[level](logObject, msg)
       }
       catch (ex) {
+        debug('Logging exception occurred. Attempting to stringify safely...')
         if (ex instanceof TypeError) {
           var stringify = require('json-stringify-safe')
           log[level](JSON.parse(stringify(logObject)), msg)
@@ -176,29 +184,9 @@ module.exports = function(config, deps) {
     throw new Error('log.query() not available.  Load a plugin that supports it.')
   }
 
-  m.errorReport = function(msg, details, err, __callDepth) {
-    details = details || {}
-
-    err = err || details.err
-    if (!err) {
-      err = new Error(msg)
-    }
-
-    if (details && details.err) delete details.err
-
-    var report = new ErrorReport(err, msg, details)
-    // this logs the error immediately and will likely cause multiple
-    // of the same error to apear in the logs since it is usually thrown.
-    // But that is OKAY b.c. errors need extra attention anyways.
-    m.error(msg, report, {callDepth:__callDepth || 2})
-    return report
-  };
-
   function createGoal(goalName, params, opts) {
-    m.log('Starting '+goalName, {params: params, options: opts}, {callDepth: 2})
-
-    var newGoalInstance = new Goal(goalName, params)
-
+    var newGoalInstance = new Goal(goalName, params, opts)
+    m.log('Starting '+goalName, {params: params}, {callDepth: 2, custom: {goalId: newGoalInstance.goalId}})
     var newGoal = m.context({
       goalInstance: newGoalInstance,
       name: goalName
@@ -207,11 +195,34 @@ module.exports = function(config, deps) {
     return newGoal
   }
 
+  m.errorReport = function(errorCode, details, err, __callDepth) {
+    details = details || {}
+    if (!_.isObject(details)) details = { details: details }
+
+    if (!details.err) {
+      if (err) details.err = err
+      else details.err = err = new Error(errorCode)
+    }
+    err = details.err
+
+    var goalReport = details.goalReport
+    delete details.goalReport
+    // this logs the error immediately and will likely cause multiple
+    // of the same error to apear in the logs since it is usually thrown.
+    // But that is OKAY b.c. errors need extra attention anyways.
+    m.error(errorCode, details, {callDepth:__callDepth || 2, custom: {goalReport: goalReport}})
+
+    err.errorCode = errorCode
+    err.what = errorCode
+
+    return err
+  }
+
   m.failSuppressed = function (error, __callDepth) {
     var result = {err: error}
 
     if (_context && _context.goalInstance) {
-      result.goalReport = _context.goalInstance.report("failed")
+      result.goalReport = _context.goalInstance.report("FAILED")
     }
 
     if (error instanceof ErrorReport) {
@@ -223,7 +234,8 @@ module.exports = function(config, deps) {
       result.message = error.message
     }
 
-    return m.errorReport(result.goalReport ? 'FAILED_'+result.goalReport.codeName : result.message, result, result.err, __callDepth)
+    return m.errorReport(result.goalReport ? 'FAILED_'+result.goalReport.codeName : result.message,
+      result, result.err, __callDepth)
   }
 
   m.fail = function(err) {
@@ -244,9 +256,12 @@ module.exports = function(config, deps) {
 
   m.pass = m.result = function(result) {
     if (_context && _context.goalInstance) {
-      m.log('Finished '+_context.goalInstance.name, {
-        goalReport: _context.goalInstance.report('succeeded', result)
-      }, {callDepth:2})
+      var goalReport = _context.goalInstance.report('SUCCEEDED', result)
+      m.log('GOAL_COMPLETED', {
+        goalId: goalReport.goalId,
+        name: goalReport.goalName,
+        codeName: goalReport.codeName
+      }, {callDepth:2, tags: 'GOAL', custom: {goalReport: goalReport, goalDuration: goalReport.duration}})
     } else {
       m.log('Result: ', _context, {callDepth:2})
     }
@@ -396,7 +411,7 @@ function Goal(name, goalDetails) {
  };
 
 Goal.prototype.report = function (status, result) {
-  var result = {
+  var report = {
     goalId: this.goalId,
     goalName: this.name,
     codeName: this.name.replace('()','').toUnderscore().toUpperCase(),
@@ -405,7 +420,7 @@ Goal.prototype.report = function (status, result) {
     result: result,
     status: status
   }
-  return result;
+  return report
 }
 
 // the fed is in a position where all of it's visible actions look good.  And all of it's bad actions are invisible.

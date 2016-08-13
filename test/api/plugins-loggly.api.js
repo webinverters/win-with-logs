@@ -56,5 +56,60 @@ describe('loggly integration', function() {
           log('RESULT:', arguments)
         })
     })
+
+    // MANUAL EXPECT: search by tag:TEST_CALL to check this event appears.
+    it('pushes tags correctly', function() {
+      return log.warn('TAG_TEST', {temperature: 5}, {tags: 'TEST_CALL'})
+        .delay(15000)
+        .then(function() {
+          log('RESULT:', arguments)
+        })
+    })
+
+    it('errors include stacktrace details', function() {
+      return p.try(function() {
+        throw new Error('System Failure Test.')
+      })
+      .catch(function(err) {
+        return log.error('A_TEST_FAILURE', err)
+      })
+      .delay(15000)
+      .then(function() {
+        log('Completed...')
+      })
+    })
+  })
+
+  // describe('@temp', function() {
+  //   it('makes events', function() {
+  //     return p.map(_.range(100), function() {
+  //       return log.warn('TEST_GOAL_COMPLETED', {duration: Math.floor((Math.random() * 100) + 1)})
+  //         .delay(300)
+  //     }, {concurrency: 1})
+  //   })
+  // })
+
+  describe('log.goal()', function() {
+    function testGoal(err) {
+      var goal = log.goal('testGoal()', arguments)
+      return p.resolve()
+        .then(function() {
+          if (err) throw new Error('ErrorCode: 54')
+          return 'completed successfully'
+        })
+        .then(goal.pass)
+        .catch(goal.fail)
+    }
+    it('when goals fail they send details to loggly', function() {
+      return testGoal(true)
+        .catch(function(err) {
+          console.log('CheckError', err.errorCode)
+        })
+        .delay(5000)
+    })
+    it('sends goal completions to loggy', function() {
+      return testGoal()
+        .delay(5000)
+    })
   })
 })
