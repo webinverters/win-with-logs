@@ -208,11 +208,19 @@ module.exports = function(config, deps) {
     err = details.err
 
     var goalReport = details.goalReport
-    delete details.goalReport
+    delete details.goalReport // avoid duplicating log report in output.
+    if (goalReport) {
+      m.error(errorCode, details, {
+        callDepth: __callDepth || 2,
+        custom: {goalReport: goalReport, goalDuration: goalReport.duration}
+      })
+    } else {
+      m.error(errorCode, details, {callDepth:__callDepth || 2})
+    }
+
     // this logs the error immediately and will likely cause multiple
     // of the same error to apear in the logs since it is usually thrown.
     // But that is OKAY b.c. errors need extra attention anyways.
-    m.error(errorCode, details, {callDepth:__callDepth || 2, custom: {goalReport: goalReport}})
 
     err.errorCode = errorCode
     err.what = errorCode
@@ -224,7 +232,12 @@ module.exports = function(config, deps) {
     var result = {err: error}
 
     if (_context && _context.goalInstance) {
-      result.goalReport = _context.goalInstance.report("FAILED")
+      var goalReport = result.goalReport = _context.goalInstance.report("FAILED")
+      m.error('GOAL_FAILED', {
+        goalId: goalReport.goalId,
+        name: goalReport.goalName,
+        codeName: goalReport.codeName
+      }, {callDepth:2, tags: 'GOAL-COMPLETE', custom: {goalReport: goalReport, goalDuration: goalReport.duration}})
     }
 
     if (error instanceof ErrorReport) {
@@ -247,11 +260,6 @@ module.exports = function(config, deps) {
   m.rejectWithCode = function(code) {
     return function(err) {
       var err = m.failSuppressed(err)
-      if (_context.goalInstance) {
-        var goalReport = _context.goalInstance.report("failed")
-        _context.goalReport = goalReport
-        throw m.errorReport(code, _context, err)
-      }
       throw m.errorReport(code, _context, err)
     }
   }
@@ -259,7 +267,7 @@ module.exports = function(config, deps) {
   m.pass = m.result = function(result) {
     if (_context && _context.goalInstance) {
       var goalReport = _context.goalInstance.report('SUCCEEDED', result)
-      m.log('GOAL_COMPLETED', {
+      m.log('GOAL_SUCCEEDED', {
         goalId: goalReport.goalId,
         name: goalReport.goalName,
         codeName: goalReport.codeName
