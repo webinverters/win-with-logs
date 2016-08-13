@@ -1,7 +1,7 @@
 {
   "name": "win-with-logs",
   "description": "",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "main": "dist/angular-dist.js",
   "authors": [
     "Justin Mooser"
