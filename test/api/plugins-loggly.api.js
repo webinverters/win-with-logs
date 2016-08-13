@@ -90,8 +90,8 @@ describe('loggly integration', function() {
   // })
 
   describe('log.goal()', function() {
-    function testGoal(err) {
-      var goal = log.goal('testGoal()', arguments)
+    function testGoal(err, opts) {
+      var goal = log.goal('testGoal()', arguments,opts)
       return p.resolve()
         .then(function() {
           if (err) throw new Error('ErrorCode: 54')
@@ -109,6 +109,11 @@ describe('loggly integration', function() {
     })
     it('sends goal completions to loggy', function() {
       return testGoal()
+        .delay(5000)
+    })
+
+    it('sends goal tags correctly', function() {
+      return testGoal(null, {tags: 'BEST-TAG'})
         .delay(5000)
     })
   })

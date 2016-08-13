@@ -31,6 +31,8 @@ module.exports = function(config, axios) {
 
   config.plugins.loggly.baseURL = config.plugins.loggly.baseURL || 'https://logs-01.loggly.com/inputs/'
 
+  config.plugins.loggly.important = 'GOAL-COMPLETE,'+(config.plugins.loggly.important||'')
+
   debug('Loggly Plugin Config:', config)
   var _tags = config.app + '-' + config.env
   if (config.plugins.loggly.tags) {
@@ -40,14 +42,14 @@ module.exports = function(config, axios) {
   debug('_tags:', _tags)
 
   var axiosConfig = {
-    baseURL: config.plugins.loggly.baseURL + config.plugins.loggly.token + '/tag/bulk',
+    baseURL: config.plugins.loggly.baseURL + config.plugins.loggly.token,
     //timeout: 1000,
     headers: {
       'X-LOGGLY-TAG': _tags,
       'content-type': 'text/plain'
     }
   }
-
+  var http = axios.create(axiosConfig)
   var queue = FixedQueue(config.plugins.loggly.bufferSize || 50)
 
   function flushLogBuffer() {
@@ -62,8 +64,9 @@ module.exports = function(config, axios) {
   m.process = function(logEvent) {
     debug('Process:', logEvent)
 
-    if (_.isString(logEvent._tags) && _.includes(logEvent._tags.split(','), 'GOAL')) {
-      sendToLoggly(logEvent)
+    if (_.isString(logEvent._tags) &&
+      _.size(_.intersection(logEvent._tags.split(','), config.plugins.loggly.important.split(',')))) {
+      return sendToLoggly(logEvent)
     }
 
     // errors are sent with up to 5mb of previous events.
@@ -77,31 +80,28 @@ module.exports = function(config, axios) {
     }
     // warnings are sent as individual events.
     else if (logEvent.level == 40) {
-      sendToLoggly(logEvent)
+      return sendToLoggly(logEvent)
     }
     else {
       queue.enqueue(logEvent)
     }
+    return p.resolve()
   }
 
   function sendToLoggly(logEvent) {
-    if (logEvent._tags) axiosConfig.headers['X-LOGGLY-TAG'] += ','+logEvent._tags
-    var http = axios.create(axiosConfig)
-
     if (logEvent.err) logEvent.err = JSON.stringify(logEvent.err, Object.getOwnPropertyNames(logEvent.err))
 
     debug('Sending logEvent...', logEvent)
 
-    return http.post('/', logEvent)
+    return http.post('/tag/'+(logEvent._tags || ''), logEvent)
       .then(function(res) {
         debug('Loggly responds...', res)
       })
       .catch(function(err) {
         debug('Failed to send logs:', err)
-        console.log('Missed:', logEvent.toString())
+        console.log('Missed:', logEvent)
       })
   }
-
 
   var queryEndpoint = axios.create({
     auth: {

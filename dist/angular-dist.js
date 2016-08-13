@@ -31206,9 +31206,11 @@ module.exports = function(config, deps) {
       level = 'info'
     }
 
+    var goal = (_context && _context.goalInstance) || {}
     var logObject = {
         _id: parseInt(_.uniqueId()),
-        _tags: options.tags
+        _tags: goal.tags ? options.tags + ',' + goal.tags : options.tags,
+        _goalId: goal.goalId
       },
       streamProcessingResolver = defer()
 
@@ -31395,7 +31397,7 @@ module.exports = function(config, deps) {
         goalId: goalReport.goalId,
         name: goalReport.goalName,
         codeName: goalReport.codeName
-      }, {callDepth:2, tags: 'GOAL', custom: {goalReport: goalReport, goalDuration: goalReport.duration}})
+      }, {callDepth:2, tags: 'GOAL-COMPLETE', custom: {goalReport: goalReport, goalDuration: goalReport.duration}})
     } else {
       m.log('Result: ', _context, {callDepth:2})
     }
@@ -31443,8 +31445,8 @@ module.exports = function(config, deps) {
   m.timestamp = function (kind) {
     if (config.timestampFunc) return config.timestampFunc()
     if (!kind || kind == 'iso') return new Date().toISOString()
-    if (kind=='epoch') return Math.floor(new Date().getTime()/1000)
-    if (kind=='epochmill') return new Date().getTime()
+    if (kind=='epoch') return Math.floor(Date.now()/1000)
+    if (kind=='epochmill') return Date.now()
   }
 
   return m
@@ -31527,16 +31529,18 @@ function getCaller3Info(level) {
     return obj;
 }
 
-function Goal(name, goalDetails) {
+function Goal(name, goalDetails, opts) {
+  opts = opts || {}
   this.goalContext = goalDetails || {};
   this.goalId = this.goalContext.goalId
 
   if (!this.goalContext.goalId) {
-    this.goalId = _.uniqueId(new Date().getTime())
+    this.goalId = _.uniqueId()
   }
 
   this.name = name;
-  this.creationTimeMS = new Date().getTime();
+  this.creationTimeMS = Date.now()
+  this.tags = opts.tags
 }
 
 
@@ -31550,7 +31554,7 @@ Goal.prototype.report = function (status, result) {
     goalName: this.name,
     codeName: this.name.replace('()','').toUnderscore().toUpperCase(),
     context: this.goalContext,
-    duration: new Date().getTime() - this.creationTimeMS,
+    duration: Date.now() - this.creationTimeMS,
     result: result,
     status: status
   }
@@ -31593,6 +31597,8 @@ module.exports = function(config, axios) {
 
   config.plugins.loggly.baseURL = config.plugins.loggly.baseURL || 'https://logs-01.loggly.com/inputs/'
 
+  config.plugins.loggly.important = 'GOAL-COMPLETE,'+(config.plugins.loggly.important||'')
+
   debug('Loggly Plugin Config:', config)
   var _tags = config.app + '-' + config.env
   if (config.plugins.loggly.tags) {
@@ -31602,14 +31608,14 @@ module.exports = function(config, axios) {
   debug('_tags:', _tags)
 
   var axiosConfig = {
-    baseURL: config.plugins.loggly.baseURL + config.plugins.loggly.token + '/tag/bulk',
+    baseURL: config.plugins.loggly.baseURL + config.plugins.loggly.token,
     //timeout: 1000,
     headers: {
       'X-LOGGLY-TAG': _tags,
       'content-type': 'text/plain'
     }
   }
-
+  var http = axios.create(axiosConfig)
   var queue = FixedQueue(config.plugins.loggly.bufferSize || 50)
 
   function flushLogBuffer() {
@@ -31624,8 +31630,9 @@ module.exports = function(config, axios) {
   m.process = function(logEvent) {
     debug('Process:', logEvent)
 
-    if (_.isString(logEvent._tags) && _.includes(logEvent._tags.split(','), 'GOAL')) {
-      sendToLoggly(logEvent)
+    if (_.isString(logEvent._tags) &&
+      _.size(_.intersection(logEvent._tags.split(','), config.plugins.loggly.important.split(',')))) {
+      return sendToLoggly(logEvent)
     }
 
     // errors are sent with up to 5mb of previous events.
@@ -31639,31 +31646,28 @@ module.exports = function(config, axios) {
     }
     // warnings are sent as individual events.
     else if (logEvent.level == 40) {
-      sendToLoggly(logEvent)
+      return sendToLoggly(logEvent)
     }
     else {
       queue.enqueue(logEvent)
     }
+    return p.resolve()
   }
 
   function sendToLoggly(logEvent) {
-    if (logEvent._tags) axiosConfig.headers['X-LOGGLY-TAG'] += ','+logEvent._tags
-    var http = axios.create(axiosConfig)
-
     if (logEvent.err) logEvent.err = JSON.stringify(logEvent.err, Object.getOwnPropertyNames(logEvent.err))
 
     debug('Sending logEvent...', logEvent)
 
-    return http.post('/', logEvent)
+    return http.post('/tag/'+(logEvent._tags || ''), logEvent)
       .then(function(res) {
         debug('Loggly responds...', res)
       })
       .catch(function(err) {
         debug('Failed to send logs:', err)
-        console.log('Missed:', logEvent.toString())
+        console.log('Missed:', logEvent)
       })
   }
-
 
   var queryEndpoint = axios.create({
     auth: {

@@ -72,9 +72,11 @@ module.exports = function(config, deps) {
       level = 'info'
     }
 
+    var goal = (_context && _context.goalInstance) || {}
     var logObject = {
         _id: parseInt(_.uniqueId()),
-        _tags: options.tags
+        _tags: goal.tags ? options.tags + ',' + goal.tags : options.tags,
+        _goalId: goal.goalId
       },
       streamProcessingResolver = defer()
 
@@ -261,7 +263,7 @@ module.exports = function(config, deps) {
         goalId: goalReport.goalId,
         name: goalReport.goalName,
         codeName: goalReport.codeName
-      }, {callDepth:2, tags: 'GOAL', custom: {goalReport: goalReport, goalDuration: goalReport.duration}})
+      }, {callDepth:2, tags: 'GOAL-COMPLETE', custom: {goalReport: goalReport, goalDuration: goalReport.duration}})
     } else {
       m.log('Result: ', _context, {callDepth:2})
     }
@@ -309,8 +311,8 @@ module.exports = function(config, deps) {
   m.timestamp = function (kind) {
     if (config.timestampFunc) return config.timestampFunc()
     if (!kind || kind == 'iso') return new Date().toISOString()
-    if (kind=='epoch') return Math.floor(new Date().getTime()/1000)
-    if (kind=='epochmill') return new Date().getTime()
+    if (kind=='epoch') return Math.floor(Date.now()/1000)
+    if (kind=='epochmill') return Date.now()
   }
 
   return m
@@ -393,16 +395,18 @@ function getCaller3Info(level) {
     return obj;
 }
 
-function Goal(name, goalDetails) {
+function Goal(name, goalDetails, opts) {
+  opts = opts || {}
   this.goalContext = goalDetails || {};
   this.goalId = this.goalContext.goalId
 
   if (!this.goalContext.goalId) {
-    this.goalId = _.uniqueId(new Date().getTime())
+    this.goalId = _.uniqueId()
   }
 
   this.name = name;
-  this.creationTimeMS = new Date().getTime();
+  this.creationTimeMS = Date.now()
+  this.tags = opts.tags
 }
 
 
@@ -416,7 +420,7 @@ Goal.prototype.report = function (status, result) {
     goalName: this.name,
     codeName: this.name.replace('()','').toUnderscore().toUpperCase(),
     context: this.goalContext,
-    duration: new Date().getTime() - this.creationTimeMS,
+    duration: Date.now() - this.creationTimeMS,
     result: result,
     status: status
   }
