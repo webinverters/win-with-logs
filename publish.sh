@@ -8,6 +8,6 @@ fi
 
 make dist
 git commit -am "$1"
-gulp release  # patch, release, feature
+gulp patch  # patch, release, feature
 git push origin master --tags
 npm publish
