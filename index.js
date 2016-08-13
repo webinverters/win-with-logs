@@ -22,7 +22,7 @@
       env: 'dev',
       silent: false, // if true, disables console logging
       debug: false,
-      logStream: 'stdout',
+      logStream: 'stdout',  // CURRENTLY NOT SUPPORTED
       logStreams: [],
       streams: []  // advanced: custom streams can be subscribed for plugin support.
     });

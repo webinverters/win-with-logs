@@ -40,6 +40,7 @@ module.exports = function(config, axios) {
 
   var logStreamCompletionPromises = {}
   var _plugins = {}
+
   /**
    * Initializes the logger based on the configuration
    * provided.
@@ -67,23 +68,31 @@ module.exports = function(config, axios) {
 
     // prettystream internally has issues running on the browser.
     if (!config.silent && isNotBrowser) {
-      var PrettyStream = require('bunyan-prettystream')
-      var prettyStdOut = new PrettyStream({mode:config.logMode || 'short'})
-      prettyStdOut.pipe(config.logStream == 'stdout' ? process.stdout : config.logStream)
+      debug('Enabling prettystream logging...')
+      var bunyanDebugStream = require('bunyan-debug-stream')
+      var bdStream = bunyanDebugStream({
+        forceColor: true
+      })
+      // logStream is needed for integration testing the output of the logger.
+      // if (config.logStream)
+      //   bdStream.pipe(config.logStream)
+
       if (config.debug) {
         bunyanConf.streams.push(
           {
             level: 'debug',
             type: 'raw',
-            stream: prettyStdOut
-          });
+            stream: bdStream
+          })
         console.warn('Debug Logging Is Enabled.  This is OK if it is not production.');
       } else {
         bunyanConf.streams.push({
           level: 'info',
-          stream: prettyStdOut           // log INFO and above to stdout
-        });
+          type: 'raw',
+          stream: bdStream
+        })
       }
+      bunyanConf.serializers = bunyanDebugStream.serializers
     } else {
       console.log('Robust-logs: detected browser runtime.')
       // function MyRawStream() {}
