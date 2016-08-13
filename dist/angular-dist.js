@@ -361,7 +361,7 @@ var objectKeys = Object.keys || function (obj) {
   return keys;
 };
 
-},{"util/":43}],3:[function(require,module,exports){
+},{"util/":31}],3:[function(require,module,exports){
 'use strict'
 
 exports.toByteArray = toByteArray
@@ -2303,72 +2303,7 @@ function isnan (val) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"base64-js":3,"ieee754":10,"isarray":13}],7:[function(require,module,exports){
-module.exports = {
-  "100": "Continue",
-  "101": "Switching Protocols",
-  "102": "Processing",
-  "200": "OK",
-  "201": "Created",
-  "202": "Accepted",
-  "203": "Non-Authoritative Information",
-  "204": "No Content",
-  "205": "Reset Content",
-  "206": "Partial Content",
-  "207": "Multi-Status",
-  "208": "Already Reported",
-  "226": "IM Used",
-  "300": "Multiple Choices",
-  "301": "Moved Permanently",
-  "302": "Found",
-  "303": "See Other",
-  "304": "Not Modified",
-  "305": "Use Proxy",
-  "307": "Temporary Redirect",
-  "308": "Permanent Redirect",
-  "400": "Bad Request",
-  "401": "Unauthorized",
-  "402": "Payment Required",
-  "403": "Forbidden",
-  "404": "Not Found",
-  "405": "Method Not Allowed",
-  "406": "Not Acceptable",
-  "407": "Proxy Authentication Required",
-  "408": "Request Timeout",
-  "409": "Conflict",
-  "410": "Gone",
-  "411": "Length Required",
-  "412": "Precondition Failed",
-  "413": "Payload Too Large",
-  "414": "URI Too Long",
-  "415": "Unsupported Media Type",
-  "416": "Range Not Satisfiable",
-  "417": "Expectation Failed",
-  "418": "I'm a teapot",
-  "421": "Misdirected Request",
-  "422": "Unprocessable Entity",
-  "423": "Locked",
-  "424": "Failed Dependency",
-  "425": "Unordered Collection",
-  "426": "Upgrade Required",
-  "428": "Precondition Required",
-  "429": "Too Many Requests",
-  "431": "Request Header Fields Too Large",
-  "500": "Internal Server Error",
-  "501": "Not Implemented",
-  "502": "Bad Gateway",
-  "503": "Service Unavailable",
-  "504": "Gateway Timeout",
-  "505": "HTTP Version Not Supported",
-  "506": "Variant Also Negotiates",
-  "507": "Insufficient Storage",
-  "508": "Loop Detected",
-  "509": "Bandwidth Limit Exceeded",
-  "510": "Not Extended",
-  "511": "Network Authentication Required"
-}
-
-},{}],8:[function(require,module,exports){
+},{"base64-js":3,"ieee754":9,"isarray":12}],7:[function(require,module,exports){
 (function (Buffer){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -2479,7 +2414,7 @@ function objectToString(o) {
 }
 
 }).call(this,{"isBuffer":require("../../is-buffer/index.js")})
-},{"../../is-buffer/index.js":12}],9:[function(require,module,exports){
+},{"../../is-buffer/index.js":11}],8:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -2783,7 +2718,7 @@ function isUndefined(arg) {
   return arg === void 0;
 }
 
-},{}],10:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = nBytes * 8 - mLen - 1
@@ -2869,7 +2804,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],11:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -2894,7 +2829,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],12:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 /*!
  * Determine if an object is a Buffer
  *
@@ -2917,14 +2852,14 @@ function isSlowBuffer (obj) {
   return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
 }
 
-},{}],13:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 var toString = {}.toString;
 
 module.exports = Array.isArray || function (arr) {
   return toString.call(arr) == '[object Array]';
 };
 
-},{}],14:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 exports.endianness = function () { return 'LE' };
 
 exports.hostname = function () {
@@ -2971,7 +2906,7 @@ exports.tmpdir = exports.tmpDir = function () {
 
 exports.EOL = '\n';
 
-},{}],15:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -3199,7 +3134,7 @@ var substr = 'ab'.substr(-1) === 'b'
 ;
 
 }).call(this,require('_process'))
-},{"_process":17}],16:[function(require,module,exports){
+},{"_process":16}],15:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -3246,7 +3181,7 @@ function nextTick(fn, arg1, arg2, arg3) {
 }
 
 }).call(this,require('_process'))
-},{"_process":17}],17:[function(require,module,exports){
+},{"_process":16}],16:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -3380,726 +3315,10 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],18:[function(require,module,exports){
-(function (global){
-/*! https://mths.be/punycode v1.4.1 by @mathias */
-;(function(root) {
-
-	/** Detect free variables */
-	var freeExports = typeof exports == 'object' && exports &&
-		!exports.nodeType && exports;
-	var freeModule = typeof module == 'object' && module &&
-		!module.nodeType && module;
-	var freeGlobal = typeof global == 'object' && global;
-	if (
-		freeGlobal.global === freeGlobal ||
-		freeGlobal.window === freeGlobal ||
-		freeGlobal.self === freeGlobal
-	) {
-		root = freeGlobal;
-	}
-
-	/**
-	 * The `punycode` object.
-	 * @name punycode
-	 * @type Object
-	 */
-	var punycode,
-
-	/** Highest positive signed 32-bit float value */
-	maxInt = 2147483647, // aka. 0x7FFFFFFF or 2^31-1
-
-	/** Bootstring parameters */
-	base = 36,
-	tMin = 1,
-	tMax = 26,
-	skew = 38,
-	damp = 700,
-	initialBias = 72,
-	initialN = 128, // 0x80
-	delimiter = '-', // '\x2D'
-
-	/** Regular expressions */
-	regexPunycode = /^xn--/,
-	regexNonASCII = /[^\x20-\x7E]/, // unprintable ASCII chars + non-ASCII chars
-	regexSeparators = /[\x2E\u3002\uFF0E\uFF61]/g, // RFC 3490 separators
-
-	/** Error messages */
-	errors = {
-		'overflow': 'Overflow: input needs wider integers to process',
-		'not-basic': 'Illegal input >= 0x80 (not a basic code point)',
-		'invalid-input': 'Invalid input'
-	},
-
-	/** Convenience shortcuts */
-	baseMinusTMin = base - tMin,
-	floor = Math.floor,
-	stringFromCharCode = String.fromCharCode,
-
-	/** Temporary variable */
-	key;
-
-	/*--------------------------------------------------------------------------*/
-
-	/**
-	 * A generic error utility function.
-	 * @private
-	 * @param {String} type The error type.
-	 * @returns {Error} Throws a `RangeError` with the applicable error message.
-	 */
-	function error(type) {
-		throw new RangeError(errors[type]);
-	}
-
-	/**
-	 * A generic `Array#map` utility function.
-	 * @private
-	 * @param {Array} array The array to iterate over.
-	 * @param {Function} callback The function that gets called for every array
-	 * item.
-	 * @returns {Array} A new array of values returned by the callback function.
-	 */
-	function map(array, fn) {
-		var length = array.length;
-		var result = [];
-		while (length--) {
-			result[length] = fn(array[length]);
-		}
-		return result;
-	}
-
-	/**
-	 * A simple `Array#map`-like wrapper to work with domain name strings or email
-	 * addresses.
-	 * @private
-	 * @param {String} domain The domain name or email address.
-	 * @param {Function} callback The function that gets called for every
-	 * character.
-	 * @returns {Array} A new string of characters returned by the callback
-	 * function.
-	 */
-	function mapDomain(string, fn) {
-		var parts = string.split('@');
-		var result = '';
-		if (parts.length > 1) {
-			// In email addresses, only the domain name should be punycoded. Leave
-			// the local part (i.e. everything up to `@`) intact.
-			result = parts[0] + '@';
-			string = parts[1];
-		}
-		// Avoid `split(regex)` for IE8 compatibility. See #17.
-		string = string.replace(regexSeparators, '\x2E');
-		var labels = string.split('.');
-		var encoded = map(labels, fn).join('.');
-		return result + encoded;
-	}
-
-	/**
-	 * Creates an array containing the numeric code points of each Unicode
-	 * character in the string. While JavaScript uses UCS-2 internally,
-	 * this function will convert a pair of surrogate halves (each of which
-	 * UCS-2 exposes as separate characters) into a single code point,
-	 * matching UTF-16.
-	 * @see `punycode.ucs2.encode`
-	 * @see <https://mathiasbynens.be/notes/javascript-encoding>
-	 * @memberOf punycode.ucs2
-	 * @name decode
-	 * @param {String} string The Unicode input string (UCS-2).
-	 * @returns {Array} The new array of code points.
-	 */
-	function ucs2decode(string) {
-		var output = [],
-		    counter = 0,
-		    length = string.length,
-		    value,
-		    extra;
-		while (counter < length) {
-			value = string.charCodeAt(counter++);
-			if (value >= 0xD800 && value <= 0xDBFF && counter < length) {
-				// high surrogate, and there is a next character
-				extra = string.charCodeAt(counter++);
-				if ((extra & 0xFC00) == 0xDC00) { // low surrogate
-					output.push(((value & 0x3FF) << 10) + (extra & 0x3FF) + 0x10000);
-				} else {
-					// unmatched surrogate; only append this code unit, in case the next
-					// code unit is the high surrogate of a surrogate pair
-					output.push(value);
-					counter--;
-				}
-			} else {
-				output.push(value);
-			}
-		}
-		return output;
-	}
-
-	/**
-	 * Creates a string based on an array of numeric code points.
-	 * @see `punycode.ucs2.decode`
-	 * @memberOf punycode.ucs2
-	 * @name encode
-	 * @param {Array} codePoints The array of numeric code points.
-	 * @returns {String} The new Unicode string (UCS-2).
-	 */
-	function ucs2encode(array) {
-		return map(array, function(value) {
-			var output = '';
-			if (value > 0xFFFF) {
-				value -= 0x10000;
-				output += stringFromCharCode(value >>> 10 & 0x3FF | 0xD800);
-				value = 0xDC00 | value & 0x3FF;
-			}
-			output += stringFromCharCode(value);
-			return output;
-		}).join('');
-	}
-
-	/**
-	 * Converts a basic code point into a digit/integer.
-	 * @see `digitToBasic()`
-	 * @private
-	 * @param {Number} codePoint The basic numeric code point value.
-	 * @returns {Number} The numeric value of a basic code point (for use in
-	 * representing integers) in the range `0` to `base - 1`, or `base` if
-	 * the code point does not represent a value.
-	 */
-	function basicToDigit(codePoint) {
-		if (codePoint - 48 < 10) {
-			return codePoint - 22;
-		}
-		if (codePoint - 65 < 26) {
-			return codePoint - 65;
-		}
-		if (codePoint - 97 < 26) {
-			return codePoint - 97;
-		}
-		return base;
-	}
-
-	/**
-	 * Converts a digit/integer into a basic code point.
-	 * @see `basicToDigit()`
-	 * @private
-	 * @param {Number} digit The numeric value of a basic code point.
-	 * @returns {Number} The basic code point whose value (when used for
-	 * representing integers) is `digit`, which needs to be in the range
-	 * `0` to `base - 1`. If `flag` is non-zero, the uppercase form is
-	 * used; else, the lowercase form is used. The behavior is undefined
-	 * if `flag` is non-zero and `digit` has no uppercase form.
-	 */
-	function digitToBasic(digit, flag) {
-		//  0..25 map to ASCII a..z or A..Z
-		// 26..35 map to ASCII 0..9
-		return digit + 22 + 75 * (digit < 26) - ((flag != 0) << 5);
-	}
-
-	/**
-	 * Bias adaptation function as per section 3.4 of RFC 3492.
-	 * https://tools.ietf.org/html/rfc3492#section-3.4
-	 * @private
-	 */
-	function adapt(delta, numPoints, firstTime) {
-		var k = 0;
-		delta = firstTime ? floor(delta / damp) : delta >> 1;
-		delta += floor(delta / numPoints);
-		for (/* no initialization */; delta > baseMinusTMin * tMax >> 1; k += base) {
-			delta = floor(delta / baseMinusTMin);
-		}
-		return floor(k + (baseMinusTMin + 1) * delta / (delta + skew));
-	}
-
-	/**
-	 * Converts a Punycode string of ASCII-only symbols to a string of Unicode
-	 * symbols.
-	 * @memberOf punycode
-	 * @param {String} input The Punycode string of ASCII-only symbols.
-	 * @returns {String} The resulting string of Unicode symbols.
-	 */
-	function decode(input) {
-		// Don't use UCS-2
-		var output = [],
-		    inputLength = input.length,
-		    out,
-		    i = 0,
-		    n = initialN,
-		    bias = initialBias,
-		    basic,
-		    j,
-		    index,
-		    oldi,
-		    w,
-		    k,
-		    digit,
-		    t,
-		    /** Cached calculation results */
-		    baseMinusT;
-
-		// Handle the basic code points: let `basic` be the number of input code
-		// points before the last delimiter, or `0` if there is none, then copy
-		// the first basic code points to the output.
-
-		basic = input.lastIndexOf(delimiter);
-		if (basic < 0) {
-			basic = 0;
-		}
-
-		for (j = 0; j < basic; ++j) {
-			// if it's not a basic code point
-			if (input.charCodeAt(j) >= 0x80) {
-				error('not-basic');
-			}
-			output.push(input.charCodeAt(j));
-		}
-
-		// Main decoding loop: start just after the last delimiter if any basic code
-		// points were copied; start at the beginning otherwise.
-
-		for (index = basic > 0 ? basic + 1 : 0; index < inputLength; /* no final expression */) {
-
-			// `index` is the index of the next character to be consumed.
-			// Decode a generalized variable-length integer into `delta`,
-			// which gets added to `i`. The overflow checking is easier
-			// if we increase `i` as we go, then subtract off its starting
-			// value at the end to obtain `delta`.
-			for (oldi = i, w = 1, k = base; /* no condition */; k += base) {
-
-				if (index >= inputLength) {
-					error('invalid-input');
-				}
-
-				digit = basicToDigit(input.charCodeAt(index++));
-
-				if (digit >= base || digit > floor((maxInt - i) / w)) {
-					error('overflow');
-				}
-
-				i += digit * w;
-				t = k <= bias ? tMin : (k >= bias + tMax ? tMax : k - bias);
-
-				if (digit < t) {
-					break;
-				}
-
-				baseMinusT = base - t;
-				if (w > floor(maxInt / baseMinusT)) {
-					error('overflow');
-				}
-
-				w *= baseMinusT;
-
-			}
-
-			out = output.length + 1;
-			bias = adapt(i - oldi, out, oldi == 0);
-
-			// `i` was supposed to wrap around from `out` to `0`,
-			// incrementing `n` each time, so we'll fix that now:
-			if (floor(i / out) > maxInt - n) {
-				error('overflow');
-			}
-
-			n += floor(i / out);
-			i %= out;
-
-			// Insert `n` at position `i` of the output
-			output.splice(i++, 0, n);
-
-		}
-
-		return ucs2encode(output);
-	}
-
-	/**
-	 * Converts a string of Unicode symbols (e.g. a domain name label) to a
-	 * Punycode string of ASCII-only symbols.
-	 * @memberOf punycode
-	 * @param {String} input The string of Unicode symbols.
-	 * @returns {String} The resulting Punycode string of ASCII-only symbols.
-	 */
-	function encode(input) {
-		var n,
-		    delta,
-		    handledCPCount,
-		    basicLength,
-		    bias,
-		    j,
-		    m,
-		    q,
-		    k,
-		    t,
-		    currentValue,
-		    output = [],
-		    /** `inputLength` will hold the number of code points in `input`. */
-		    inputLength,
-		    /** Cached calculation results */
-		    handledCPCountPlusOne,
-		    baseMinusT,
-		    qMinusT;
-
-		// Convert the input in UCS-2 to Unicode
-		input = ucs2decode(input);
-
-		// Cache the length
-		inputLength = input.length;
-
-		// Initialize the state
-		n = initialN;
-		delta = 0;
-		bias = initialBias;
-
-		// Handle the basic code points
-		for (j = 0; j < inputLength; ++j) {
-			currentValue = input[j];
-			if (currentValue < 0x80) {
-				output.push(stringFromCharCode(currentValue));
-			}
-		}
-
-		handledCPCount = basicLength = output.length;
-
-		// `handledCPCount` is the number of code points that have been handled;
-		// `basicLength` is the number of basic code points.
-
-		// Finish the basic string - if it is not empty - with a delimiter
-		if (basicLength) {
-			output.push(delimiter);
-		}
-
-		// Main encoding loop:
-		while (handledCPCount < inputLength) {
-
-			// All non-basic code points < n have been handled already. Find the next
-			// larger one:
-			for (m = maxInt, j = 0; j < inputLength; ++j) {
-				currentValue = input[j];
-				if (currentValue >= n && currentValue < m) {
-					m = currentValue;
-				}
-			}
-
-			// Increase `delta` enough to advance the decoder's <n,i> state to <m,0>,
-			// but guard against overflow
-			handledCPCountPlusOne = handledCPCount + 1;
-			if (m - n > floor((maxInt - delta) / handledCPCountPlusOne)) {
-				error('overflow');
-			}
-
-			delta += (m - n) * handledCPCountPlusOne;
-			n = m;
-
-			for (j = 0; j < inputLength; ++j) {
-				currentValue = input[j];
-
-				if (currentValue < n && ++delta > maxInt) {
-					error('overflow');
-				}
-
-				if (currentValue == n) {
-					// Represent delta as a generalized variable-length integer
-					for (q = delta, k = base; /* no condition */; k += base) {
-						t = k <= bias ? tMin : (k >= bias + tMax ? tMax : k - bias);
-						if (q < t) {
-							break;
-						}
-						qMinusT = q - t;
-						baseMinusT = base - t;
-						output.push(
-							stringFromCharCode(digitToBasic(t + qMinusT % baseMinusT, 0))
-						);
-						q = floor(qMinusT / baseMinusT);
-					}
-
-					output.push(stringFromCharCode(digitToBasic(q, 0)));
-					bias = adapt(delta, handledCPCountPlusOne, handledCPCount == basicLength);
-					delta = 0;
-					++handledCPCount;
-				}
-			}
-
-			++delta;
-			++n;
-
-		}
-		return output.join('');
-	}
-
-	/**
-	 * Converts a Punycode string representing a domain name or an email address
-	 * to Unicode. Only the Punycoded parts of the input will be converted, i.e.
-	 * it doesn't matter if you call it on a string that has already been
-	 * converted to Unicode.
-	 * @memberOf punycode
-	 * @param {String} input The Punycoded domain name or email address to
-	 * convert to Unicode.
-	 * @returns {String} The Unicode representation of the given Punycode
-	 * string.
-	 */
-	function toUnicode(input) {
-		return mapDomain(input, function(string) {
-			return regexPunycode.test(string)
-				? decode(string.slice(4).toLowerCase())
-				: string;
-		});
-	}
-
-	/**
-	 * Converts a Unicode string representing a domain name or an email address to
-	 * Punycode. Only the non-ASCII parts of the domain name will be converted,
-	 * i.e. it doesn't matter if you call it with a domain that's already in
-	 * ASCII.
-	 * @memberOf punycode
-	 * @param {String} input The domain name or email address to convert, as a
-	 * Unicode string.
-	 * @returns {String} The Punycode representation of the given domain name or
-	 * email address.
-	 */
-	function toASCII(input) {
-		return mapDomain(input, function(string) {
-			return regexNonASCII.test(string)
-				? 'xn--' + encode(string)
-				: string;
-		});
-	}
-
-	/*--------------------------------------------------------------------------*/
-
-	/** Define the public API */
-	punycode = {
-		/**
-		 * A string representing the current Punycode.js version number.
-		 * @memberOf punycode
-		 * @type String
-		 */
-		'version': '1.4.1',
-		/**
-		 * An object of methods to convert from JavaScript's internal character
-		 * representation (UCS-2) to Unicode code points, and back.
-		 * @see <https://mathiasbynens.be/notes/javascript-encoding>
-		 * @memberOf punycode
-		 * @type Object
-		 */
-		'ucs2': {
-			'decode': ucs2decode,
-			'encode': ucs2encode
-		},
-		'decode': decode,
-		'encode': encode,
-		'toASCII': toASCII,
-		'toUnicode': toUnicode
-	};
-
-	/** Expose `punycode` */
-	// Some AMD build optimizers, like r.js, check for specific condition patterns
-	// like the following:
-	if (
-		typeof define == 'function' &&
-		typeof define.amd == 'object' &&
-		define.amd
-	) {
-		define('punycode', function() {
-			return punycode;
-		});
-	} else if (freeExports && freeModule) {
-		if (module.exports == freeExports) {
-			// in Node.js, io.js, or RingoJS v0.8.0+
-			freeModule.exports = punycode;
-		} else {
-			// in Narwhal or RingoJS v0.7.0-
-			for (key in punycode) {
-				punycode.hasOwnProperty(key) && (freeExports[key] = punycode[key]);
-			}
-		}
-	} else {
-		// in Rhino or a web browser
-		root.punycode = punycode;
-	}
-
-}(this));
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],19:[function(require,module,exports){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-'use strict';
-
-// If obj.hasOwnProperty has been overridden, then calling
-// obj.hasOwnProperty(prop) will break.
-// See: https://github.com/joyent/node/issues/1707
-function hasOwnProperty(obj, prop) {
-  return Object.prototype.hasOwnProperty.call(obj, prop);
-}
-
-module.exports = function(qs, sep, eq, options) {
-  sep = sep || '&';
-  eq = eq || '=';
-  var obj = {};
-
-  if (typeof qs !== 'string' || qs.length === 0) {
-    return obj;
-  }
-
-  var regexp = /\+/g;
-  qs = qs.split(sep);
-
-  var maxKeys = 1000;
-  if (options && typeof options.maxKeys === 'number') {
-    maxKeys = options.maxKeys;
-  }
-
-  var len = qs.length;
-  // maxKeys <= 0 means that we should not limit keys count
-  if (maxKeys > 0 && len > maxKeys) {
-    len = maxKeys;
-  }
-
-  for (var i = 0; i < len; ++i) {
-    var x = qs[i].replace(regexp, '%20'),
-        idx = x.indexOf(eq),
-        kstr, vstr, k, v;
-
-    if (idx >= 0) {
-      kstr = x.substr(0, idx);
-      vstr = x.substr(idx + 1);
-    } else {
-      kstr = x;
-      vstr = '';
-    }
-
-    k = decodeURIComponent(kstr);
-    v = decodeURIComponent(vstr);
-
-    if (!hasOwnProperty(obj, k)) {
-      obj[k] = v;
-    } else if (isArray(obj[k])) {
-      obj[k].push(v);
-    } else {
-      obj[k] = [obj[k], v];
-    }
-  }
-
-  return obj;
-};
-
-var isArray = Array.isArray || function (xs) {
-  return Object.prototype.toString.call(xs) === '[object Array]';
-};
-
-},{}],20:[function(require,module,exports){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-'use strict';
-
-var stringifyPrimitive = function(v) {
-  switch (typeof v) {
-    case 'string':
-      return v;
-
-    case 'boolean':
-      return v ? 'true' : 'false';
-
-    case 'number':
-      return isFinite(v) ? v : '';
-
-    default:
-      return '';
-  }
-};
-
-module.exports = function(obj, sep, eq, name) {
-  sep = sep || '&';
-  eq = eq || '=';
-  if (obj === null) {
-    obj = undefined;
-  }
-
-  if (typeof obj === 'object') {
-    return map(objectKeys(obj), function(k) {
-      var ks = encodeURIComponent(stringifyPrimitive(k)) + eq;
-      if (isArray(obj[k])) {
-        return map(obj[k], function(v) {
-          return ks + encodeURIComponent(stringifyPrimitive(v));
-        }).join(sep);
-      } else {
-        return ks + encodeURIComponent(stringifyPrimitive(obj[k]));
-      }
-    }).join(sep);
-
-  }
-
-  if (!name) return '';
-  return encodeURIComponent(stringifyPrimitive(name)) + eq +
-         encodeURIComponent(stringifyPrimitive(obj));
-};
-
-var isArray = Array.isArray || function (xs) {
-  return Object.prototype.toString.call(xs) === '[object Array]';
-};
-
-function map (xs, f) {
-  if (xs.map) return xs.map(f);
-  var res = [];
-  for (var i = 0; i < xs.length; i++) {
-    res.push(f(xs[i], i));
-  }
-  return res;
-}
-
-var objectKeys = Object.keys || function (obj) {
-  var res = [];
-  for (var key in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) res.push(key);
-  }
-  return res;
-};
-
-},{}],21:[function(require,module,exports){
-'use strict';
-
-exports.decode = exports.parse = require('./decode');
-exports.encode = exports.stringify = require('./encode');
-
-},{"./decode":19,"./encode":20}],22:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 module.exports = require("./lib/_stream_duplex.js")
 
-},{"./lib/_stream_duplex.js":23}],23:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":18}],18:[function(require,module,exports){
 // a duplex stream is just a stream that is both readable and writable.
 // Since JS doesn't have multiple prototypal inheritance, this class
 // prototypally inherits from Readable, and then parasitically from
@@ -4175,7 +3394,7 @@ function forEach(xs, f) {
     f(xs[i], i);
   }
 }
-},{"./_stream_readable":25,"./_stream_writable":27,"core-util-is":8,"inherits":11,"process-nextick-args":16}],24:[function(require,module,exports){
+},{"./_stream_readable":20,"./_stream_writable":22,"core-util-is":7,"inherits":10,"process-nextick-args":15}],19:[function(require,module,exports){
 // a passthrough stream.
 // basically just the most minimal sort of Transform stream.
 // Every written chunk gets output as-is.
@@ -4202,7 +3421,7 @@ function PassThrough(options) {
 PassThrough.prototype._transform = function (chunk, encoding, cb) {
   cb(null, chunk);
 };
-},{"./_stream_transform":26,"core-util-is":8,"inherits":11}],25:[function(require,module,exports){
+},{"./_stream_transform":21,"core-util-is":7,"inherits":10}],20:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -5098,7 +4317,7 @@ function indexOf(xs, x) {
   return -1;
 }
 }).call(this,require('_process'))
-},{"./_stream_duplex":23,"_process":17,"buffer":6,"buffer-shims":5,"core-util-is":8,"events":9,"inherits":11,"isarray":13,"process-nextick-args":16,"string_decoder/":37,"util":4}],26:[function(require,module,exports){
+},{"./_stream_duplex":18,"_process":16,"buffer":6,"buffer-shims":5,"core-util-is":7,"events":8,"inherits":10,"isarray":12,"process-nextick-args":15,"string_decoder/":28,"util":4}],21:[function(require,module,exports){
 // a transform stream is a readable/writable stream where you do
 // something with the data.  Sometimes it's called a "filter",
 // but that's not a great name for it, since that implies a thing where
@@ -5279,7 +4498,7 @@ function done(stream, er) {
 
   return stream.push(null);
 }
-},{"./_stream_duplex":23,"core-util-is":8,"inherits":11}],27:[function(require,module,exports){
+},{"./_stream_duplex":18,"core-util-is":7,"inherits":10}],22:[function(require,module,exports){
 (function (process){
 // A bit simpler than readable streams.
 // Implement an async ._write(chunk, encoding, cb), and it'll handle all
@@ -5808,10 +5027,10 @@ function CorkedRequest(state) {
   };
 }
 }).call(this,require('_process'))
-},{"./_stream_duplex":23,"_process":17,"buffer":6,"buffer-shims":5,"core-util-is":8,"events":9,"inherits":11,"process-nextick-args":16,"util-deprecate":41}],28:[function(require,module,exports){
+},{"./_stream_duplex":18,"_process":16,"buffer":6,"buffer-shims":5,"core-util-is":7,"events":8,"inherits":10,"process-nextick-args":15,"util-deprecate":29}],23:[function(require,module,exports){
 module.exports = require("./lib/_stream_passthrough.js")
 
-},{"./lib/_stream_passthrough.js":24}],29:[function(require,module,exports){
+},{"./lib/_stream_passthrough.js":19}],24:[function(require,module,exports){
 (function (process){
 var Stream = (function (){
   try {
@@ -5831,13 +5050,13 @@ if (!process.browser && process.env.READABLE_STREAM === 'disable' && Stream) {
 }
 
 }).call(this,require('_process'))
-},{"./lib/_stream_duplex.js":23,"./lib/_stream_passthrough.js":24,"./lib/_stream_readable.js":25,"./lib/_stream_transform.js":26,"./lib/_stream_writable.js":27,"_process":17}],30:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":18,"./lib/_stream_passthrough.js":19,"./lib/_stream_readable.js":20,"./lib/_stream_transform.js":21,"./lib/_stream_writable.js":22,"_process":16}],25:[function(require,module,exports){
 module.exports = require("./lib/_stream_transform.js")
 
-},{"./lib/_stream_transform.js":26}],31:[function(require,module,exports){
+},{"./lib/_stream_transform.js":21}],26:[function(require,module,exports){
 module.exports = require("./lib/_stream_writable.js")
 
-},{"./lib/_stream_writable.js":27}],32:[function(require,module,exports){
+},{"./lib/_stream_writable.js":22}],27:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -5966,598 +5185,7 @@ Stream.prototype.pipe = function(dest, options) {
   return dest;
 };
 
-},{"events":9,"inherits":11,"readable-stream/duplex.js":22,"readable-stream/passthrough.js":28,"readable-stream/readable.js":29,"readable-stream/transform.js":30,"readable-stream/writable.js":31}],33:[function(require,module,exports){
-(function (global){
-var ClientRequest = require('./lib/request')
-var extend = require('xtend')
-var statusCodes = require('builtin-status-codes')
-var url = require('url')
-
-var http = exports
-
-http.request = function (opts, cb) {
-	if (typeof opts === 'string')
-		opts = url.parse(opts)
-	else
-		opts = extend(opts)
-
-	// Normally, the page is loaded from http or https, so not specifying a protocol
-	// will result in a (valid) protocol-relative url. However, this won't work if
-	// the protocol is something else, like 'file:'
-	var defaultProtocol = global.location.protocol.search(/^https?:$/) === -1 ? 'http:' : ''
-
-	var protocol = opts.protocol || defaultProtocol
-	var host = opts.hostname || opts.host
-	var port = opts.port
-	var path = opts.path || '/'
-
-	// Necessary for IPv6 addresses
-	if (host && host.indexOf(':') !== -1)
-		host = '[' + host + ']'
-
-	// This may be a relative url. The browser should always be able to interpret it correctly.
-	opts.url = (host ? (protocol + '//' + host) : '') + (port ? ':' + port : '') + path
-	opts.method = (opts.method || 'GET').toUpperCase()
-	opts.headers = opts.headers || {}
-
-	// Also valid opts.auth, opts.mode
-
-	var req = new ClientRequest(opts)
-	if (cb)
-		req.on('response', cb)
-	return req
-}
-
-http.get = function get (opts, cb) {
-	var req = http.request(opts, cb)
-	req.end()
-	return req
-}
-
-http.Agent = function () {}
-http.Agent.defaultMaxSockets = 4
-
-http.STATUS_CODES = statusCodes
-
-http.METHODS = [
-	'CHECKOUT',
-	'CONNECT',
-	'COPY',
-	'DELETE',
-	'GET',
-	'HEAD',
-	'LOCK',
-	'M-SEARCH',
-	'MERGE',
-	'MKACTIVITY',
-	'MKCOL',
-	'MOVE',
-	'NOTIFY',
-	'OPTIONS',
-	'PATCH',
-	'POST',
-	'PROPFIND',
-	'PROPPATCH',
-	'PURGE',
-	'PUT',
-	'REPORT',
-	'SEARCH',
-	'SUBSCRIBE',
-	'TRACE',
-	'UNLOCK',
-	'UNSUBSCRIBE'
-]
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./lib/request":35,"builtin-status-codes":7,"url":39,"xtend":44}],34:[function(require,module,exports){
-(function (global){
-exports.fetch = isFunction(global.fetch) && isFunction(global.ReadableStream)
-
-exports.blobConstructor = false
-try {
-	new Blob([new ArrayBuffer(1)])
-	exports.blobConstructor = true
-} catch (e) {}
-
-var xhr = new global.XMLHttpRequest()
-// If location.host is empty, e.g. if this page/worker was loaded
-// from a Blob, then use example.com to avoid an error
-xhr.open('GET', global.location.host ? '/' : 'https://example.com')
-
-function checkTypeSupport (type) {
-	try {
-		xhr.responseType = type
-		return xhr.responseType === type
-	} catch (e) {}
-	return false
-}
-
-// For some strange reason, Safari 7.0 reports typeof global.ArrayBuffer === 'object'.
-// Safari 7.1 appears to have fixed this bug.
-var haveArrayBuffer = typeof global.ArrayBuffer !== 'undefined'
-var haveSlice = haveArrayBuffer && isFunction(global.ArrayBuffer.prototype.slice)
-
-exports.arraybuffer = haveArrayBuffer && checkTypeSupport('arraybuffer')
-// These next two tests unavoidably show warnings in Chrome. Since fetch will always
-// be used if it's available, just return false for these to avoid the warnings.
-exports.msstream = !exports.fetch && haveSlice && checkTypeSupport('ms-stream')
-exports.mozchunkedarraybuffer = !exports.fetch && haveArrayBuffer &&
-	checkTypeSupport('moz-chunked-arraybuffer')
-exports.overrideMimeType = isFunction(xhr.overrideMimeType)
-exports.vbArray = isFunction(global.VBArray)
-
-function isFunction (value) {
-  return typeof value === 'function'
-}
-
-xhr = null // Help gc
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],35:[function(require,module,exports){
-(function (process,global,Buffer){
-var capability = require('./capability')
-var inherits = require('inherits')
-var response = require('./response')
-var stream = require('readable-stream')
-var toArrayBuffer = require('to-arraybuffer')
-
-var IncomingMessage = response.IncomingMessage
-var rStates = response.readyStates
-
-function decideMode (preferBinary) {
-	if (capability.fetch) {
-		return 'fetch'
-	} else if (capability.mozchunkedarraybuffer) {
-		return 'moz-chunked-arraybuffer'
-	} else if (capability.msstream) {
-		return 'ms-stream'
-	} else if (capability.arraybuffer && preferBinary) {
-		return 'arraybuffer'
-	} else if (capability.vbArray && preferBinary) {
-		return 'text:vbarray'
-	} else {
-		return 'text'
-	}
-}
-
-var ClientRequest = module.exports = function (opts) {
-	var self = this
-	stream.Writable.call(self)
-
-	self._opts = opts
-	self._body = []
-	self._headers = {}
-	if (opts.auth)
-		self.setHeader('Authorization', 'Basic ' + new Buffer(opts.auth).toString('base64'))
-	Object.keys(opts.headers).forEach(function (name) {
-		self.setHeader(name, opts.headers[name])
-	})
-
-	var preferBinary
-	if (opts.mode === 'prefer-streaming') {
-		// If streaming is a high priority but binary compatibility and
-		// the accuracy of the 'content-type' header aren't
-		preferBinary = false
-	} else if (opts.mode === 'allow-wrong-content-type') {
-		// If streaming is more important than preserving the 'content-type' header
-		preferBinary = !capability.overrideMimeType
-	} else if (!opts.mode || opts.mode === 'default' || opts.mode === 'prefer-fast') {
-		// Use binary if text streaming may corrupt data or the content-type header, or for speed
-		preferBinary = true
-	} else {
-		throw new Error('Invalid value for opts.mode')
-	}
-	self._mode = decideMode(preferBinary)
-
-	self.on('finish', function () {
-		self._onFinish()
-	})
-}
-
-inherits(ClientRequest, stream.Writable)
-
-ClientRequest.prototype.setHeader = function (name, value) {
-	var self = this
-	var lowerName = name.toLowerCase()
-	// This check is not necessary, but it prevents warnings from browsers about setting unsafe
-	// headers. To be honest I'm not entirely sure hiding these warnings is a good thing, but
-	// http-browserify did it, so I will too.
-	if (unsafeHeaders.indexOf(lowerName) !== -1)
-		return
-
-	self._headers[lowerName] = {
-		name: name,
-		value: value
-	}
-}
-
-ClientRequest.prototype.getHeader = function (name) {
-	var self = this
-	return self._headers[name.toLowerCase()].value
-}
-
-ClientRequest.prototype.removeHeader = function (name) {
-	var self = this
-	delete self._headers[name.toLowerCase()]
-}
-
-ClientRequest.prototype._onFinish = function () {
-	var self = this
-
-	if (self._destroyed)
-		return
-	var opts = self._opts
-
-	var headersObj = self._headers
-	var body
-	if (opts.method === 'POST' || opts.method === 'PUT' || opts.method === 'PATCH') {
-		if (capability.blobConstructor) {
-			body = new global.Blob(self._body.map(function (buffer) {
-				return toArrayBuffer(buffer)
-			}), {
-				type: (headersObj['content-type'] || {}).value || ''
-			})
-		} else {
-			// get utf8 string
-			body = Buffer.concat(self._body).toString()
-		}
-	}
-
-	if (self._mode === 'fetch') {
-		var headers = Object.keys(headersObj).map(function (name) {
-			return [headersObj[name].name, headersObj[name].value]
-		})
-
-		global.fetch(self._opts.url, {
-			method: self._opts.method,
-			headers: headers,
-			body: body,
-			mode: 'cors',
-			credentials: opts.withCredentials ? 'include' : 'same-origin'
-		}).then(function (response) {
-			self._fetchResponse = response
-			self._connect()
-		}, function (reason) {
-			self.emit('error', reason)
-		})
-	} else {
-		var xhr = self._xhr = new global.XMLHttpRequest()
-		try {
-			xhr.open(self._opts.method, self._opts.url, true)
-		} catch (err) {
-			process.nextTick(function () {
-				self.emit('error', err)
-			})
-			return
-		}
-
-		// Can't set responseType on really old browsers
-		if ('responseType' in xhr)
-			xhr.responseType = self._mode.split(':')[0]
-
-		if ('withCredentials' in xhr)
-			xhr.withCredentials = !!opts.withCredentials
-
-		if (self._mode === 'text' && 'overrideMimeType' in xhr)
-			xhr.overrideMimeType('text/plain; charset=x-user-defined')
-
-		Object.keys(headersObj).forEach(function (name) {
-			xhr.setRequestHeader(headersObj[name].name, headersObj[name].value)
-		})
-
-		self._response = null
-		xhr.onreadystatechange = function () {
-			switch (xhr.readyState) {
-				case rStates.LOADING:
-				case rStates.DONE:
-					self._onXHRProgress()
-					break
-			}
-		}
-		// Necessary for streaming in Firefox, since xhr.response is ONLY defined
-		// in onprogress, not in onreadystatechange with xhr.readyState = 3
-		if (self._mode === 'moz-chunked-arraybuffer') {
-			xhr.onprogress = function () {
-				self._onXHRProgress()
-			}
-		}
-
-		xhr.onerror = function () {
-			if (self._destroyed)
-				return
-			self.emit('error', new Error('XHR error'))
-		}
-
-		try {
-			xhr.send(body)
-		} catch (err) {
-			process.nextTick(function () {
-				self.emit('error', err)
-			})
-			return
-		}
-	}
-}
-
-/**
- * Checks if xhr.status is readable and non-zero, indicating no error.
- * Even though the spec says it should be available in readyState 3,
- * accessing it throws an exception in IE8
- */
-function statusValid (xhr) {
-	try {
-		var status = xhr.status
-		return (status !== null && status !== 0)
-	} catch (e) {
-		return false
-	}
-}
-
-ClientRequest.prototype._onXHRProgress = function () {
-	var self = this
-
-	if (!statusValid(self._xhr) || self._destroyed)
-		return
-
-	if (!self._response)
-		self._connect()
-
-	self._response._onXHRProgress()
-}
-
-ClientRequest.prototype._connect = function () {
-	var self = this
-
-	if (self._destroyed)
-		return
-
-	self._response = new IncomingMessage(self._xhr, self._fetchResponse, self._mode)
-	self.emit('response', self._response)
-}
-
-ClientRequest.prototype._write = function (chunk, encoding, cb) {
-	var self = this
-
-	self._body.push(chunk)
-	cb()
-}
-
-ClientRequest.prototype.abort = ClientRequest.prototype.destroy = function () {
-	var self = this
-	self._destroyed = true
-	if (self._response)
-		self._response._destroyed = true
-	if (self._xhr)
-		self._xhr.abort()
-	// Currently, there isn't a way to truly abort a fetch.
-	// If you like bikeshedding, see https://github.com/whatwg/fetch/issues/27
-}
-
-ClientRequest.prototype.end = function (data, encoding, cb) {
-	var self = this
-	if (typeof data === 'function') {
-		cb = data
-		data = undefined
-	}
-
-	stream.Writable.prototype.end.call(self, data, encoding, cb)
-}
-
-ClientRequest.prototype.flushHeaders = function () {}
-ClientRequest.prototype.setTimeout = function () {}
-ClientRequest.prototype.setNoDelay = function () {}
-ClientRequest.prototype.setSocketKeepAlive = function () {}
-
-// Taken from http://www.w3.org/TR/XMLHttpRequest/#the-setrequestheader%28%29-method
-var unsafeHeaders = [
-	'accept-charset',
-	'accept-encoding',
-	'access-control-request-headers',
-	'access-control-request-method',
-	'connection',
-	'content-length',
-	'cookie',
-	'cookie2',
-	'date',
-	'dnt',
-	'expect',
-	'host',
-	'keep-alive',
-	'origin',
-	'referer',
-	'te',
-	'trailer',
-	'transfer-encoding',
-	'upgrade',
-	'user-agent',
-	'via'
-]
-
-}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
-},{"./capability":34,"./response":36,"_process":17,"buffer":6,"inherits":11,"readable-stream":29,"to-arraybuffer":38}],36:[function(require,module,exports){
-(function (process,global,Buffer){
-var capability = require('./capability')
-var inherits = require('inherits')
-var stream = require('readable-stream')
-
-var rStates = exports.readyStates = {
-	UNSENT: 0,
-	OPENED: 1,
-	HEADERS_RECEIVED: 2,
-	LOADING: 3,
-	DONE: 4
-}
-
-var IncomingMessage = exports.IncomingMessage = function (xhr, response, mode) {
-	var self = this
-	stream.Readable.call(self)
-
-	self._mode = mode
-	self.headers = {}
-	self.rawHeaders = []
-	self.trailers = {}
-	self.rawTrailers = []
-
-	// Fake the 'close' event, but only once 'end' fires
-	self.on('end', function () {
-		// The nextTick is necessary to prevent the 'request' module from causing an infinite loop
-		process.nextTick(function () {
-			self.emit('close')
-		})
-	})
-
-	if (mode === 'fetch') {
-		self._fetchResponse = response
-
-		self.url = response.url
-		self.statusCode = response.status
-		self.statusMessage = response.statusText
-		// backwards compatible version of for (<item> of <iterable>):
-		// for (var <item>,_i,_it = <iterable>[Symbol.iterator](); <item> = (_i = _it.next()).value,!_i.done;)
-		for (var header, _i, _it = response.headers[Symbol.iterator](); header = (_i = _it.next()).value, !_i.done;) {
-			self.headers[header[0].toLowerCase()] = header[1]
-			self.rawHeaders.push(header[0], header[1])
-		}
-
-		// TODO: this doesn't respect backpressure. Once WritableStream is available, this can be fixed
-		var reader = response.body.getReader()
-		function read () {
-			reader.read().then(function (result) {
-				if (self._destroyed)
-					return
-				if (result.done) {
-					self.push(null)
-					return
-				}
-				self.push(new Buffer(result.value))
-				read()
-			})
-		}
-		read()
-
-	} else {
-		self._xhr = xhr
-		self._pos = 0
-
-		self.url = xhr.responseURL
-		self.statusCode = xhr.status
-		self.statusMessage = xhr.statusText
-		var headers = xhr.getAllResponseHeaders().split(/\r?\n/)
-		headers.forEach(function (header) {
-			var matches = header.match(/^([^:]+):\s*(.*)/)
-			if (matches) {
-				var key = matches[1].toLowerCase()
-				if (key === 'set-cookie') {
-					if (self.headers[key] === undefined) {
-						self.headers[key] = []
-					}
-					self.headers[key].push(matches[2])
-				} else if (self.headers[key] !== undefined) {
-					self.headers[key] += ', ' + matches[2]
-				} else {
-					self.headers[key] = matches[2]
-				}
-				self.rawHeaders.push(matches[1], matches[2])
-			}
-		})
-
-		self._charset = 'x-user-defined'
-		if (!capability.overrideMimeType) {
-			var mimeType = self.rawHeaders['mime-type']
-			if (mimeType) {
-				var charsetMatch = mimeType.match(/;\s*charset=([^;])(;|$)/)
-				if (charsetMatch) {
-					self._charset = charsetMatch[1].toLowerCase()
-				}
-			}
-			if (!self._charset)
-				self._charset = 'utf-8' // best guess
-		}
-	}
-}
-
-inherits(IncomingMessage, stream.Readable)
-
-IncomingMessage.prototype._read = function () {}
-
-IncomingMessage.prototype._onXHRProgress = function () {
-	var self = this
-
-	var xhr = self._xhr
-
-	var response = null
-	switch (self._mode) {
-		case 'text:vbarray': // For IE9
-			if (xhr.readyState !== rStates.DONE)
-				break
-			try {
-				// This fails in IE8
-				response = new global.VBArray(xhr.responseBody).toArray()
-			} catch (e) {}
-			if (response !== null) {
-				self.push(new Buffer(response))
-				break
-			}
-			// Falls through in IE8	
-		case 'text':
-			try { // This will fail when readyState = 3 in IE9. Switch mode and wait for readyState = 4
-				response = xhr.responseText
-			} catch (e) {
-				self._mode = 'text:vbarray'
-				break
-			}
-			if (response.length > self._pos) {
-				var newData = response.substr(self._pos)
-				if (self._charset === 'x-user-defined') {
-					var buffer = new Buffer(newData.length)
-					for (var i = 0; i < newData.length; i++)
-						buffer[i] = newData.charCodeAt(i) & 0xff
-
-					self.push(buffer)
-				} else {
-					self.push(newData, self._charset)
-				}
-				self._pos = response.length
-			}
-			break
-		case 'arraybuffer':
-			if (xhr.readyState !== rStates.DONE)
-				break
-			response = xhr.response
-			self.push(new Buffer(new Uint8Array(response)))
-			break
-		case 'moz-chunked-arraybuffer': // take whole
-			response = xhr.response
-			if (xhr.readyState !== rStates.LOADING || !response)
-				break
-			self.push(new Buffer(new Uint8Array(response)))
-			break
-		case 'ms-stream':
-			response = xhr.response
-			if (xhr.readyState !== rStates.LOADING)
-				break
-			var reader = new global.MSStreamReader()
-			reader.onprogress = function () {
-				if (reader.result.byteLength > self._pos) {
-					self.push(new Buffer(new Uint8Array(reader.result.slice(self._pos))))
-					self._pos = reader.result.byteLength
-				}
-			}
-			reader.onload = function () {
-				self.push(null)
-			}
-			// reader.onerror = ??? // TODO: this
-			reader.readAsArrayBuffer(response)
-			break
-	}
-
-	// The ms-stream case handles end separately in reader.onload()
-	if (self._xhr.readyState === rStates.DONE && self._mode !== 'ms-stream') {
-		self.push(null)
-	}
-}
-
-}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
-},{"./capability":34,"_process":17,"buffer":6,"inherits":11,"readable-stream":29}],37:[function(require,module,exports){
+},{"events":8,"inherits":10,"readable-stream/duplex.js":17,"readable-stream/passthrough.js":23,"readable-stream/readable.js":24,"readable-stream/transform.js":25,"readable-stream/writable.js":26}],28:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -6780,788 +5408,7 @@ function base64DetectIncompleteChar(buffer) {
   this.charLength = this.charReceived ? 3 : 0;
 }
 
-},{"buffer":6}],38:[function(require,module,exports){
-var Buffer = require('buffer').Buffer
-
-module.exports = function (buf) {
-	// If the buffer is backed by a Uint8Array, a faster version will work
-	if (buf instanceof Uint8Array) {
-		// If the buffer isn't a subarray, return the underlying ArrayBuffer
-		if (buf.byteOffset === 0 && buf.byteLength === buf.buffer.byteLength) {
-			return buf.buffer
-		} else if (typeof buf.buffer.slice === 'function') {
-			// Otherwise we need to get a proper copy
-			return buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength)
-		}
-	}
-
-	if (Buffer.isBuffer(buf)) {
-		// This is the slow version that will work with any Buffer
-		// implementation (even in old browsers)
-		var arrayCopy = new Uint8Array(buf.length)
-		var len = buf.length
-		for (var i = 0; i < len; i++) {
-			arrayCopy[i] = buf[i]
-		}
-		return arrayCopy.buffer
-	} else {
-		throw new Error('Argument must be a Buffer')
-	}
-}
-
-},{"buffer":6}],39:[function(require,module,exports){
-// Copyright Joyent, Inc. and other Node contributors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a
-// copy of this software and associated documentation files (the
-// "Software"), to deal in the Software without restriction, including
-// without limitation the rights to use, copy, modify, merge, publish,
-// distribute, sublicense, and/or sell copies of the Software, and to permit
-// persons to whom the Software is furnished to do so, subject to the
-// following conditions:
-//
-// The above copyright notice and this permission notice shall be included
-// in all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-'use strict';
-
-var punycode = require('punycode');
-var util = require('./util');
-
-exports.parse = urlParse;
-exports.resolve = urlResolve;
-exports.resolveObject = urlResolveObject;
-exports.format = urlFormat;
-
-exports.Url = Url;
-
-function Url() {
-  this.protocol = null;
-  this.slashes = null;
-  this.auth = null;
-  this.host = null;
-  this.port = null;
-  this.hostname = null;
-  this.hash = null;
-  this.search = null;
-  this.query = null;
-  this.pathname = null;
-  this.path = null;
-  this.href = null;
-}
-
-// Reference: RFC 3986, RFC 1808, RFC 2396
-
-// define these here so at least they only have to be
-// compiled once on the first module load.
-var protocolPattern = /^([a-z0-9.+-]+:)/i,
-    portPattern = /:[0-9]*$/,
-
-    // Special case for a simple path URL
-    simplePathPattern = /^(\/\/?(?!\/)[^\?\s]*)(\?[^\s]*)?$/,
-
-    // RFC 2396: characters reserved for delimiting URLs.
-    // We actually just auto-escape these.
-    delims = ['<', '>', '"', '`', ' ', '\r', '\n', '\t'],
-
-    // RFC 2396: characters not allowed for various reasons.
-    unwise = ['{', '}', '|', '\\', '^', '`'].concat(delims),
-
-    // Allowed by RFCs, but cause of XSS attacks.  Always escape these.
-    autoEscape = ['\''].concat(unwise),
-    // Characters that are never ever allowed in a hostname.
-    // Note that any invalid chars are also handled, but these
-    // are the ones that are *expected* to be seen, so we fast-path
-    // them.
-    nonHostChars = ['%', '/', '?', ';', '#'].concat(autoEscape),
-    hostEndingChars = ['/', '?', '#'],
-    hostnameMaxLen = 255,
-    hostnamePartPattern = /^[+a-z0-9A-Z_-]{0,63}$/,
-    hostnamePartStart = /^([+a-z0-9A-Z_-]{0,63})(.*)$/,
-    // protocols that can allow "unsafe" and "unwise" chars.
-    unsafeProtocol = {
-      'javascript': true,
-      'javascript:': true
-    },
-    // protocols that never have a hostname.
-    hostlessProtocol = {
-      'javascript': true,
-      'javascript:': true
-    },
-    // protocols that always contain a // bit.
-    slashedProtocol = {
-      'http': true,
-      'https': true,
-      'ftp': true,
-      'gopher': true,
-      'file': true,
-      'http:': true,
-      'https:': true,
-      'ftp:': true,
-      'gopher:': true,
-      'file:': true
-    },
-    querystring = require('querystring');
-
-function urlParse(url, parseQueryString, slashesDenoteHost) {
-  if (url && util.isObject(url) && url instanceof Url) return url;
-
-  var u = new Url;
-  u.parse(url, parseQueryString, slashesDenoteHost);
-  return u;
-}
-
-Url.prototype.parse = function(url, parseQueryString, slashesDenoteHost) {
-  if (!util.isString(url)) {
-    throw new TypeError("Parameter 'url' must be a string, not " + typeof url);
-  }
-
-  // Copy chrome, IE, opera backslash-handling behavior.
-  // Back slashes before the query string get converted to forward slashes
-  // See: https://code.google.com/p/chromium/issues/detail?id=25916
-  var queryIndex = url.indexOf('?'),
-      splitter =
-          (queryIndex !== -1 && queryIndex < url.indexOf('#')) ? '?' : '#',
-      uSplit = url.split(splitter),
-      slashRegex = /\\/g;
-  uSplit[0] = uSplit[0].replace(slashRegex, '/');
-  url = uSplit.join(splitter);
-
-  var rest = url;
-
-  // trim before proceeding.
-  // This is to support parse stuff like "  http://foo.com  \n"
-  rest = rest.trim();
-
-  if (!slashesDenoteHost && url.split('#').length === 1) {
-    // Try fast path regexp
-    var simplePath = simplePathPattern.exec(rest);
-    if (simplePath) {
-      this.path = rest;
-      this.href = rest;
-      this.pathname = simplePath[1];
-      if (simplePath[2]) {
-        this.search = simplePath[2];
-        if (parseQueryString) {
-          this.query = querystring.parse(this.search.substr(1));
-        } else {
-          this.query = this.search.substr(1);
-        }
-      } else if (parseQueryString) {
-        this.search = '';
-        this.query = {};
-      }
-      return this;
-    }
-  }
-
-  var proto = protocolPattern.exec(rest);
-  if (proto) {
-    proto = proto[0];
-    var lowerProto = proto.toLowerCase();
-    this.protocol = lowerProto;
-    rest = rest.substr(proto.length);
-  }
-
-  // figure out if it's got a host
-  // user@server is *always* interpreted as a hostname, and url
-  // resolution will treat //foo/bar as host=foo,path=bar because that's
-  // how the browser resolves relative URLs.
-  if (slashesDenoteHost || proto || rest.match(/^\/\/[^@\/]+@[^@\/]+/)) {
-    var slashes = rest.substr(0, 2) === '//';
-    if (slashes && !(proto && hostlessProtocol[proto])) {
-      rest = rest.substr(2);
-      this.slashes = true;
-    }
-  }
-
-  if (!hostlessProtocol[proto] &&
-      (slashes || (proto && !slashedProtocol[proto]))) {
-
-    // there's a hostname.
-    // the first instance of /, ?, ;, or # ends the host.
-    //
-    // If there is an @ in the hostname, then non-host chars *are* allowed
-    // to the left of the last @ sign, unless some host-ending character
-    // comes *before* the @-sign.
-    // URLs are obnoxious.
-    //
-    // ex:
-    // http://a@b@c/ => user:a@b host:c
-    // http://a@b?@c => user:a host:c path:/?@c
-
-    // v0.12 TODO(isaacs): This is not quite how Chrome does things.
-    // Review our test case against browsers more comprehensively.
-
-    // find the first instance of any hostEndingChars
-    var hostEnd = -1;
-    for (var i = 0; i < hostEndingChars.length; i++) {
-      var hec = rest.indexOf(hostEndingChars[i]);
-      if (hec !== -1 && (hostEnd === -1 || hec < hostEnd))
-        hostEnd = hec;
-    }
-
-    // at this point, either we have an explicit point where the
-    // auth portion cannot go past, or the last @ char is the decider.
-    var auth, atSign;
-    if (hostEnd === -1) {
-      // atSign can be anywhere.
-      atSign = rest.lastIndexOf('@');
-    } else {
-      // atSign must be in auth portion.
-      // http://a@b/c@d => host:b auth:a path:/c@d
-      atSign = rest.lastIndexOf('@', hostEnd);
-    }
-
-    // Now we have a portion which is definitely the auth.
-    // Pull that off.
-    if (atSign !== -1) {
-      auth = rest.slice(0, atSign);
-      rest = rest.slice(atSign + 1);
-      this.auth = decodeURIComponent(auth);
-    }
-
-    // the host is the remaining to the left of the first non-host char
-    hostEnd = -1;
-    for (var i = 0; i < nonHostChars.length; i++) {
-      var hec = rest.indexOf(nonHostChars[i]);
-      if (hec !== -1 && (hostEnd === -1 || hec < hostEnd))
-        hostEnd = hec;
-    }
-    // if we still have not hit it, then the entire thing is a host.
-    if (hostEnd === -1)
-      hostEnd = rest.length;
-
-    this.host = rest.slice(0, hostEnd);
-    rest = rest.slice(hostEnd);
-
-    // pull out port.
-    this.parseHost();
-
-    // we've indicated that there is a hostname,
-    // so even if it's empty, it has to be present.
-    this.hostname = this.hostname || '';
-
-    // if hostname begins with [ and ends with ]
-    // assume that it's an IPv6 address.
-    var ipv6Hostname = this.hostname[0] === '[' &&
-        this.hostname[this.hostname.length - 1] === ']';
-
-    // validate a little.
-    if (!ipv6Hostname) {
-      var hostparts = this.hostname.split(/\./);
-      for (var i = 0, l = hostparts.length; i < l; i++) {
-        var part = hostparts[i];
-        if (!part) continue;
-        if (!part.match(hostnamePartPattern)) {
-          var newpart = '';
-          for (var j = 0, k = part.length; j < k; j++) {
-            if (part.charCodeAt(j) > 127) {
-              // we replace non-ASCII char with a temporary placeholder
-              // we need this to make sure size of hostname is not
-              // broken by replacing non-ASCII by nothing
-              newpart += 'x';
-            } else {
-              newpart += part[j];
-            }
-          }
-          // we test again with ASCII char only
-          if (!newpart.match(hostnamePartPattern)) {
-            var validParts = hostparts.slice(0, i);
-            var notHost = hostparts.slice(i + 1);
-            var bit = part.match(hostnamePartStart);
-            if (bit) {
-              validParts.push(bit[1]);
-              notHost.unshift(bit[2]);
-            }
-            if (notHost.length) {
-              rest = '/' + notHost.join('.') + rest;
-            }
-            this.hostname = validParts.join('.');
-            break;
-          }
-        }
-      }
-    }
-
-    if (this.hostname.length > hostnameMaxLen) {
-      this.hostname = '';
-    } else {
-      // hostnames are always lower case.
-      this.hostname = this.hostname.toLowerCase();
-    }
-
-    if (!ipv6Hostname) {
-      // IDNA Support: Returns a punycoded representation of "domain".
-      // It only converts parts of the domain name that
-      // have non-ASCII characters, i.e. it doesn't matter if
-      // you call it with a domain that already is ASCII-only.
-      this.hostname = punycode.toASCII(this.hostname);
-    }
-
-    var p = this.port ? ':' + this.port : '';
-    var h = this.hostname || '';
-    this.host = h + p;
-    this.href += this.host;
-
-    // strip [ and ] from the hostname
-    // the host field still retains them, though
-    if (ipv6Hostname) {
-      this.hostname = this.hostname.substr(1, this.hostname.length - 2);
-      if (rest[0] !== '/') {
-        rest = '/' + rest;
-      }
-    }
-  }
-
-  // now rest is set to the post-host stuff.
-  // chop off any delim chars.
-  if (!unsafeProtocol[lowerProto]) {
-
-    // First, make 100% sure that any "autoEscape" chars get
-    // escaped, even if encodeURIComponent doesn't think they
-    // need to be.
-    for (var i = 0, l = autoEscape.length; i < l; i++) {
-      var ae = autoEscape[i];
-      if (rest.indexOf(ae) === -1)
-        continue;
-      var esc = encodeURIComponent(ae);
-      if (esc === ae) {
-        esc = escape(ae);
-      }
-      rest = rest.split(ae).join(esc);
-    }
-  }
-
-
-  // chop off from the tail first.
-  var hash = rest.indexOf('#');
-  if (hash !== -1) {
-    // got a fragment string.
-    this.hash = rest.substr(hash);
-    rest = rest.slice(0, hash);
-  }
-  var qm = rest.indexOf('?');
-  if (qm !== -1) {
-    this.search = rest.substr(qm);
-    this.query = rest.substr(qm + 1);
-    if (parseQueryString) {
-      this.query = querystring.parse(this.query);
-    }
-    rest = rest.slice(0, qm);
-  } else if (parseQueryString) {
-    // no query string, but parseQueryString still requested
-    this.search = '';
-    this.query = {};
-  }
-  if (rest) this.pathname = rest;
-  if (slashedProtocol[lowerProto] &&
-      this.hostname && !this.pathname) {
-    this.pathname = '/';
-  }
-
-  //to support http.request
-  if (this.pathname || this.search) {
-    var p = this.pathname || '';
-    var s = this.search || '';
-    this.path = p + s;
-  }
-
-  // finally, reconstruct the href based on what has been validated.
-  this.href = this.format();
-  return this;
-};
-
-// format a parsed object into a url string
-function urlFormat(obj) {
-  // ensure it's an object, and not a string url.
-  // If it's an obj, this is a no-op.
-  // this way, you can call url_format() on strings
-  // to clean up potentially wonky urls.
-  if (util.isString(obj)) obj = urlParse(obj);
-  if (!(obj instanceof Url)) return Url.prototype.format.call(obj);
-  return obj.format();
-}
-
-Url.prototype.format = function() {
-  var auth = this.auth || '';
-  if (auth) {
-    auth = encodeURIComponent(auth);
-    auth = auth.replace(/%3A/i, ':');
-    auth += '@';
-  }
-
-  var protocol = this.protocol || '',
-      pathname = this.pathname || '',
-      hash = this.hash || '',
-      host = false,
-      query = '';
-
-  if (this.host) {
-    host = auth + this.host;
-  } else if (this.hostname) {
-    host = auth + (this.hostname.indexOf(':') === -1 ?
-        this.hostname :
-        '[' + this.hostname + ']');
-    if (this.port) {
-      host += ':' + this.port;
-    }
-  }
-
-  if (this.query &&
-      util.isObject(this.query) &&
-      Object.keys(this.query).length) {
-    query = querystring.stringify(this.query);
-  }
-
-  var search = this.search || (query && ('?' + query)) || '';
-
-  if (protocol && protocol.substr(-1) !== ':') protocol += ':';
-
-  // only the slashedProtocols get the //.  Not mailto:, xmpp:, etc.
-  // unless they had them to begin with.
-  if (this.slashes ||
-      (!protocol || slashedProtocol[protocol]) && host !== false) {
-    host = '//' + (host || '');
-    if (pathname && pathname.charAt(0) !== '/') pathname = '/' + pathname;
-  } else if (!host) {
-    host = '';
-  }
-
-  if (hash && hash.charAt(0) !== '#') hash = '#' + hash;
-  if (search && search.charAt(0) !== '?') search = '?' + search;
-
-  pathname = pathname.replace(/[?#]/g, function(match) {
-    return encodeURIComponent(match);
-  });
-  search = search.replace('#', '%23');
-
-  return protocol + host + pathname + search + hash;
-};
-
-function urlResolve(source, relative) {
-  return urlParse(source, false, true).resolve(relative);
-}
-
-Url.prototype.resolve = function(relative) {
-  return this.resolveObject(urlParse(relative, false, true)).format();
-};
-
-function urlResolveObject(source, relative) {
-  if (!source) return relative;
-  return urlParse(source, false, true).resolveObject(relative);
-}
-
-Url.prototype.resolveObject = function(relative) {
-  if (util.isString(relative)) {
-    var rel = new Url();
-    rel.parse(relative, false, true);
-    relative = rel;
-  }
-
-  var result = new Url();
-  var tkeys = Object.keys(this);
-  for (var tk = 0; tk < tkeys.length; tk++) {
-    var tkey = tkeys[tk];
-    result[tkey] = this[tkey];
-  }
-
-  // hash is always overridden, no matter what.
-  // even href="" will remove it.
-  result.hash = relative.hash;
-
-  // if the relative url is empty, then there's nothing left to do here.
-  if (relative.href === '') {
-    result.href = result.format();
-    return result;
-  }
-
-  // hrefs like //foo/bar always cut to the protocol.
-  if (relative.slashes && !relative.protocol) {
-    // take everything except the protocol from relative
-    var rkeys = Object.keys(relative);
-    for (var rk = 0; rk < rkeys.length; rk++) {
-      var rkey = rkeys[rk];
-      if (rkey !== 'protocol')
-        result[rkey] = relative[rkey];
-    }
-
-    //urlParse appends trailing / to urls like http://www.example.com
-    if (slashedProtocol[result.protocol] &&
-        result.hostname && !result.pathname) {
-      result.path = result.pathname = '/';
-    }
-
-    result.href = result.format();
-    return result;
-  }
-
-  if (relative.protocol && relative.protocol !== result.protocol) {
-    // if it's a known url protocol, then changing
-    // the protocol does weird things
-    // first, if it's not file:, then we MUST have a host,
-    // and if there was a path
-    // to begin with, then we MUST have a path.
-    // if it is file:, then the host is dropped,
-    // because that's known to be hostless.
-    // anything else is assumed to be absolute.
-    if (!slashedProtocol[relative.protocol]) {
-      var keys = Object.keys(relative);
-      for (var v = 0; v < keys.length; v++) {
-        var k = keys[v];
-        result[k] = relative[k];
-      }
-      result.href = result.format();
-      return result;
-    }
-
-    result.protocol = relative.protocol;
-    if (!relative.host && !hostlessProtocol[relative.protocol]) {
-      var relPath = (relative.pathname || '').split('/');
-      while (relPath.length && !(relative.host = relPath.shift()));
-      if (!relative.host) relative.host = '';
-      if (!relative.hostname) relative.hostname = '';
-      if (relPath[0] !== '') relPath.unshift('');
-      if (relPath.length < 2) relPath.unshift('');
-      result.pathname = relPath.join('/');
-    } else {
-      result.pathname = relative.pathname;
-    }
-    result.search = relative.search;
-    result.query = relative.query;
-    result.host = relative.host || '';
-    result.auth = relative.auth;
-    result.hostname = relative.hostname || relative.host;
-    result.port = relative.port;
-    // to support http.request
-    if (result.pathname || result.search) {
-      var p = result.pathname || '';
-      var s = result.search || '';
-      result.path = p + s;
-    }
-    result.slashes = result.slashes || relative.slashes;
-    result.href = result.format();
-    return result;
-  }
-
-  var isSourceAbs = (result.pathname && result.pathname.charAt(0) === '/'),
-      isRelAbs = (
-          relative.host ||
-          relative.pathname && relative.pathname.charAt(0) === '/'
-      ),
-      mustEndAbs = (isRelAbs || isSourceAbs ||
-                    (result.host && relative.pathname)),
-      removeAllDots = mustEndAbs,
-      srcPath = result.pathname && result.pathname.split('/') || [],
-      relPath = relative.pathname && relative.pathname.split('/') || [],
-      psychotic = result.protocol && !slashedProtocol[result.protocol];
-
-  // if the url is a non-slashed url, then relative
-  // links like ../.. should be able
-  // to crawl up to the hostname, as well.  This is strange.
-  // result.protocol has already been set by now.
-  // Later on, put the first path part into the host field.
-  if (psychotic) {
-    result.hostname = '';
-    result.port = null;
-    if (result.host) {
-      if (srcPath[0] === '') srcPath[0] = result.host;
-      else srcPath.unshift(result.host);
-    }
-    result.host = '';
-    if (relative.protocol) {
-      relative.hostname = null;
-      relative.port = null;
-      if (relative.host) {
-        if (relPath[0] === '') relPath[0] = relative.host;
-        else relPath.unshift(relative.host);
-      }
-      relative.host = null;
-    }
-    mustEndAbs = mustEndAbs && (relPath[0] === '' || srcPath[0] === '');
-  }
-
-  if (isRelAbs) {
-    // it's absolute.
-    result.host = (relative.host || relative.host === '') ?
-                  relative.host : result.host;
-    result.hostname = (relative.hostname || relative.hostname === '') ?
-                      relative.hostname : result.hostname;
-    result.search = relative.search;
-    result.query = relative.query;
-    srcPath = relPath;
-    // fall through to the dot-handling below.
-  } else if (relPath.length) {
-    // it's relative
-    // throw away the existing file, and take the new path instead.
-    if (!srcPath) srcPath = [];
-    srcPath.pop();
-    srcPath = srcPath.concat(relPath);
-    result.search = relative.search;
-    result.query = relative.query;
-  } else if (!util.isNullOrUndefined(relative.search)) {
-    // just pull out the search.
-    // like href='?foo'.
-    // Put this after the other two cases because it simplifies the booleans
-    if (psychotic) {
-      result.hostname = result.host = srcPath.shift();
-      //occationaly the auth can get stuck only in host
-      //this especially happens in cases like
-      //url.resolveObject('mailto:local1@domain1', 'local2@domain2')
-      var authInHost = result.host && result.host.indexOf('@') > 0 ?
-                       result.host.split('@') : false;
-      if (authInHost) {
-        result.auth = authInHost.shift();
-        result.host = result.hostname = authInHost.shift();
-      }
-    }
-    result.search = relative.search;
-    result.query = relative.query;
-    //to support http.request
-    if (!util.isNull(result.pathname) || !util.isNull(result.search)) {
-      result.path = (result.pathname ? result.pathname : '') +
-                    (result.search ? result.search : '');
-    }
-    result.href = result.format();
-    return result;
-  }
-
-  if (!srcPath.length) {
-    // no path at all.  easy.
-    // we've already handled the other stuff above.
-    result.pathname = null;
-    //to support http.request
-    if (result.search) {
-      result.path = '/' + result.search;
-    } else {
-      result.path = null;
-    }
-    result.href = result.format();
-    return result;
-  }
-
-  // if a url ENDs in . or .., then it must get a trailing slash.
-  // however, if it ends in anything else non-slashy,
-  // then it must NOT get a trailing slash.
-  var last = srcPath.slice(-1)[0];
-  var hasTrailingSlash = (
-      (result.host || relative.host || srcPath.length > 1) &&
-      (last === '.' || last === '..') || last === '');
-
-  // strip single dots, resolve double dots to parent dir
-  // if the path tries to go above the root, `up` ends up > 0
-  var up = 0;
-  for (var i = srcPath.length; i >= 0; i--) {
-    last = srcPath[i];
-    if (last === '.') {
-      srcPath.splice(i, 1);
-    } else if (last === '..') {
-      srcPath.splice(i, 1);
-      up++;
-    } else if (up) {
-      srcPath.splice(i, 1);
-      up--;
-    }
-  }
-
-  // if the path is allowed to go above the root, restore leading ..s
-  if (!mustEndAbs && !removeAllDots) {
-    for (; up--; up) {
-      srcPath.unshift('..');
-    }
-  }
-
-  if (mustEndAbs && srcPath[0] !== '' &&
-      (!srcPath[0] || srcPath[0].charAt(0) !== '/')) {
-    srcPath.unshift('');
-  }
-
-  if (hasTrailingSlash && (srcPath.join('/').substr(-1) !== '/')) {
-    srcPath.push('');
-  }
-
-  var isAbsolute = srcPath[0] === '' ||
-      (srcPath[0] && srcPath[0].charAt(0) === '/');
-
-  // put the host back
-  if (psychotic) {
-    result.hostname = result.host = isAbsolute ? '' :
-                                    srcPath.length ? srcPath.shift() : '';
-    //occationaly the auth can get stuck only in host
-    //this especially happens in cases like
-    //url.resolveObject('mailto:local1@domain1', 'local2@domain2')
-    var authInHost = result.host && result.host.indexOf('@') > 0 ?
-                     result.host.split('@') : false;
-    if (authInHost) {
-      result.auth = authInHost.shift();
-      result.host = result.hostname = authInHost.shift();
-    }
-  }
-
-  mustEndAbs = mustEndAbs || (result.host && srcPath.length);
-
-  if (mustEndAbs && !isAbsolute) {
-    srcPath.unshift('');
-  }
-
-  if (!srcPath.length) {
-    result.pathname = null;
-    result.path = null;
-  } else {
-    result.pathname = srcPath.join('/');
-  }
-
-  //to support request.http
-  if (!util.isNull(result.pathname) || !util.isNull(result.search)) {
-    result.path = (result.pathname ? result.pathname : '') +
-                  (result.search ? result.search : '');
-  }
-  result.auth = relative.auth || result.auth;
-  result.slashes = result.slashes || relative.slashes;
-  result.href = result.format();
-  return result;
-};
-
-Url.prototype.parseHost = function() {
-  var host = this.host;
-  var port = portPattern.exec(host);
-  if (port) {
-    port = port[0];
-    if (port !== ':') {
-      this.port = port.substr(1);
-    }
-    host = host.substr(0, host.length - port.length);
-  }
-  if (host) this.hostname = host;
-};
-
-},{"./util":40,"punycode":18,"querystring":21}],40:[function(require,module,exports){
-'use strict';
-
-module.exports = {
-  isString: function(arg) {
-    return typeof(arg) === 'string';
-  },
-  isObject: function(arg) {
-    return typeof(arg) === 'object' && arg !== null;
-  },
-  isNull: function(arg) {
-    return arg === null;
-  },
-  isNullOrUndefined: function(arg) {
-    return arg == null;
-  }
-};
-
-},{}],41:[function(require,module,exports){
+},{"buffer":6}],29:[function(require,module,exports){
 (function (global){
 
 /**
@@ -7632,14 +5479,14 @@ function config (name) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],42:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],43:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -8229,28 +6076,7 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":42,"_process":17,"inherits":11}],44:[function(require,module,exports){
-module.exports = extend
-
-var hasOwnProperty = Object.prototype.hasOwnProperty;
-
-function extend() {
-    var target = {}
-
-    for (var i = 0; i < arguments.length; i++) {
-        var source = arguments[i]
-
-        for (var key in source) {
-            if (hasOwnProperty.call(source, key)) {
-                target[key] = source[key]
-            }
-        }
-    }
-
-    return target
-}
-
-},{}],45:[function(require,module,exports){
+},{"./support/isBuffer":30,"_process":16,"inherits":10}],32:[function(require,module,exports){
 angular.module('robust-logs', [])
   .factory('Log', ['config', function(config) {
     if (!window._) throw new Error('robust-logs: missing dependency "lodash"')
@@ -8265,7 +6091,7 @@ angular.module('robust-logs', [])
     return Log
   }])
 
-},{"./src/win-with-logs":61}],46:[function(require,module,exports){
+},{"./src/win-with-logs":61}],33:[function(require,module,exports){
 (function (process,global){
 /* @preserve
  * The MIT License (MIT)
@@ -13155,439 +10981,457 @@ module.exports = ret;
 },{"./es5.js":14}]},{},[4])(4)
 });                    ;if (typeof window !== 'undefined' && window !== null) {                               window.P = window.Promise;                                                     } else if (typeof self !== 'undefined' && self !== null) {                             self.P = self.Promise;                                                         }
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":17}],47:[function(require,module,exports){
-"use strict";
+},{"_process":16}],34:[function(require,module,exports){
+(function (process){
+// Generated by CoffeeScript 1.9.3
+(function() {
+  var BunyanDebugStream, EXPRESS_BUNYAN_LOGGER_FIELDS, FIELDS_TO_IGNORE, INDENT, LEVELS, Writable, applyColors, bunyan, colors, dateToString, exceptionFormatter, exports, isString, path, ref, ref1, serializer, serializerName, serializers, srcToString,
+    extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+    hasProp = {}.hasOwnProperty;
 
-var Stream = require('stream').Stream;
-var util = require('util');
-var format = util.format;
-var http = require('http');
+  path = require('path');
 
-var colors = {
-  'bold' : [1, 22],
-  'italic' : [3, 23],
-  'underline' : [4, 24],
-  'inverse' : [7, 27],
-  'white' : [37, 39],
-  'grey' : [90, 39],
-  'black' : [30, 39],
-  'blue' : [34, 39],
-  'cyan' : [36, 39],
-  'green' : [32, 39],
-  'magenta' : [35, 39],
-  'red' : [31, 39],
-  'yellow' : [33, 39]
-};
+  Writable = require('stream').Writable;
 
-var defaultOptions = {
-  mode: 'long', //short, long, dev
-  useColor: true
-};
+  bunyan = require('bunyan');
 
-var levelFromName = {
-  'trace': 10,
-  'debug': 20,
-  'info': 30,
-  'warn': 40,
-  'error': 50,
-  'fatal': 60
-};
+  colors = require('colors/safe');
 
-var colorFromLevel = {
-  10: 'grey',     // TRACE
-  20: 'grey',     // DEBUG
-  30: 'cyan',     // INFO
-  40: 'magenta',  // WARN
-  50: 'red',      // ERROR
-  60: 'inverse'  // FATAL
-};
+  exceptionFormatter = require('exception-formatter');
 
-var nameFromLevel = {};
-var upperNameFromLevel = {};
-var upperPaddedNameFromLevel = {};
-Object.keys(levelFromName).forEach(function (name) {
-  var lvl = levelFromName[name];
-  nameFromLevel[lvl] = name;
-  upperNameFromLevel[lvl] = name.toUpperCase();
-  upperPaddedNameFromLevel[lvl] = (name.length === 4 ? ' ' : '') + name.toUpperCase();
-});
+  ref = require('./utils'), srcToString = ref.srcToString, applyColors = ref.applyColors, dateToString = ref.dateToString, isString = ref.isString;
 
-function PrettyStream(opts){
-  var options = {};
-
-  if (opts){
-    Object.keys(opts).forEach(function(key){
-      options[key] = {
-        value: opts[key],
-        enumerable: true,
-        writable: true,
-        configurable: true
+  LEVELS = (function() {
+    var answer, o;
+    answer = {};
+    o = function(level, prefix, colors) {
+      return answer[level] = {
+        level: level,
+        prefix: prefix,
+        colors: colors
       };
-    });
-  }
+    };
+    o(bunyan.TRACE, 'TRACE:', ['grey']);
+    o(bunyan.DEBUG, 'DEBUG:', ['cyan']);
+    o(bunyan.INFO, 'INFO: ', ['green']);
+    o(bunyan.WARN, 'WARN: ', ['yellow']);
+    o(bunyan.ERROR, 'ERROR:', ['red']);
+    o(bunyan.FATAL, 'FATAL:', ['magenta']);
+    return answer;
+  })();
 
-  var config = Object.create(defaultOptions, options);
+  FIELDS_TO_IGNORE = ['src', 'msg', 'name', 'hostname', 'pid', 'level', 'time', 'v', 'err'];
 
-  this.readable = true;
-  this.writable = true;
+  EXPRESS_BUNYAN_LOGGER_FIELDS = ['remote-address', 'ip', 'method', 'url', 'referer', 'user-agent', 'body', 'short-body', 'http-version', 'response-hrtime', 'status-code', 'req-headers', 'res-headers', 'incoming', 'req_id'];
 
-  Stream.call(this);
+  INDENT = "  ";
 
-  function stylize(str, color) {
-    if (!str){
-      return '';
-    }
+  BunyanDebugStream = (function(superClass) {
+    extend(BunyanDebugStream, superClass);
 
-    if (!config.useColor){
-      return str;
-    }
-
-    if (!color){
-      color = 'white';
-    }
-
-    var codes = colors[color];
-    if (codes) {
-      return '\x1B[' + codes[0] + 'm' + str +
-             '\x1B[' + codes[1] + 'm';
-    }
-    return str;
-  }
-
-  function indent(s) {
-    return '    ' + s.split(/\r?\n/).join('\n    ');
-  }
-
-  function extractTime(rec){
-    var time = (typeof rec.time === 'object') ? rec.time.toISOString() : rec.time;
-
-    if ((config.mode === 'short' || config.mode === 'dev') && time[10] == 'T') {
-      return stylize(time.substr(11));
-    }
-    return stylize(time);
-  }
-
-  function extractName(rec){
-    var name =  rec.name;
-
-    if (rec.component) {
-      name += '/' + rec.component;
-    }
-
-    if (config.mode !== 'short' && config.mode !== 'dev'){
-      name += '/' + rec.pid;
-    }
-
-    return name;
-  }
-
-  function extractLevel(rec){
-    var level = (upperPaddedNameFromLevel[rec.level] || 'LVL' + rec.level);
-    return stylize(level, colorFromLevel[rec.level]);
-  }
-
-  function extractSrc(rec){
-    var src = '';
-    if (rec.src && rec.src.file) {
-      if (rec.src.func) {
-        src = format('(%s:%d in %s)', rec.src.file, rec.src.line, rec.src.func);
+    function BunyanDebugStream(options1) {
+      var c, key, level, levelName, levelValue, ref1, ref10, ref11, ref12, ref13, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, self, value;
+      this.options = options1 != null ? options1 : {};
+      BunyanDebugStream.__super__.constructor.call(this, {
+        objectMode: true
+      });
+      if (this.options.forceColor) {
+        colors.enabled = true;
+      }
+      this._colors = {};
+      if (('colors' in this.options) && !this.options.colors) {
+        this._useColor = false;
+        for (levelValue in LEVELS) {
+          level = LEVELS[levelValue];
+          this._colors[levelValue] = [];
+        }
       } else {
-        src = format('(%s:%d)', rec.src.file, rec.src.line);
-      }
-    }
-    return stylize(src, 'green');
-  }
-
-  function extractHost(rec){
-    return rec.hostname || '<no-hostname>';
-  }
-
-  function isSingleLineMsg(rec){
-    return rec.msg.indexOf('\n') === -1;
-  }
-
-  function extractMsg(rec){
-    return stylize(rec.msg, 'cyan');
-  }
-
-  function extractReqDetail(rec){
-    if (rec.req && typeof (rec.req) === 'object') {
-      var req = rec.req;
-      var headers = req.headers;
-
-      var str = format('%s %s HTTP/%s%s%s',
-        req.method,
-        req.url,
-        req.httpVersion || '1.1',
-        (req.remoteAddress ? "\nremote: " + req.remoteAddress + ":" + req.remotePort : ""),
-        (headers ?
-         '\n' + Object.keys(headers).map(function (h) {
-           return h + ': ' + headers[h];
-         }).join('\n') :
-         '')
-      );
-
-      if (req.body) {
-        str += '\n\n' + (typeof (req.body) === 'object' ? JSON.stringify(req.body, null, 2) : req.body);
-      }
-      if (req.trailers && Object.keys(req.trailers) > 0) {
-        str += '\n' + Object.keys(req.trailers).map(function (t) {
-          return t + ': ' + req.trailers[t];
-        }).join('\n');
-      }
-
-      var skip = ['headers', 'url', 'httpVersion', 'body', 'trailers', 'method', 'remoteAddress', 'remotePort'];
-
-      var extras = {};
-
-      Object.keys(req).forEach(function (k) {
-        if (skip.indexOf(k) === -1){
-          extras['req.' + k] = req[k];
+        this._useColor = true;
+        for (levelValue in LEVELS) {
+          level = LEVELS[levelValue];
+          this._colors[levelValue] = level.colors;
         }
-      });
+        ref2 = (ref1 = this.options.colors) != null ? ref1 : {};
+        for (level in ref2) {
+          c = ref2[level];
+          if (isString(c)) {
+            c = [c];
+          }
+          if (this._colors[level] != null) {
+            this._colors[level] = c;
+          } else {
+            levelName = level;
+            level = bunyan[levelName != null ? levelName.toUpperCase() : void 0];
+            if (this._colors[level] != null) {
+              this._colors[level] = c;
+            } else {
 
-      return {
-        details: [str],
-        extras: extras
+            }
+          }
+        }
+      }
+      this._processName = (ref3 = (ref4 = (ref5 = this.options.processName) != null ? ref5 : (process.argv.length > 1 ? path.basename(process.argv[1], path.extname(process.argv[1])) : void 0)) != null ? ref4 : (process.argv.length > 0 ? path.basename(process.argv[0], path.extname(process.argv[0])) : void 0)) != null ? ref3 : '';
+      self = this;
+      this._stringifiers = {
+        req: exports.stdStringifiers.req,
+        err: exports.stdStringifiers.err
       };
-    }
-  }
-
-  function genericRes(res) {
-    var s = '';
-
-    if (res.statusCode) {
-      s += format('HTTP/1.1 %s %s\n', res.statusCode, http.STATUS_CODES[res.statusCode]);
-    }
-
-    if (res.header) {
-      s += res.header.trimRight();
-    } else if (res.headers) {
-      var headers = res.headers;
-      s += Object.keys(headers).map(
-        function (h) { return h + ': ' + headers[h]; }).join('\n');
-    }
-
-    if (res.body) {
-      s += '\n\n' + (typeof (res.body) === 'object' ? JSON.stringify(res.body, null, 2) : res.body);
-    }
-    if (res.trailer) {
-      s += '\n' + res.trailer;
-    }
-
-    var skip = ['header', 'statusCode', 'headers', 'body', 'trailer'];
-
-    var extras = {};
-
-    Object.keys(res).forEach(function (k) {
-      if (skip.indexOf(k) === -1){
-        extras['res.' + k] = res[k];
-      }
-    });
-
-    return {
-      details: [s],
-      extras: extras
-    };
-  }
-
-  function extractResDetail(rec){
-    if (rec.res && typeof (rec.res) === 'object') {
-      return genericRes(rec.res);
-    }
-  }
-
-  function extractClientReqDetail(rec){
-    if (rec.client_req && typeof (rec.client_req) === 'object') {
-      var client_req = rec.client_req;
-
-      var headers = client_req.headers;
-      var hostHeaderLine = '';
-      var s = '';
-
-      if (client_req.address) {
-        hostHeaderLine = 'Host: ' + client_req.address;
-
-        if (client_req.port) {
-          hostHeaderLine += ':' + client_req.port;
+      if (this.options.stringifiers != null) {
+        ref6 = this.options.stringifiers;
+        for (key in ref6) {
+          value = ref6[key];
+          this._stringifiers[key] = value;
         }
-
-        hostHeaderLine += '\n';
       }
-
-      s += format('%s %s HTTP/%s\n%s%s', client_req.method,
-        client_req.url,
-        client_req.httpVersion || '1.1',
-        hostHeaderLine,
-        (headers ?
-         Object.keys(headers).map(
-           function (h) {
-             return h + ': ' + headers[h];
-           }).join('\n') :
-         ''));
-
-      if (client_req.body) {
-        s += '\n\n' + (typeof (client_req.body) === 'object' ?
-                       JSON.stringify(client_req.body, null, 2) :
-                       client_req.body);
-      }
-
-      var skip = ['headers', 'url', 'httpVersion', 'body', 'trailers', 'method', 'remoteAddress', 'remotePort'];
-
-      var extras = {};
-
-      Object.keys(client_req).forEach(function (k) {
-        if (skip.indexOf(k) === -1){
-          extras['client_req.' + k] = client_req[k];
-        }
-      });
-
-      return {
-        details: [s],
-        extras: extras
-      };
+      this._prefixers = (ref7 = this.options.prefixers) != null ? ref7 : {};
+      this._out = (ref8 = this.options.out) != null ? ref8 : process.stdout;
+      this._basepath = (ref9 = this.options.basepath) != null ? ref9 : process.cwd();
+      this._showDate = (ref10 = this.options.showDate) != null ? ref10 : true;
+      this._showLoggerName = (ref11 = this.options.showLoggerName) != null ? ref11 : true;
+      this._showPid = (ref12 = this.options.showPid) != null ? ref12 : true;
+      this._showLevel = (ref13 = this.options.showLevel) != null ? ref13 : true;
     }
-  }
 
-  function extractClientResDetail(rec){
-    if (rec.client_res && typeof (rec.client_res) === 'object') {
-      return genericRes(rec.client_res);
-    }
-  }
+    BunyanDebugStream.prototype._runStringifier = function(entry, key, stringifier, consumed, message) {
+      var err, i, len, newMessage, ref1, ref2, result, value;
+      consumed[key] = true;
+      value = null;
+      newMessage = message;
+      try {
+        if (stringifier == null) {
 
-  function extractError(rec){
-    if (rec.err && rec.err.stack) {
-      return rec.err.stack;
-    }
-  }
-
-  function extractCustomDetails(rec){
-    var skip = ['name', 'hostname', 'pid', 'level', 'component', 'msg', 'time', 'v', 'src', 'err', 'client_req', 'client_res', 'req', 'res'];
-
-    var details = [];
-    var extras = {};
-
-    Object.keys(rec).forEach(function(key) {
-      if (skip.indexOf(key) === -1){
-        var value = rec[key];
-        if (typeof value === 'undefined') value = '';
-        var stringified = false;
-        if (typeof value !== 'string') {
-          value = JSON.stringify(value, null, 2);
-          stringified = true;
-        }
-        if (value.indexOf('\n') !== -1 || value.length > 50) {
-          details.push(key + ': ' + value);
-        } else if (!stringified && (value.indexOf(' ') != -1 ||  value.length === 0)){
-          extras[key] = JSON.stringify(value);
         } else {
-          extras[key] = value;
+          result = stringifier(entry[key], {
+            entry: entry,
+            useColor: this._useColor,
+            debugStream: this
+          });
+          if (result == null) {
+
+          } else if (isString(result)) {
+            value = result;
+          } else {
+            ref2 = (ref1 = result.consumed) != null ? ref1 : [];
+            for (i = 0, len = ref2.length; i < len; i++) {
+              key = ref2[i];
+              consumed[key] = true;
+            }
+            if (result.value != null) {
+              if (result.replaceMessage) {
+                newMessage = result.value;
+                value = null;
+              } else {
+                value = result.value;
+              }
+            }
+          }
+        }
+      } catch (_error) {
+        err = _error;
+        newMessage = message;
+        value = "Error running stringifier:\n" + err.stack;
+      }
+      if (value != null) {
+        value = value.replace(/\n/g, "\n" + INDENT);
+      }
+      return {
+        message: newMessage,
+        value: value
+      };
+    };
+
+    BunyanDebugStream.prototype._entryToString = function(entry) {
+      var colorsToApply, cols, consumed, date, field, i, key, len, levelPrefix, line, message, prefixer, prefixes, processStr, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, src, start, stringifier, value, valueString, values;
+      if (typeof entry === 'string') {
+        entry = JSON.parse(entry);
+      }
+      colorsToApply = this._colors[(ref1 = entry.level) != null ? ref1 : bunyan.INFO];
+      src = srcToString(entry.src, this._basepath, this.options.basepathReplacement);
+      if (src) {
+        src += ': ';
+      }
+      message = entry.msg;
+      consumed = {};
+      for (i = 0, len = FIELDS_TO_IGNORE.length; i < len; i++) {
+        field = FIELDS_TO_IGNORE[i];
+        consumed[field] = true;
+      }
+      values = [];
+      ref2 = this._stringifiers;
+      for (key in ref2) {
+        stringifier = ref2[key];
+        if (entry[key] != null) {
+          ref3 = message = this._runStringifier(entry, key, stringifier, consumed, message), message = ref3.message, value = ref3.value;
+          if (value != null) {
+            values.push("" + INDENT + key + ": " + value);
+          }
+        } else {
+          consumed[key] = true;
         }
       }
-    });
-
-    return {
-      details: details,
-      extras: extras
+      prefixes = [];
+      ref4 = this._prefixers;
+      for (key in ref4) {
+        prefixer = ref4[key];
+        if (entry[key] != null) {
+          ref5 = this._runStringifier(entry, key, prefixer, consumed, message), message = ref5.message, value = ref5.value;
+          if (value != null) {
+            prefixes.push(value);
+          }
+        } else {
+          consumed[key] = true;
+        }
+      }
+      for (key in entry) {
+        value = entry[key];
+        if (consumed[key]) {
+          continue;
+        }
+        valueString = JSON.stringify(value);
+        if (valueString != null) {
+          cols = process.stdout.columns;
+          start = "" + INDENT + key + ": ";
+          if (cols && (valueString.length + start.length) >= cols) {
+            valueString = valueString.slice(0, cols - 3 - start.length) + "...";
+          }
+          values.push("" + start + valueString);
+        }
+      }
+      prefixes = prefixes.length > 0 ? "[" + (prefixes.join(',')) + "] " : '';
+      date = this._showDate ? (dateToString((ref6 = entry.time) != null ? ref6 : new Date())) + " " : '';
+      processStr = "";
+      if (this.options.showProcess) {
+        processStr += this._processName;
+      }
+      if (this._showLoggerName) {
+        processStr += entry.name;
+      }
+      if (this._showPid) {
+        processStr += "[" + entry.pid + "]";
+      }
+      if (processStr.length > 0) {
+        processStr += " ";
+      }
+      levelPrefix = this._showLevel ? ((ref7 = (ref8 = LEVELS[entry.level]) != null ? ref8.prefix : void 0) != null ? ref7 : '      ') + ' ' : '';
+      line = "" + date + processStr + levelPrefix + src + prefixes + (applyColors(message, colorsToApply));
+      if (typeof request !== "undefined" && request !== null) {
+        line += "\n" + INDENT + request;
+      }
+      if (values.length > 0) {
+        line += "\n" + applyColors(values.join('\n'), colorsToApply);
+      }
+      return line;
     };
+
+    BunyanDebugStream.prototype._write = function(entry, encoding, done) {
+      this._out.write(this._entryToString(entry) + "\n");
+      return done();
+    };
+
+    return BunyanDebugStream;
+
+  })(Writable);
+
+  module.exports = exports = function(options) {
+    return new BunyanDebugStream(options);
+  };
+
+  serializers = module.exports.serializers = {};
+
+  ref1 = bunyan.stdSerializers;
+  for (serializerName in ref1) {
+    serializer = ref1[serializerName];
+    serializers[serializerName] = serializer;
   }
 
-  function applyDetails(results, details, extras){
-    if (results){
-      results.details.forEach(function(d){
-        details.push(indent(d));
+  serializers.req = function(req) {
+    var answer;
+    answer = bunyan.stdSerializers.req(req);
+    if (answer != null) {
+      if (req.user != null) {
+        answer.user = req != null ? req.user : void 0;
+      }
+    }
+    return answer;
+  };
+
+  serializers.res = function(res) {
+    var answer;
+    answer = bunyan.stdSerializers.res(res);
+    if (answer != null) {
+      answer.headers = res._headers;
+      if (res.responseTime != null) {
+        answer.responseTime = res.responseTime;
+      }
+    }
+    return answer;
+  };
+
+  exports.stdStringifiers = {
+    req: function(req, arg) {
+      var consumed, contentLength, entry, fields, host, ref10, ref11, ref12, ref13, ref14, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, replaceMessage, request, res, responseTime, status, statusCode, statusColor, url, useColor, user;
+      entry = arg.entry, useColor = arg.useColor;
+      consumed = ['req', 'res'];
+      res = entry.res;
+      if ((entry['status-code'] != null) && (entry['method'] != null) && (entry['url'] != null) && (entry['res-headers'] != null)) {
+        consumed = consumed.concat(EXPRESS_BUNYAN_LOGGER_FIELDS);
+      }
+      statusCode = (ref2 = res != null ? res.statusCode : void 0) != null ? ref2 : entry['status-code'];
+      if (statusCode != null) {
+        status = "" + statusCode;
+        if (useColor) {
+          statusColor = statusCode < 200 ? colors.grey : statusCode < 400 ? colors.green : colors.red;
+          status = colors.bold(statusColor(status));
+        }
+      } else {
+        status = "";
+      }
+      responseTime = (res != null ? res.responseTime : void 0) != null ? res.responseTime : entry.duration != null ? (consumed.push('duration'), entry.duration) : entry["response-time"] != null ? (consumed.push("response-time"), entry["response-time"]) : null;
+      if (responseTime != null) {
+        responseTime = responseTime + "ms";
+      } else {
+        responseTime = "";
+      }
+      user = req.user != null ? ((ref3 = (ref4 = (ref5 = req.user) != null ? ref5.username : void 0) != null ? ref4 : (ref6 = req.user) != null ? ref6.name : void 0) != null ? ref3 : req.user) + "@" : entry.user != null ? (consumed.push("user"), ((ref7 = (ref8 = (ref9 = entry.user) != null ? ref9.username : void 0) != null ? ref8 : (ref10 = entry.user) != null ? ref10.name : void 0) != null ? ref7 : entry.user) + "@") : "";
+      contentLength = (ref11 = res != null ? (ref12 = res.headers) != null ? ref12['content-length'] : void 0 : void 0) != null ? ref11 : (ref13 = entry['res-headers']) != null ? ref13['content-length'] : void 0;
+      contentLength = contentLength != null ? "- " + contentLength + " bytes" : "";
+      host = ((ref14 = req.headers) != null ? ref14.host : void 0) || null;
+      url = host != null ? "" + host + req.url : "" + req.url;
+      fields = [req.method, user + url, status, responseTime, contentLength];
+      fields = fields.filter(function(f) {
+        return !!f;
       });
-      Object.keys(results.extras).forEach(function(k){
-        extras.push(k + '=' + results.extras[k]);
+      request = fields.join(' ');
+      replaceMessage = !entry.msg || entry.msg === 'request finish';
+      return {
+        consumed: consumed,
+        value: request,
+        replaceMessage: replaceMessage
+      };
+    },
+    err: function(err, arg) {
+      var debugStream, ref2, ref3, ref4, useColor;
+      useColor = arg.useColor, debugStream = arg.debugStream;
+      return exceptionFormatter(err, {
+        format: useColor ? 'ansi' : 'ascii',
+        colors: false,
+        maxLines: (ref2 = (ref3 = debugStream.options) != null ? ref3.maxExceptionLines : void 0) != null ? ref2 : null,
+        basepath: debugStream._basepath,
+        basepathReplacement: (ref4 = debugStream.options) != null ? ref4.basepathReplacement : void 0
       });
-    }
-  }
-
-  this.formatRecord = function formatRecord(rec){
-    var details = [];
-    var extras = [];
-
-    var time = extractTime(rec);
-    var level = extractLevel(rec);
-    var name = extractName(rec);
-    var host = extractHost(rec);
-    var src = extractSrc(rec);
-
-    var msg = isSingleLineMsg(rec) ? extractMsg(rec) : '';
-    if (!msg){
-      details.push(indent(extractMsg(rec)));
-    }
-
-    var error = extractError(rec);
-    if (error){
-      details.push(indent(error));
-    }
-
-    if (rec.req){ applyDetails(extractReqDetail(rec), details, extras); }
-    if (rec.res){ applyDetails(extractResDetail(rec), details, extras); }
-    if (rec.client_req){ applyDetails(extractClientReqDetail(rec), details, extras); }
-    if (rec.client_res){ applyDetails(extractClientResDetail(rec), details, extras); }
-
-    applyDetails(extractCustomDetails(rec), details, extras);
-
-    extras = stylize(
-      (extras.length ? ' (' + extras.join(', ') + ')' : ''), 'grey');
-    details = stylize(
-      (details.length ? details.join('\n    --\n') + '\n' : ''), 'grey');
-
-
-    if (config.mode === 'long'){
-      return format('[%s] %s: %s on %s%s: %s%s\n%s',
-        time,
-        level,
-        name,
-        host,
-        src,
-        msg,
-        extras,
-        details);
-    }
-    if (config.mode === 'short'){
-      return format('[%s] %s %s: %s%s\n%s',
-        time,
-        level,
-        name,
-        msg,
-        extras,
-        details);
-    }
-    if (config.mode === 'dev'){
-      return format('%s %s %s %s: %s%s\n%s',
-        time,
-        level,
-        name,
-        src,
-        msg,
-        extras,
-        details);
     }
   };
-}
 
-util.inherits(PrettyStream, Stream);
+}).call(this);
 
-PrettyStream.prototype.write = function write(data){
-  if (typeof data === 'string') {
-    this.emit('data', this.formatRecord(JSON.parse(data)));
-  }else if(typeof data === 'object'){
-    this.emit('data', this.formatRecord(data));
-  }
-  return true;
-};
+}).call(this,require('_process'))
+},{"./utils":35,"_process":16,"bunyan":36,"colors/safe":46,"exception-formatter":49,"path":14,"stream":27}],35:[function(require,module,exports){
+// Generated by CoffeeScript 1.9.3
+(function() {
+  var EXPRESS_BUNYAN_LOGGER_FIELDS, applyColors, bunyan, colors, endsWith, lpad, path, toShortFilename;
 
-PrettyStream.prototype.end = function end(){
-  this.emit('end');
-  return true;
-};
+  path = require('path');
 
-module.exports = PrettyStream;
+  bunyan = require('bunyan');
 
-},{"http":33,"stream":32,"util":43}],48:[function(require,module,exports){
+  colors = require('colors/safe');
+
+  endsWith = function(str, suffix) {
+    return str.slice(-suffix.length) === suffix;
+  };
+
+  lpad = function(str, count, fill) {
+    if (fill == null) {
+      fill = ' ';
+    }
+    str = "" + str;
+    while (str.length < count) {
+      str = fill + str;
+    }
+    return str;
+  };
+
+  exports.dateToString = (function() {
+    var MONTHS;
+    MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return function(date) {
+      var time, timestamp;
+      time = [lpad(date.getHours(), 2, '0'), lpad(date.getMinutes(), 2, '0'), lpad(date.getSeconds(), 2, '0')].join(':');
+      return timestamp = [MONTHS[date.getMonth()], date.getDate(), time].join(' ');
+    };
+  })();
+
+  applyColors = exports.applyColors = function(message, colorList) {
+    var color, i, len;
+    if (message == null) {
+      return message;
+    }
+    for (i = 0, len = colorList.length; i < len; i++) {
+      color = colorList[i];
+      message = colors[color](message);
+    }
+    return message;
+  };
+
+  toShortFilename = exports.toShortFilename = function(filename, basepath, replacement) {
+    var ext, file, i, index, len, part, parts, shortenIndex;
+    if (basepath == null) {
+      basepath = null;
+    }
+    if (replacement == null) {
+      replacement = "./";
+    }
+    if (basepath != null) {
+      if (exports.isString(basepath) && !endsWith(basepath, path.sep)) {
+        basepath += path.sep;
+      }
+      filename = filename.replace(basepath, replacement);
+    }
+    parts = filename.split(path.sep);
+    file = parts[parts.length - 1];
+    ext = path.extname(file);
+    file = path.basename(file, ext);
+    if (file === 'index') {
+      shortenIndex = parts.length - 3;
+      file = '';
+    } else {
+      shortenIndex = parts.length - 2;
+    }
+    parts[parts.length - 1] = file;
+    for (index = i = 0, len = parts.length; i < len; index = ++i) {
+      part = parts[index];
+      if (index <= shortenIndex) {
+        parts[index] = parts[index][0];
+      }
+    }
+    return parts.join('/');
+  };
+
+  exports.srcToString = function(src, basepath, replacement) {
+    var answer, file;
+    if (basepath == null) {
+      basepath = null;
+    }
+    if (replacement == null) {
+      replacement = "./";
+    }
+    if (src == null) {
+      return '';
+    }
+    file = (src.file != null ? toShortFilename(src.file, basepath, replacement) : '') + (src.line != null ? ":" + src.line : '');
+    answer = (src.func != null) && file ? src.func + " (" + file + ")" : src.func != null ? src.func : file ? file : '';
+    return answer;
+  };
+
+  EXPRESS_BUNYAN_LOGGER_FIELDS = ['remote-address', 'ip', 'method', 'url', 'referer', 'user-agent', 'body', 'short-body', 'http-version', 'response-time', 'status-code', 'req-headers', 'res-headers', 'incoming'];
+
+  exports.isString = function(value) {
+    return typeof value === 'string' || value && typeof value === 'object' && toString.call(value) === '[object String]' || false;
+  };
+
+}).call(this);
+
+},{"bunyan":36,"colors/safe":46,"path":14}],36:[function(require,module,exports){
 (function (Buffer,process){
 /**
  * Copyright (c) 2015 Trent Mick.
@@ -15149,7 +12993,543 @@ module.exports.RotatingFileStream = RotatingFileStream;
 module.exports.safeCycles = safeCycles;
 
 }).call(this,{"isBuffer":require("../../../../../.nvm/versions/node/v6.3.1/lib/node_modules/browserify/node_modules/is-buffer/index.js")},require('_process'))
-},{"../../../../../.nvm/versions/node/v6.3.1/lib/node_modules/browserify/node_modules/is-buffer/index.js":12,"_process":17,"assert":2,"events":9,"fs":1,"os":14,"safe-json-stringify":55,"stream":32,"util":43}],49:[function(require,module,exports){
+},{"../../../../../.nvm/versions/node/v6.3.1/lib/node_modules/browserify/node_modules/is-buffer/index.js":11,"_process":16,"assert":2,"events":8,"fs":1,"os":13,"safe-json-stringify":55,"stream":27,"util":31}],37:[function(require,module,exports){
+/*
+
+The MIT License (MIT)
+
+Original Library 
+  - Copyright (c) Marak Squires
+
+Additional functionality
+ - Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+*/
+
+var colors = {};
+module['exports'] = colors;
+
+colors.themes = {};
+
+var ansiStyles = colors.styles = require('./styles');
+var defineProps = Object.defineProperties;
+
+colors.supportsColor = require('./system/supports-colors');
+
+if (typeof colors.enabled === "undefined") {
+  colors.enabled = colors.supportsColor;
+}
+
+colors.stripColors = colors.strip = function(str){
+  return ("" + str).replace(/\x1B\[\d+m/g, '');
+};
+
+
+var stylize = colors.stylize = function stylize (str, style) {
+  if (!colors.enabled) {
+    return str+'';
+  }
+
+  return ansiStyles[style].open + str + ansiStyles[style].close;
+}
+
+var matchOperatorsRe = /[|\\{}()[\]^$+*?.]/g;
+var escapeStringRegexp = function (str) {
+  if (typeof str !== 'string') {
+    throw new TypeError('Expected a string');
+  }
+  return str.replace(matchOperatorsRe,  '\\$&');
+}
+
+function build(_styles) {
+  var builder = function builder() {
+    return applyStyle.apply(builder, arguments);
+  };
+  builder._styles = _styles;
+  // __proto__ is used because we must return a function, but there is
+  // no way to create a function with a different prototype.
+  builder.__proto__ = proto;
+  return builder;
+}
+
+var styles = (function () {
+  var ret = {};
+  ansiStyles.grey = ansiStyles.gray;
+  Object.keys(ansiStyles).forEach(function (key) {
+    ansiStyles[key].closeRe = new RegExp(escapeStringRegexp(ansiStyles[key].close), 'g');
+    ret[key] = {
+      get: function () {
+        return build(this._styles.concat(key));
+      }
+    };
+  });
+  return ret;
+})();
+
+var proto = defineProps(function colors() {}, styles);
+
+function applyStyle() {
+  var args = arguments;
+  var argsLen = args.length;
+  var str = argsLen !== 0 && String(arguments[0]);
+  if (argsLen > 1) {
+    for (var a = 1; a < argsLen; a++) {
+      str += ' ' + args[a];
+    }
+  }
+
+  if (!colors.enabled || !str) {
+    return str;
+  }
+
+  var nestedStyles = this._styles;
+
+  var i = nestedStyles.length;
+  while (i--) {
+    var code = ansiStyles[nestedStyles[i]];
+    str = code.open + str.replace(code.closeRe, code.open) + code.close;
+  }
+
+  return str;
+}
+
+function applyTheme (theme) {
+  for (var style in theme) {
+    (function(style){
+      colors[style] = function(str){
+        if (typeof theme[style] === 'object'){
+          var out = str;
+          for (var i in theme[style]){
+            out = colors[theme[style][i]](out);
+          }
+          return out;
+        }
+        return colors[theme[style]](str);
+      };
+    })(style)
+  }
+}
+
+colors.setTheme = function (theme) {
+  if (typeof theme === 'string') {
+    try {
+      colors.themes[theme] = require(theme);
+      applyTheme(colors.themes[theme]);
+      return colors.themes[theme];
+    } catch (err) {
+      console.log(err);
+      return err;
+    }
+  } else {
+    applyTheme(theme);
+  }
+};
+
+function init() {
+  var ret = {};
+  Object.keys(styles).forEach(function (name) {
+    ret[name] = {
+      get: function () {
+        return build([name]);
+      }
+    };
+  });
+  return ret;
+}
+
+var sequencer = function sequencer (map, str) {
+  var exploded = str.split(""), i = 0;
+  exploded = exploded.map(map);
+  return exploded.join("");
+};
+
+// custom formatter methods
+colors.trap = require('./custom/trap');
+colors.zalgo = require('./custom/zalgo');
+
+// maps
+colors.maps = {};
+colors.maps.america = require('./maps/america');
+colors.maps.zebra = require('./maps/zebra');
+colors.maps.rainbow = require('./maps/rainbow');
+colors.maps.random = require('./maps/random')
+
+for (var map in colors.maps) {
+  (function(map){
+    colors[map] = function (str) {
+      return sequencer(colors.maps[map], str);
+    }
+  })(map)
+}
+
+defineProps(colors, init());
+},{"./custom/trap":38,"./custom/zalgo":39,"./maps/america":40,"./maps/rainbow":41,"./maps/random":42,"./maps/zebra":43,"./styles":44,"./system/supports-colors":45}],38:[function(require,module,exports){
+module['exports'] = function runTheTrap (text, options) {
+  var result = "";
+  text = text || "Run the trap, drop the bass";
+  text = text.split('');
+  var trap = {
+    a: ["\u0040", "\u0104", "\u023a", "\u0245", "\u0394", "\u039b", "\u0414"],
+    b: ["\u00df", "\u0181", "\u0243", "\u026e", "\u03b2", "\u0e3f"],
+    c: ["\u00a9", "\u023b", "\u03fe"],
+    d: ["\u00d0", "\u018a", "\u0500" , "\u0501" ,"\u0502", "\u0503"],
+    e: ["\u00cb", "\u0115", "\u018e", "\u0258", "\u03a3", "\u03be", "\u04bc", "\u0a6c"],
+    f: ["\u04fa"],
+    g: ["\u0262"],
+    h: ["\u0126", "\u0195", "\u04a2", "\u04ba", "\u04c7", "\u050a"],
+    i: ["\u0f0f"],
+    j: ["\u0134"],
+    k: ["\u0138", "\u04a0", "\u04c3", "\u051e"],
+    l: ["\u0139"],
+    m: ["\u028d", "\u04cd", "\u04ce", "\u0520", "\u0521", "\u0d69"],
+    n: ["\u00d1", "\u014b", "\u019d", "\u0376", "\u03a0", "\u048a"],
+    o: ["\u00d8", "\u00f5", "\u00f8", "\u01fe", "\u0298", "\u047a", "\u05dd", "\u06dd", "\u0e4f"],
+    p: ["\u01f7", "\u048e"],
+    q: ["\u09cd"],
+    r: ["\u00ae", "\u01a6", "\u0210", "\u024c", "\u0280", "\u042f"],
+    s: ["\u00a7", "\u03de", "\u03df", "\u03e8"],
+    t: ["\u0141", "\u0166", "\u0373"],
+    u: ["\u01b1", "\u054d"],
+    v: ["\u05d8"],
+    w: ["\u0428", "\u0460", "\u047c", "\u0d70"],
+    x: ["\u04b2", "\u04fe", "\u04fc", "\u04fd"],
+    y: ["\u00a5", "\u04b0", "\u04cb"],
+    z: ["\u01b5", "\u0240"]
+  }
+  text.forEach(function(c){
+    c = c.toLowerCase();
+    var chars = trap[c] || [" "];
+    var rand = Math.floor(Math.random() * chars.length);
+    if (typeof trap[c] !== "undefined") {
+      result += trap[c][rand];
+    } else {
+      result += c;
+    }
+  });
+  return result;
+
+}
+
+},{}],39:[function(require,module,exports){
+// please no
+module['exports'] = function zalgo(text, options) {
+  text = text || "   he is here   ";
+  var soul = {
+    "up" : [
+      '̍', '̎', '̄', '̅',
+      '̿', '̑', '̆', '̐',
+      '͒', '͗', '͑', '̇',
+      '̈', '̊', '͂', '̓',
+      '̈', '͊', '͋', '͌',
+      '̃', '̂', '̌', '͐',
+      '̀', '́', '̋', '̏',
+      '̒', '̓', '̔', '̽',
+      '̉', 'ͣ', 'ͤ', 'ͥ',
+      'ͦ', 'ͧ', 'ͨ', 'ͩ',
+      'ͪ', 'ͫ', 'ͬ', 'ͭ',
+      'ͮ', 'ͯ', '̾', '͛',
+      '͆', '̚'
+    ],
+    "down" : [
+      '̖', '̗', '̘', '̙',
+      '̜', '̝', '̞', '̟',
+      '̠', '̤', '̥', '̦',
+      '̩', '̪', '̫', '̬',
+      '̭', '̮', '̯', '̰',
+      '̱', '̲', '̳', '̹',
+      '̺', '̻', '̼', 'ͅ',
+      '͇', '͈', '͉', '͍',
+      '͎', '͓', '͔', '͕',
+      '͖', '͙', '͚', '̣'
+    ],
+    "mid" : [
+      '̕', '̛', '̀', '́',
+      '͘', '̡', '̢', '̧',
+      '̨', '̴', '̵', '̶',
+      '͜', '͝', '͞',
+      '͟', '͠', '͢', '̸',
+      '̷', '͡', ' ҉'
+    ]
+  },
+  all = [].concat(soul.up, soul.down, soul.mid),
+  zalgo = {};
+
+  function randomNumber(range) {
+    var r = Math.floor(Math.random() * range);
+    return r;
+  }
+
+  function is_char(character) {
+    var bool = false;
+    all.filter(function (i) {
+      bool = (i === character);
+    });
+    return bool;
+  }
+  
+
+  function heComes(text, options) {
+    var result = '', counts, l;
+    options = options || {};
+    options["up"] =   typeof options["up"]   !== 'undefined' ? options["up"]   : true;
+    options["mid"] =  typeof options["mid"]  !== 'undefined' ? options["mid"]  : true;
+    options["down"] = typeof options["down"] !== 'undefined' ? options["down"] : true;
+    options["size"] = typeof options["size"] !== 'undefined' ? options["size"] : "maxi";
+    text = text.split('');
+    for (l in text) {
+      if (is_char(l)) {
+        continue;
+      }
+      result = result + text[l];
+      counts = {"up" : 0, "down" : 0, "mid" : 0};
+      switch (options.size) {
+      case 'mini':
+        counts.up = randomNumber(8);
+        counts.mid = randomNumber(2);
+        counts.down = randomNumber(8);
+        break;
+      case 'maxi':
+        counts.up = randomNumber(16) + 3;
+        counts.mid = randomNumber(4) + 1;
+        counts.down = randomNumber(64) + 3;
+        break;
+      default:
+        counts.up = randomNumber(8) + 1;
+        counts.mid = randomNumber(6) / 2;
+        counts.down = randomNumber(8) + 1;
+        break;
+      }
+
+      var arr = ["up", "mid", "down"];
+      for (var d in arr) {
+        var index = arr[d];
+        for (var i = 0 ; i <= counts[index]; i++) {
+          if (options[index]) {
+            result = result + soul[index][randomNumber(soul[index].length)];
+          }
+        }
+      }
+    }
+    return result;
+  }
+  // don't summon him
+  return heComes(text, options);
+}
+
+},{}],40:[function(require,module,exports){
+var colors = require('../colors');
+
+module['exports'] = (function() {
+  return function (letter, i, exploded) {
+    if(letter === " ") return letter;
+    switch(i%3) {
+      case 0: return colors.red(letter);
+      case 1: return colors.white(letter)
+      case 2: return colors.blue(letter)
+    }
+  }
+})();
+},{"../colors":37}],41:[function(require,module,exports){
+var colors = require('../colors');
+
+module['exports'] = (function () {
+  var rainbowColors = ['red', 'yellow', 'green', 'blue', 'magenta']; //RoY G BiV
+  return function (letter, i, exploded) {
+    if (letter === " ") {
+      return letter;
+    } else {
+      return colors[rainbowColors[i++ % rainbowColors.length]](letter);
+    }
+  };
+})();
+
+
+},{"../colors":37}],42:[function(require,module,exports){
+var colors = require('../colors');
+
+module['exports'] = (function () {
+  var available = ['underline', 'inverse', 'grey', 'yellow', 'red', 'green', 'blue', 'white', 'cyan', 'magenta'];
+  return function(letter, i, exploded) {
+    return letter === " " ? letter : colors[available[Math.round(Math.random() * (available.length - 1))]](letter);
+  };
+})();
+},{"../colors":37}],43:[function(require,module,exports){
+var colors = require('../colors');
+
+module['exports'] = function (letter, i, exploded) {
+  return i % 2 === 0 ? letter : colors.inverse(letter);
+};
+},{"../colors":37}],44:[function(require,module,exports){
+/*
+The MIT License (MIT)
+
+Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+*/
+
+var styles = {};
+module['exports'] = styles;
+
+var codes = {
+  reset: [0, 0],
+
+  bold: [1, 22],
+  dim: [2, 22],
+  italic: [3, 23],
+  underline: [4, 24],
+  inverse: [7, 27],
+  hidden: [8, 28],
+  strikethrough: [9, 29],
+
+  black: [30, 39],
+  red: [31, 39],
+  green: [32, 39],
+  yellow: [33, 39],
+  blue: [34, 39],
+  magenta: [35, 39],
+  cyan: [36, 39],
+  white: [37, 39],
+  gray: [90, 39],
+  grey: [90, 39],
+
+  bgBlack: [40, 49],
+  bgRed: [41, 49],
+  bgGreen: [42, 49],
+  bgYellow: [43, 49],
+  bgBlue: [44, 49],
+  bgMagenta: [45, 49],
+  bgCyan: [46, 49],
+  bgWhite: [47, 49],
+
+  // legacy styles for colors pre v1.0.0
+  blackBG: [40, 49],
+  redBG: [41, 49],
+  greenBG: [42, 49],
+  yellowBG: [43, 49],
+  blueBG: [44, 49],
+  magentaBG: [45, 49],
+  cyanBG: [46, 49],
+  whiteBG: [47, 49]
+
+};
+
+Object.keys(codes).forEach(function (key) {
+  var val = codes[key];
+  var style = styles[key] = [];
+  style.open = '\u001b[' + val[0] + 'm';
+  style.close = '\u001b[' + val[1] + 'm';
+});
+},{}],45:[function(require,module,exports){
+(function (process){
+/*
+The MIT License (MIT)
+
+Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (sindresorhus.com)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+*/
+
+var argv = process.argv;
+
+module.exports = (function () {
+  if (argv.indexOf('--no-color') !== -1 ||
+    argv.indexOf('--color=false') !== -1) {
+    return false;
+  }
+
+  if (argv.indexOf('--color') !== -1 ||
+    argv.indexOf('--color=true') !== -1 ||
+    argv.indexOf('--color=always') !== -1) {
+    return true;
+  }
+
+  if (process.stdout && !process.stdout.isTTY) {
+    return false;
+  }
+
+  if (process.platform === 'win32') {
+    return true;
+  }
+
+  if ('COLORTERM' in process.env) {
+    return true;
+  }
+
+  if (process.env.TERM === 'dumb') {
+    return false;
+  }
+
+  if (/^screen|^xterm|^vt100|color|ansi|cygwin|linux/i.test(process.env.TERM)) {
+    return true;
+  }
+
+  return false;
+})();
+}).call(this,require('_process'))
+},{"_process":16}],46:[function(require,module,exports){
+//
+// Remark: Requiring this file will use the "safe" colors API which will not touch String.prototype
+//
+//   var colors = require('colors/safe);
+//   colors.red("foo")
+//
+//
+var colors = require('./lib/colors');
+module['exports'] = colors;
+},{"./lib/colors":37}],47:[function(require,module,exports){
 
 /**
  * This is the web browser implementation of `debug()`.
@@ -15319,7 +13699,7 @@ function localstorage(){
   } catch (e) {}
 }
 
-},{"./debug":50}],50:[function(require,module,exports){
+},{"./debug":48}],48:[function(require,module,exports){
 
 /**
  * This is the common logic for both the Node.js and web browser
@@ -15518,7 +13898,244 @@ function coerce(val) {
   return val;
 }
 
-},{"ms":54}],51:[function(require,module,exports){
+},{"ms":54}],49:[function(require,module,exports){
+(function (process){
+// Generated by CoffeeScript 1.8.0
+(function() {
+  var DIVIDER, HEADER, OUR_SOURCE, SOURCE, UNKNOWN, colors, endsWith, escapeHtml, formatExceptionLines, formatters, isString, parseException, parseExceptionLine, path, stripColors,
+    __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+
+  path = require('path');
+
+  colors = require('colors/safe');
+
+  HEADER = "header";
+
+  SOURCE = "source";
+
+  OUR_SOURCE = "our-source";
+
+  UNKNOWN = "unknown";
+
+  DIVIDER = "divider";
+
+  stripColors = require('./utils').stripColors;
+
+  escapeHtml = function(html) {
+    return String(html).replace(/&(?!\w+;)/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  };
+
+  isString = function(value) {
+    return typeof value === 'string' || value && typeof value === 'object' && toString.call(value) === '[object String]' || false;
+  };
+
+  endsWith = function(str, suffix) {
+    return str.slice(-suffix.length) === suffix;
+  };
+
+  parseExceptionLine = (function() {
+    var STACK_LINE_NO_FN_RE, STACK_LINE_RE;
+    STACK_LINE_RE = /(\s*)at\s*([^\s]*)\s*\((.*?):(\d*):(\d*)\)/;
+    STACK_LINE_NO_FN_RE = /(\s*)at\s*(.*?):(\d*):(\d*)/;
+    return function(line) {
+      var match;
+      match = STACK_LINE_RE.exec(line);
+      if (match) {
+        return {
+          indent: match[1],
+          fn: match[2],
+          filename: match[3],
+          line: match[4],
+          column: match[5]
+        };
+      } else {
+        match = STACK_LINE_NO_FN_RE.exec(line);
+        if (match) {
+          return {
+            indent: match[1],
+            filename: match[2],
+            line: match[3],
+            column: match[4]
+          };
+        } else {
+          return null;
+        }
+      }
+    };
+  })();
+
+  parseException = (function() {
+    var DIVIDERS;
+    DIVIDERS = ['    <<< async stack >>>', '    <<< raw stack >>>', '---------------------------------------------'];
+    return function(exception, options) {
+      var basepath, basepathReplacement, endOfHeader, exceptionText, lines, value, _ref, _ref1;
+      if (options == null) {
+        options = {};
+      }
+      basepath = (_ref = options.basepath) != null ? _ref : process.cwd();
+      if (isString(basepath) && !endsWith(basepath, path.sep)) {
+        basepath += path.sep;
+      }
+      basepathReplacement = (_ref1 = options.basepathReplacement) != null ? _ref1 : "." + path.sep;
+      exceptionText = isString(exception) ? exception : exception.stack != null ? exception.stack : "" + exception;
+      value = stripColors(exceptionText);
+      lines = value.split('\n');
+      endOfHeader = false;
+      return lines.map(function(line) {
+        var filename, parsed, type;
+        parsed = null;
+        if (__indexOf.call(DIVIDERS, line) >= 0) {
+          endOfHeader = true;
+          type = DIVIDER;
+        } else {
+          parsed = parseExceptionLine(line);
+          if (parsed) {
+            filename = parsed.filename;
+            endOfHeader = true;
+            type = SOURCE;
+            if (filename.indexOf('node_modules') === -1 && filename[isString(basepath) ? 'indexOf' : 'search'](basepath) !== -1) {
+              type = OUR_SOURCE;
+            }
+          }
+        }
+        if (!endOfHeader && !type) {
+          type = HEADER;
+        }
+        if (!type) {
+          type = UNKNOWN;
+        }
+        if (type === SOURCE || type === OUR_SOURCE) {
+          line = line.replace(basepath, basepathReplacement);
+          parsed.filename = parsed.filename.replace(basepath, basepathReplacement);
+        }
+        return {
+          line: line,
+          parsed: parsed,
+          type: type
+        };
+      });
+    };
+  })();
+
+  formatExceptionLines = function(exception, options, lineFn) {
+    var lines;
+    lines = parseException(exception, options);
+    if (options.maxLines && lines.length > options.maxLines) {
+      lines = lines.slice(0, +options.maxLines + 1 || 9e9);
+      lines.push(lineFn("[truncated]", DIVIDER));
+    }
+    lines = lines.map(lineFn);
+    return lines.join('\n');
+  };
+
+  formatters = {
+    html: (function() {
+      var INLINE_STYLES;
+      INLINE_STYLES = {};
+      INLINE_STYLES[OUR_SOURCE] = "white-space:nowrap; font-weight:bold; color: #800";
+      INLINE_STYLES[SOURCE] = "white-space:nowrap; color: #888";
+      INLINE_STYLES[DIVIDER] = "white-space:nowrap; color: #000";
+      return function(exception, options) {
+        var html, style;
+        if (options == null) {
+          options = {};
+        }
+        html = formatExceptionLines(exception, options, function(_arg) {
+          var line, style, type, _ref;
+          line = _arg.line, type = _arg.type;
+          line = escapeHtml(line);
+          style = options.inlineStyle ? "style='" + ((_ref = INLINE_STYLES[type]) != null ? _ref : '') + "'" : "class=" + type;
+          switch (type) {
+            case HEADER:
+              return "<h2 " + style + ">" + line + "</h2>";
+            default:
+              return "<span " + style + ">" + line + "</span><br />";
+          }
+        });
+        style = options.inlineStyle ? "style='font-family: monospace'" : "class='exception'";
+        return "<div " + style + ">" + html + "</div>";
+      };
+    })(),
+    ascii: function(exception, options) {
+      if (options == null) {
+        options = {};
+      }
+      return formatExceptionLines(exception, options, function(_arg) {
+        var line, type;
+        line = _arg.line, type = _arg.type;
+        switch (type) {
+          case OUR_SOURCE:
+            if (line[0] === ' ') {
+              return "*" + line.slice(1);
+            } else {
+              return line;
+            }
+            break;
+          default:
+            return line;
+        }
+      });
+    },
+    ansi: (function() {
+      var colorizeLine;
+      colorizeLine = function(parsed) {
+        var file;
+        file = "" + parsed.filename + ":" + parsed.line + ":" + parsed.column;
+        if (parsed.fn != null) {
+          return "" + parsed.indent + "at " + (colors.magenta(parsed.fn)) + " (" + (colors.cyan(file)) + ")";
+        } else {
+          return "" + parsed.indent + "at (" + (colors.cyan(file)) + ")";
+        }
+      };
+      return function(exception, options) {
+        if (options == null) {
+          options = {};
+        }
+        return formatExceptionLines(exception, options, function(_arg) {
+          var line, parsed, type, _ref;
+          line = _arg.line, type = _arg.type, parsed = _arg.parsed;
+          switch (type) {
+            case OUR_SOURCE:
+              if ((_ref = options.colors) != null ? _ref : true) {
+                return colors.bold(colorizeLine(parsed));
+              } else {
+                return colors.bold(line);
+              }
+              break;
+            default:
+              return line;
+          }
+        });
+      };
+    })()
+  };
+
+  module.exports = function(exception, options) {
+    var format, _ref;
+    if (options == null) {
+      options = {};
+    }
+    format = (_ref = options.format) != null ? _ref : 'ascii';
+    return formatters[format](exception, options);
+  };
+
+  module.exports.parseExceptionLine = parseExceptionLine;
+
+}).call(this);
+
+}).call(this,require('_process'))
+},{"./utils":50,"_process":16,"colors/safe":46,"path":14}],50:[function(require,module,exports){
+// Generated by CoffeeScript 1.8.0
+(function() {
+  exports.stripColors = function(str) {
+    var re;
+    re = /\u001b\[[0-9;]*m/g;
+    return str.replace(re, '');
+  };
+
+}).call(this);
+
+},{}],51:[function(require,module,exports){
 var FixedQueue = function(s, startingValues) {
   startingValues = (startingValues || [])
   queue = Array.apply( null, startingValues );
@@ -15605,7 +14222,7 @@ function serializer(replacer, cycleReplacer) {
   var undefined;
 
   /** Used as the semantic version number. */
-  var VERSION = '4.14.2';
+  var VERSION = '4.15.0';
 
   /** Used as the size to enable large array optimizations. */
   var LARGE_ARRAY_SIZE = 200;
@@ -15742,8 +14359,8 @@ function serializer(replacer, cycleReplacer) {
       reWrapDetails = /\{\n\/\* \[wrapped with (.+)\] \*/,
       reSplitDetails = /,? & /;
 
-  /** Used to match non-compound words composed of alphanumeric characters. */
-  var reBasicWord = /[a-zA-Z0-9]+/g;
+  /** Used to match words composed of alphanumeric characters. */
+  var reAsciiWord = /[^\x00-\x2f\x3a-\x40\x5b-\x60\x7b-\x7f]+/g;
 
   /** Used to match backslashes in property paths. */
   var reEscapeChar = /\\(\\)?/g;
@@ -15775,8 +14392,8 @@ function serializer(replacer, cycleReplacer) {
   /** Used to detect unsigned integer values. */
   var reIsUint = /^(?:0|[1-9]\d*)$/;
 
-  /** Used to match latin-1 supplementary letters (excluding mathematical operators). */
-  var reLatin1 = /[\xc0-\xd6\xd8-\xde\xdf-\xf6\xf8-\xff]/g;
+  /** Used to match Latin Unicode letters (excluding mathematical operators). */
+  var reLatin = /[\xc0-\xd6\xd8-\xf6\xf8-\xff\u0100-\u017f]/g;
 
   /** Used to ensure capturing order of template delimiters. */
   var reNoMatch = /($^)/;
@@ -15837,10 +14454,10 @@ function serializer(replacer, cycleReplacer) {
   var reComboMark = RegExp(rsCombo, 'g');
 
   /** Used to match [string symbols](https://mathiasbynens.be/notes/javascript-unicode). */
-  var reComplexSymbol = RegExp(rsFitz + '(?=' + rsFitz + ')|' + rsSymbol + rsSeq, 'g');
+  var reUnicode = RegExp(rsFitz + '(?=' + rsFitz + ')|' + rsSymbol + rsSeq, 'g');
 
   /** Used to match complex or compound words. */
-  var reComplexWord = RegExp([
+  var reUnicodeWord = RegExp([
     rsUpper + '?' + rsLower + '+' + rsOptLowerContr + '(?=' + [rsBreak, rsUpper, '$'].join('|') + ')',
     rsUpperMisc + '+' + rsOptUpperContr + '(?=' + [rsBreak, rsUpper + rsLowerMisc, '$'].join('|') + ')',
     rsUpper + '?' + rsLowerMisc + '+' + rsOptLowerContr,
@@ -15850,18 +14467,18 @@ function serializer(replacer, cycleReplacer) {
   ].join('|'), 'g');
 
   /** Used to detect strings with [zero-width joiners or code points from the astral planes](http://eev.ee/blog/2015/09/12/dark-corners-of-unicode/). */
-  var reHasComplexSymbol = RegExp('[' + rsZWJ + rsAstralRange  + rsComboMarksRange + rsComboSymbolsRange + rsVarRange + ']');
+  var reHasUnicode = RegExp('[' + rsZWJ + rsAstralRange  + rsComboMarksRange + rsComboSymbolsRange + rsVarRange + ']');
 
   /** Used to detect strings that need a more robust regexp to match words. */
-  var reHasComplexWord = /[a-z][A-Z]|[A-Z]{2,}[a-z]|[0-9][a-zA-Z]|[a-zA-Z][0-9]|[^a-zA-Z0-9 ]/;
+  var reHasUnicodeWord = /[a-z][A-Z]|[A-Z]{2,}[a-z]|[0-9][a-zA-Z]|[a-zA-Z][0-9]|[^a-zA-Z0-9 ]/;
 
   /** Used to assign default `context` object properties. */
   var contextProps = [
     'Array', 'Buffer', 'DataView', 'Date', 'Error', 'Float32Array', 'Float64Array',
     'Function', 'Int8Array', 'Int16Array', 'Int32Array', 'Map', 'Math', 'Object',
     'Promise', 'RegExp', 'Set', 'String', 'Symbol', 'TypeError', 'Uint8Array',
-    'Uint8ClampedArray', 'Uint16Array', 'Uint32Array', 'WeakMap', '_', 'clearTimeout',
-    'isFinite', 'parseInt', 'setTimeout'
+    'Uint8ClampedArray', 'Uint16Array', 'Uint32Array', 'WeakMap',
+    '_', 'clearTimeout', 'isFinite', 'parseInt', 'setTimeout'
   ];
 
   /** Used to make template sourceURLs easier to identify. */
@@ -15899,16 +14516,17 @@ function serializer(replacer, cycleReplacer) {
   cloneableTags[errorTag] = cloneableTags[funcTag] =
   cloneableTags[weakMapTag] = false;
 
-  /** Used to map latin-1 supplementary letters to basic latin letters. */
+  /** Used to map Latin Unicode letters to basic Latin letters. */
   var deburredLetters = {
+    // Latin-1 Supplement block.
     '\xc0': 'A',  '\xc1': 'A', '\xc2': 'A', '\xc3': 'A', '\xc4': 'A', '\xc5': 'A',
     '\xe0': 'a',  '\xe1': 'a', '\xe2': 'a', '\xe3': 'a', '\xe4': 'a', '\xe5': 'a',
     '\xc7': 'C',  '\xe7': 'c',
     '\xd0': 'D',  '\xf0': 'd',
     '\xc8': 'E',  '\xc9': 'E', '\xca': 'E', '\xcb': 'E',
     '\xe8': 'e',  '\xe9': 'e', '\xea': 'e', '\xeb': 'e',
-    '\xcC': 'I',  '\xcd': 'I', '\xce': 'I', '\xcf': 'I',
-    '\xeC': 'i',  '\xed': 'i', '\xee': 'i', '\xef': 'i',
+    '\xcc': 'I',  '\xcd': 'I', '\xce': 'I', '\xcf': 'I',
+    '\xec': 'i',  '\xed': 'i', '\xee': 'i', '\xef': 'i',
     '\xd1': 'N',  '\xf1': 'n',
     '\xd2': 'O',  '\xd3': 'O', '\xd4': 'O', '\xd5': 'O', '\xd6': 'O', '\xd8': 'O',
     '\xf2': 'o',  '\xf3': 'o', '\xf4': 'o', '\xf5': 'o', '\xf6': 'o', '\xf8': 'o',
@@ -15917,7 +14535,43 @@ function serializer(replacer, cycleReplacer) {
     '\xdd': 'Y',  '\xfd': 'y', '\xff': 'y',
     '\xc6': 'Ae', '\xe6': 'ae',
     '\xde': 'Th', '\xfe': 'th',
-    '\xdf': 'ss'
+    '\xdf': 'ss',
+    // Latin Extended-A block.
+    '\u0100': 'A',  '\u0102': 'A', '\u0104': 'A',
+    '\u0101': 'a',  '\u0103': 'a', '\u0105': 'a',
+    '\u0106': 'C',  '\u0108': 'C', '\u010a': 'C', '\u010c': 'C',
+    '\u0107': 'c',  '\u0109': 'c', '\u010b': 'c', '\u010d': 'c',
+    '\u010e': 'D',  '\u0110': 'D', '\u010f': 'd', '\u0111': 'd',
+    '\u0112': 'E',  '\u0114': 'E', '\u0116': 'E', '\u0118': 'E', '\u011a': 'E',
+    '\u0113': 'e',  '\u0115': 'e', '\u0117': 'e', '\u0119': 'e', '\u011b': 'e',
+    '\u011c': 'G',  '\u011e': 'G', '\u0120': 'G', '\u0122': 'G',
+    '\u011d': 'g',  '\u011f': 'g', '\u0121': 'g', '\u0123': 'g',
+    '\u0124': 'H',  '\u0126': 'H', '\u0125': 'h', '\u0127': 'h',
+    '\u0128': 'I',  '\u012a': 'I', '\u012c': 'I', '\u012e': 'I', '\u0130': 'I',
+    '\u0129': 'i',  '\u012b': 'i', '\u012d': 'i', '\u012f': 'i', '\u0131': 'i',
+    '\u0134': 'J',  '\u0135': 'j',
+    '\u0136': 'K',  '\u0137': 'k', '\u0138': 'k',
+    '\u0139': 'L',  '\u013b': 'L', '\u013d': 'L', '\u013f': 'L', '\u0141': 'L',
+    '\u013a': 'l',  '\u013c': 'l', '\u013e': 'l', '\u0140': 'l', '\u0142': 'l',
+    '\u0143': 'N',  '\u0145': 'N', '\u0147': 'N', '\u014a': 'N',
+    '\u0144': 'n',  '\u0146': 'n', '\u0148': 'n', '\u014b': 'n',
+    '\u014c': 'O',  '\u014e': 'O', '\u0150': 'O',
+    '\u014d': 'o',  '\u014f': 'o', '\u0151': 'o',
+    '\u0154': 'R',  '\u0156': 'R', '\u0158': 'R',
+    '\u0155': 'r',  '\u0157': 'r', '\u0159': 'r',
+    '\u015a': 'S',  '\u015c': 'S', '\u015e': 'S', '\u0160': 'S',
+    '\u015b': 's',  '\u015d': 's', '\u015f': 's', '\u0161': 's',
+    '\u0162': 'T',  '\u0164': 'T', '\u0166': 'T',
+    '\u0163': 't',  '\u0165': 't', '\u0167': 't',
+    '\u0168': 'U',  '\u016a': 'U', '\u016c': 'U', '\u016e': 'U', '\u0170': 'U', '\u0172': 'U',
+    '\u0169': 'u',  '\u016b': 'u', '\u016d': 'u', '\u016f': 'u', '\u0171': 'u', '\u0173': 'u',
+    '\u0174': 'W',  '\u0175': 'w',
+    '\u0176': 'Y',  '\u0177': 'y', '\u0178': 'Y',
+    '\u0179': 'Z',  '\u017b': 'Z', '\u017d': 'Z',
+    '\u017a': 'z',  '\u017c': 'z', '\u017e': 'z',
+    '\u0132': 'IJ', '\u0133': 'ij',
+    '\u0152': 'Oe', '\u0153': 'oe',
+    '\u0149': "'n", '\u017f': 'ss'
   };
 
   /** Used to map characters to HTML entities. */
@@ -16153,7 +14807,7 @@ function serializer(replacer, cycleReplacer) {
    * specifying an index to search from.
    *
    * @private
-   * @param {Array} [array] The array to search.
+   * @param {Array} [array] The array to inspect.
    * @param {*} target The value to search for.
    * @returns {boolean} Returns `true` if `target` is found, else `false`.
    */
@@ -16166,7 +14820,7 @@ function serializer(replacer, cycleReplacer) {
    * This function is like `arrayIncludes` except that it accepts a comparator.
    *
    * @private
-   * @param {Array} [array] The array to search.
+   * @param {Array} [array] The array to inspect.
    * @param {*} target The value to search for.
    * @param {Function} comparator The comparator invoked per element.
    * @returns {boolean} Returns `true` if `target` is found, else `false`.
@@ -16293,12 +14947,43 @@ function serializer(replacer, cycleReplacer) {
   }
 
   /**
+   * Gets the size of an ASCII `string`.
+   *
+   * @private
+   * @param {string} string The string inspect.
+   * @returns {number} Returns the string size.
+   */
+  var asciiSize = baseProperty('length');
+
+  /**
+   * Converts an ASCII `string` to an array.
+   *
+   * @private
+   * @param {string} string The string to convert.
+   * @returns {Array} Returns the converted array.
+   */
+  function asciiToArray(string) {
+    return string.split('');
+  }
+
+  /**
+   * Splits an ASCII `string` into an array of its words.
+   *
+   * @private
+   * @param {string} The string to inspect.
+   * @returns {Array} Returns the words of `string`.
+   */
+  function asciiWords(string) {
+    return string.match(reAsciiWord) || [];
+  }
+
+  /**
    * The base implementation of methods like `_.findKey` and `_.findLastKey`,
    * without support for iteratee shorthands, which iterates over `collection`
    * using `eachFunc`.
    *
    * @private
-   * @param {Array|Object} collection The collection to search.
+   * @param {Array|Object} collection The collection to inspect.
    * @param {Function} predicate The function invoked per iteration.
    * @param {Function} eachFunc The function to iterate over `collection`.
    * @returns {*} Returns the found element or its key, else `undefined`.
@@ -16319,7 +15004,7 @@ function serializer(replacer, cycleReplacer) {
    * support for iteratee shorthands.
    *
    * @private
-   * @param {Array} array The array to search.
+   * @param {Array} array The array to inspect.
    * @param {Function} predicate The function invoked per iteration.
    * @param {number} fromIndex The index to search from.
    * @param {boolean} [fromRight] Specify iterating from right to left.
@@ -16341,7 +15026,7 @@ function serializer(replacer, cycleReplacer) {
    * The base implementation of `_.indexOf` without `fromIndex` bounds checks.
    *
    * @private
-   * @param {Array} array The array to search.
+   * @param {Array} array The array to inspect.
    * @param {*} value The value to search for.
    * @param {number} fromIndex The index to search from.
    * @returns {number} Returns the index of the matched value, else `-1`.
@@ -16365,7 +15050,7 @@ function serializer(replacer, cycleReplacer) {
    * This function is like `baseIndexOf` except that it accepts a comparator.
    *
    * @private
-   * @param {Array} array The array to search.
+   * @param {Array} array The array to inspect.
    * @param {*} value The value to search for.
    * @param {number} fromIndex The index to search from.
    * @param {Function} comparator The comparator invoked per element.
@@ -16628,7 +15313,8 @@ function serializer(replacer, cycleReplacer) {
   }
 
   /**
-   * Used by `_.deburr` to convert latin-1 supplementary letters to basic latin letters.
+   * Used by `_.deburr` to convert Latin-1 Supplement and Latin Extended-A
+   * letters to basic Latin letters.
    *
    * @private
    * @param {string} letter The matched letter to deburr.
@@ -16666,6 +15352,28 @@ function serializer(replacer, cycleReplacer) {
    */
   function getValue(object, key) {
     return object == null ? undefined : object[key];
+  }
+
+  /**
+   * Checks if `string` contains Unicode symbols.
+   *
+   * @private
+   * @param {string} string The string to inspect.
+   * @returns {boolean} Returns `true` if a symbol is found, else `false`.
+   */
+  function hasUnicode(string) {
+    return reHasUnicode.test(string);
+  }
+
+  /**
+   * Checks if `string` contains a word composed of Unicode symbols.
+   *
+   * @private
+   * @param {string} string The string to inspect.
+   * @returns {boolean} Returns `true` if a word is found, else `false`.
+   */
+  function hasUnicodeWord(string) {
+    return reHasUnicodeWord.test(string);
   }
 
   /**
@@ -16802,14 +15510,9 @@ function serializer(replacer, cycleReplacer) {
    * @returns {number} Returns the string size.
    */
   function stringSize(string) {
-    if (!(string && reHasComplexSymbol.test(string))) {
-      return string.length;
-    }
-    var result = reComplexSymbol.lastIndex = 0;
-    while (reComplexSymbol.test(string)) {
-      result++;
-    }
-    return result;
+    return hasUnicode(string)
+      ? unicodeSize(string)
+      : asciiSize(string);
   }
 
   /**
@@ -16820,7 +15523,9 @@ function serializer(replacer, cycleReplacer) {
    * @returns {Array} Returns the converted array.
    */
   function stringToArray(string) {
-    return string.match(reComplexSymbol);
+    return hasUnicode(string)
+      ? unicodeToArray(string)
+      : asciiToArray(string);
   }
 
   /**
@@ -16831,6 +15536,43 @@ function serializer(replacer, cycleReplacer) {
    * @returns {string} Returns the unescaped character.
    */
   var unescapeHtmlChar = basePropertyOf(htmlUnescapes);
+
+  /**
+   * Gets the size of a Unicode `string`.
+   *
+   * @private
+   * @param {string} string The string inspect.
+   * @returns {number} Returns the string size.
+   */
+  function unicodeSize(string) {
+    var result = reUnicode.lastIndex = 0;
+    while (reUnicode.test(string)) {
+      result++;
+    }
+    return result;
+  }
+
+  /**
+   * Converts a Unicode `string` to an array.
+   *
+   * @private
+   * @param {string} string The string to convert.
+   * @returns {Array} Returns the converted array.
+   */
+  function unicodeToArray(string) {
+    return string.match(reUnicode) || [];
+  }
+
+  /**
+   * Splits a Unicode `string` into an array of its words.
+   *
+   * @private
+   * @param {string} The string to inspect.
+   * @returns {Array} Returns the words of `string`.
+   */
+  function unicodeWords(string) {
+    return string.match(reUnicodeWord) || [];
+  }
 
   /*--------------------------------------------------------------------------*/
 
@@ -16871,19 +15613,23 @@ function serializer(replacer, cycleReplacer) {
    * var defer = _.runInContext({ 'setTimeout': setImmediate }).defer;
    */
   function runInContext(context) {
-    context = context ? _.defaults({}, context, _.pick(root, contextProps)) : root;
+    context = context ? _.defaults(root.Object(), context, _.pick(root, contextProps)) : root;
 
     /** Built-in constructor references. */
     var Array = context.Array,
+        Date = context.Date,
         Error = context.Error,
+        Function = context.Function,
         Math = context.Math,
+        Object = context.Object,
         RegExp = context.RegExp,
+        String = context.String,
         TypeError = context.TypeError;
 
     /** Used for built-in method references. */
-    var arrayProto = context.Array.prototype,
-        objectProto = context.Object.prototype,
-        stringProto = context.String.prototype;
+    var arrayProto = Array.prototype,
+        funcProto = Function.prototype,
+        objectProto = Object.prototype;
 
     /** Used to detect overreaching core-js shims. */
     var coreJsData = context['__core-js_shared__'];
@@ -16895,7 +15641,7 @@ function serializer(replacer, cycleReplacer) {
     }());
 
     /** Used to resolve the decompiled source of functions. */
-    var funcToString = context.Function.prototype.toString;
+    var funcToString = funcProto.toString;
 
     /** Used to check objects for own properties. */
     var hasOwnProperty = objectProto.hasOwnProperty;
@@ -16928,14 +15674,14 @@ function serializer(replacer, cycleReplacer) {
         Uint8Array = context.Uint8Array,
         getPrototype = overArg(Object.getPrototypeOf, Object),
         iteratorSymbol = Symbol ? Symbol.iterator : undefined,
-        objectCreate = context.Object.create,
+        objectCreate = Object.create,
         propertyIsEnumerable = objectProto.propertyIsEnumerable,
         splice = arrayProto.splice,
         spreadableSymbol = Symbol ? Symbol.isConcatSpreadable : undefined;
 
     /** Mocked built-ins. */
     var ctxClearTimeout = context.clearTimeout !== root.clearTimeout && context.clearTimeout,
-        ctxNow = context.Date && context.Date.now !== root.Date.now && context.Date.now,
+        ctxNow = Date && Date.now !== root.Date.now && Date.now,
         ctxSetTimeout = context.setTimeout !== root.setTimeout && context.setTimeout;
 
     /* Built-in method references for those with the same name as other `lodash` methods. */
@@ -16950,9 +15696,7 @@ function serializer(replacer, cycleReplacer) {
         nativeMin = Math.min,
         nativeParseInt = context.parseInt,
         nativeRandom = Math.random,
-        nativeReplace = stringProto.replace,
-        nativeReverse = arrayProto.reverse,
-        nativeSplit = stringProto.split;
+        nativeReverse = arrayProto.reverse;
 
     /* Built-in method references that are verified to be native. */
     var DataView = getNative(context, 'DataView'),
@@ -16960,11 +15704,11 @@ function serializer(replacer, cycleReplacer) {
         Promise = getNative(context, 'Promise'),
         Set = getNative(context, 'Set'),
         WeakMap = getNative(context, 'WeakMap'),
-        nativeCreate = getNative(context.Object, 'create');
+        nativeCreate = getNative(Object, 'create');
 
     /* Used to set `toString` methods. */
     var defineProperty = (function() {
-      var func = getNative(context.Object, 'defineProperty'),
+      var func = getNative(Object, 'defineProperty'),
           name = getNative.name;
 
       return (name && name.length > 2) ? func : undefined;
@@ -17801,7 +16545,9 @@ function serializer(replacer, cycleReplacer) {
      * @returns {Array} Returns the array of property names.
      */
     function arrayLikeKeys(value, inherited) {
-      var result = (isArray(value) || isString(value) || isArguments(value))
+      // Safari 8.1 makes `arguments.callee` enumerable in strict mode.
+      // Safari 9 makes `arguments.length` enumerable in strict mode.
+      var result = (isArray(value) || isArguments(value))
         ? baseTimes(value.length, String)
         : [];
 
@@ -17873,7 +16619,7 @@ function serializer(replacer, cycleReplacer) {
      * Gets the index at which the `key` is found in `array` of key-value pairs.
      *
      * @private
-     * @param {Array} array The array to search.
+     * @param {Array} array The array to inspect.
      * @param {*} key The key to search for.
      * @returns {number} Returns the index of the matched value, else `-1`.
      */
@@ -19298,7 +18044,7 @@ function serializer(replacer, cycleReplacer) {
      * The base implementation of `_.set`.
      *
      * @private
-     * @param {Object} object The object to query.
+     * @param {Object} object The object to modify.
      * @param {Array|string} path The path of the property to set.
      * @param {*} value The value to set.
      * @param {Function} [customizer] The function to customize path creation.
@@ -19628,7 +18374,7 @@ function serializer(replacer, cycleReplacer) {
      * The base implementation of `_.update`.
      *
      * @private
-     * @param {Object} object The object to query.
+     * @param {Object} object The object to modify.
      * @param {Array|string} path The path of the property to update.
      * @param {Function} updater The function to produce the updated value.
      * @param {Function} [customizer] The function to customize path creation.
@@ -20239,7 +18985,7 @@ function serializer(replacer, cycleReplacer) {
       return function(string) {
         string = toString(string);
 
-        var strSymbols = reHasComplexSymbol.test(string)
+        var strSymbols = hasUnicode(string)
           ? stringToArray(string)
           : undefined;
 
@@ -20582,7 +19328,7 @@ function serializer(replacer, cycleReplacer) {
         return charsLength ? baseRepeat(chars, length) : chars;
       }
       var result = baseRepeat(chars, nativeCeil(length / stringSize(chars)));
-      return reHasComplexSymbol.test(chars)
+      return hasUnicode(chars)
         ? castSlice(stringToArray(result), 0, length).join('')
         : result.slice(0, length);
     }
@@ -21249,7 +19995,7 @@ function serializer(replacer, cycleReplacer) {
     var getTag = baseGetTag;
 
     // Fallback for data views, maps, sets, and weak maps in IE 11,
-    // for data views in Edge, and promises in Node.js.
+    // for data views in Edge < 14, and promises in Node.js.
     if ((DataView && getTag(new DataView(new ArrayBuffer(1))) != dataViewTag) ||
         (Map && getTag(new Map) != mapTag) ||
         (Promise && getTag(Promise.resolve()) != promiseTag) ||
@@ -21341,7 +20087,7 @@ function serializer(replacer, cycleReplacer) {
       }
       var length = object ? object.length : 0;
       return !!length && isLength(length) && isIndex(key, length) &&
-        (isArray(object) || isString(object) || isArguments(object));
+        (isArray(object) || isArguments(object));
     }
 
     /**
@@ -22322,7 +21068,7 @@ function serializer(replacer, cycleReplacer) {
      * @memberOf _
      * @since 1.1.0
      * @category Array
-     * @param {Array} array The array to search.
+     * @param {Array} array The array to inspect.
      * @param {Function} [predicate=_.identity]
      *  The function invoked per iteration.
      * @param {number} [fromIndex=0] The index to search from.
@@ -22370,7 +21116,7 @@ function serializer(replacer, cycleReplacer) {
      * @memberOf _
      * @since 2.0.0
      * @category Array
-     * @param {Array} array The array to search.
+     * @param {Array} array The array to inspect.
      * @param {Function} [predicate=_.identity]
      *  The function invoked per iteration.
      * @param {number} [fromIndex=array.length-1] The index to search from.
@@ -22539,7 +21285,7 @@ function serializer(replacer, cycleReplacer) {
      * @memberOf _
      * @since 0.1.0
      * @category Array
-     * @param {Array} array The array to search.
+     * @param {Array} array The array to inspect.
      * @param {*} value The value to search for.
      * @param {number} [fromIndex=0] The index to search from.
      * @returns {number} Returns the index of the matched value, else `-1`.
@@ -22724,7 +21470,7 @@ function serializer(replacer, cycleReplacer) {
      * @memberOf _
      * @since 0.1.0
      * @category Array
-     * @param {Array} array The array to search.
+     * @param {Array} array The array to inspect.
      * @param {*} value The value to search for.
      * @param {number} [fromIndex=array.length-1] The index to search from.
      * @returns {number} Returns the index of the matched value, else `-1`.
@@ -23102,7 +21848,7 @@ function serializer(replacer, cycleReplacer) {
      * @memberOf _
      * @since 4.0.0
      * @category Array
-     * @param {Array} array The array to search.
+     * @param {Array} array The array to inspect.
      * @param {*} value The value to search for.
      * @returns {number} Returns the index of the matched value, else `-1`.
      * @example
@@ -23181,7 +21927,7 @@ function serializer(replacer, cycleReplacer) {
      * @memberOf _
      * @since 4.0.0
      * @category Array
-     * @param {Array} array The array to search.
+     * @param {Array} array The array to inspect.
      * @param {*} value The value to search for.
      * @returns {number} Returns the index of the matched value, else `-1`.
      * @example
@@ -24310,7 +23056,7 @@ function serializer(replacer, cycleReplacer) {
      * @memberOf _
      * @since 0.1.0
      * @category Collection
-     * @param {Array|Object} collection The collection to search.
+     * @param {Array|Object} collection The collection to inspect.
      * @param {Function} [predicate=_.identity]
      *  The function invoked per iteration.
      * @param {number} [fromIndex=0] The index to search from.
@@ -24348,7 +23094,7 @@ function serializer(replacer, cycleReplacer) {
      * @memberOf _
      * @since 2.0.0
      * @category Collection
-     * @param {Array|Object} collection The collection to search.
+     * @param {Array|Object} collection The collection to inspect.
      * @param {Function} [predicate=_.identity]
      *  The function invoked per iteration.
      * @param {number} [fromIndex=collection.length-1] The index to search from.
@@ -24543,7 +23289,7 @@ function serializer(replacer, cycleReplacer) {
      * @memberOf _
      * @since 0.1.0
      * @category Collection
-     * @param {Array|Object|string} collection The collection to search.
+     * @param {Array|Object|string} collection The collection to inspect.
      * @param {*} value The value to search for.
      * @param {number} [fromIndex=0] The index to search from.
      * @param- {Object} [guard] Enables use as an iteratee for methods like `_.reduce`.
@@ -24976,7 +23722,7 @@ function serializer(replacer, cycleReplacer) {
      * @memberOf _
      * @since 0.1.0
      * @category Collection
-     * @param {Array|Object} collection The collection to inspect.
+     * @param {Array|Object|string} collection The collection to inspect.
      * @returns {number} Returns the collection size.
      * @example
      *
@@ -24994,14 +23740,11 @@ function serializer(replacer, cycleReplacer) {
         return 0;
       }
       if (isArrayLike(collection)) {
-        var result = collection.length;
-        return (result && isString(collection)) ? stringSize(collection) : result;
+        return isString(collection) ? stringSize(collection) : collection.length;
       }
-      if (isObjectLike(collection)) {
-        var tag = getTag(collection);
-        if (tag == mapTag || tag == setTag) {
-          return collection.size;
-        }
+      var tag = getTag(collection);
+      if (tag == mapTag || tag == setTag) {
+        return collection.size;
       }
       return baseKeys(collection).length;
     }
@@ -26410,7 +25153,7 @@ function serializer(replacer, cycleReplacer) {
      * // => false
      */
     function isArguments(value) {
-      // Safari 8.1 incorrectly makes `arguments.callee` enumerable in strict mode.
+      // Safari 8.1 makes `arguments.callee` enumerable in strict mode.
       return isArrayLikeObject(value) && hasOwnProperty.call(value, 'callee') &&
         (!propertyIsEnumerable.call(value, 'callee') || objectToString.call(value) == argsTag);
     }
@@ -26633,24 +25376,23 @@ function serializer(replacer, cycleReplacer) {
      */
     function isEmpty(value) {
       if (isArrayLike(value) &&
-          (isArray(value) || isString(value) || isFunction(value.splice) ||
-            isArguments(value) || isBuffer(value))) {
+          (isArray(value) || typeof value == 'string' ||
+            typeof value.splice == 'function' || isBuffer(value) || isArguments(value))) {
         return !value.length;
       }
-      if (isObjectLike(value)) {
-        var tag = getTag(value);
-        if (tag == mapTag || tag == setTag) {
-          return !value.size;
-        }
+      var tag = getTag(value);
+      if (tag == mapTag || tag == setTag) {
+        return !value.size;
       }
-      var isProto = isPrototype(value);
+      if (nonEnumShadows || isPrototype(value)) {
+        return !nativeKeys(value).length;
+      }
       for (var key in value) {
-        if (hasOwnProperty.call(value, key) &&
-            !(isProto && key == 'constructor')) {
+        if (hasOwnProperty.call(value, key)) {
           return false;
         }
       }
-      return !(nonEnumShadows && nativeKeys(value).length);
+      return true;
     }
 
     /**
@@ -26798,8 +25540,7 @@ function serializer(replacer, cycleReplacer) {
      */
     function isFunction(value) {
       // The use of `Object#toString` avoids issues with the `typeof` operator
-      // in Safari 8 which returns 'object' for typed array and weak map constructors,
-      // and PhantomJS 1.9 which returns 'function' for `NodeList` instances.
+      // in Safari 8-9 which returns 'object' for typed array and other constructors.
       var tag = isObject(value) ? objectToString.call(value) : '';
       return tag == funcTag || tag == genTag;
     }
@@ -27613,7 +26354,7 @@ function serializer(replacer, cycleReplacer) {
         return NAN;
       }
       if (isObject(value)) {
-        var other = isFunction(value.valueOf) ? value.valueOf() : value;
+        var other = typeof value.valueOf == 'function' ? value.valueOf() : value;
         value = isObject(other) ? (other + '') : other;
       }
       if (typeof value != 'string') {
@@ -27971,7 +26712,7 @@ function serializer(replacer, cycleReplacer) {
      * @memberOf _
      * @since 1.1.0
      * @category Object
-     * @param {Object} object The object to search.
+     * @param {Object} object The object to inspect.
      * @param {Function} [predicate=_.identity] The function invoked per iteration.
      * @returns {string|undefined} Returns the key of the matched element,
      *  else `undefined`.
@@ -28010,7 +26751,7 @@ function serializer(replacer, cycleReplacer) {
      * @memberOf _
      * @since 2.0.0
      * @category Object
-     * @param {Object} object The object to search.
+     * @param {Object} object The object to inspect.
      * @param {Function} [predicate=_.identity] The function invoked per iteration.
      * @returns {string|undefined} Returns the key of the matched element,
      *  else `undefined`.
@@ -29252,8 +27993,9 @@ function serializer(replacer, cycleReplacer) {
 
     /**
      * Deburrs `string` by converting
-     * [latin-1 supplementary letters](https://en.wikipedia.org/wiki/Latin-1_Supplement_(Unicode_block)#Character_table)
-     * to basic latin letters and removing
+     * [Latin-1 Supplement](https://en.wikipedia.org/wiki/Latin-1_Supplement_(Unicode_block)#Character_table)
+     * and [Latin Extended-A](https://en.wikipedia.org/wiki/Latin_Extended-A)
+     * letters to basic Latin letters and removing
      * [combining diacritical marks](https://en.wikipedia.org/wiki/Combining_Diacritical_Marks).
      *
      * @static
@@ -29269,7 +28011,7 @@ function serializer(replacer, cycleReplacer) {
      */
     function deburr(string) {
       string = toString(string);
-      return string && string.replace(reLatin1, deburrLetter).replace(reComboMark, '');
+      return string && string.replace(reLatin, deburrLetter).replace(reComboMark, '');
     }
 
     /**
@@ -29279,7 +28021,7 @@ function serializer(replacer, cycleReplacer) {
      * @memberOf _
      * @since 3.0.0
      * @category String
-     * @param {string} [string=''] The string to search.
+     * @param {string} [string=''] The string to inspect.
      * @param {string} [target] The string to search for.
      * @param {number} [position=string.length] The position to search up to.
      * @returns {boolean} Returns `true` if `string` ends with `target`,
@@ -29635,7 +28377,7 @@ function serializer(replacer, cycleReplacer) {
       var args = arguments,
           string = toString(args[0]);
 
-      return args.length < 3 ? string : nativeReplace.call(string, args[1], args[2]);
+      return args.length < 3 ? string : string.replace(args[1], args[2]);
     }
 
     /**
@@ -29696,11 +28438,11 @@ function serializer(replacer, cycleReplacer) {
             (separator != null && !isRegExp(separator))
           )) {
         separator = baseToString(separator);
-        if (separator == '' && reHasComplexSymbol.test(string)) {
+        if (!separator && hasUnicode(string)) {
           return castSlice(stringToArray(string), 0, limit);
         }
       }
-      return nativeSplit.call(string, separator, limit);
+      return string.split(separator, limit);
     }
 
     /**
@@ -29735,7 +28477,7 @@ function serializer(replacer, cycleReplacer) {
      * @memberOf _
      * @since 3.0.0
      * @category String
-     * @param {string} [string=''] The string to search.
+     * @param {string} [string=''] The string to inspect.
      * @param {string} [target] The string to search for.
      * @param {number} [position=0] The position to search from.
      * @returns {boolean} Returns `true` if `string` starts with `target`,
@@ -30172,7 +28914,7 @@ function serializer(replacer, cycleReplacer) {
       string = toString(string);
 
       var strLength = string.length;
-      if (reHasComplexSymbol.test(string)) {
+      if (hasUnicode(string)) {
         var strSymbols = stringToArray(string);
         strLength = strSymbols.length;
       }
@@ -30309,7 +29051,7 @@ function serializer(replacer, cycleReplacer) {
       pattern = guard ? undefined : pattern;
 
       if (pattern === undefined) {
-        pattern = reHasComplexWord.test(string) ? reComplexWord : reBasicWord;
+        return hasUnicodeWord(string) ? unicodeWords(string) : asciiWords(string);
       }
       return string.match(pattern) || [];
     }
@@ -32454,9 +31196,19 @@ module.exports = function(config, deps) {
 
   function post(level, msg, details, options) {
     options = options || {}
-    if (!log[level]) throw new Error("invalid log level:"+level);
+    if (!_.isObject(options)) {
+      details.options = options
+      options = {}
+    }
+
+    if (!log[level]) {
+      log.trace({msg:'Invalid log level',arg: level})
+      level = 'info'
+    }
+
     var logObject = {
         _id: parseInt(_.uniqueId()),
+        _tags: options.tags
       },
       streamProcessingResolver = defer()
 
@@ -32478,13 +31230,10 @@ module.exports = function(config, deps) {
       logObject.details = {details: details}
     }
 
-    if (options && !_.isObject(options)) {
-      console.log('DETECTED INVALID OPTIONS:', arguments)
-      throw new Error("Options must be an object")
-    }
+    if (logObject.details) delete logObject.details.err
 
-    if (options && _.isObject(options)) {
-      logObject = _.merge(logObject,options)
+    if (_.isObject(options.custom)) {
+      logObject = _.merge(logObject,options.custom)
       delete logObject.callDepth
     }
 
@@ -32515,6 +31264,7 @@ module.exports = function(config, deps) {
         log[level](logObject, msg)
       }
       catch (ex) {
+        debug('Logging exception occurred. Attempting to stringify safely...')
         if (ex instanceof TypeError) {
           var stringify = require('json-stringify-safe')
           log[level](JSON.parse(stringify(logObject)), msg)
@@ -32568,29 +31318,9 @@ module.exports = function(config, deps) {
     throw new Error('log.query() not available.  Load a plugin that supports it.')
   }
 
-  m.errorReport = function(msg, details, err, __callDepth) {
-    details = details || {}
-
-    err = err || details.err
-    if (!err) {
-      err = new Error(msg)
-    }
-
-    if (details && details.err) delete details.err
-
-    var report = new ErrorReport(err, msg, details)
-    // this logs the error immediately and will likely cause multiple
-    // of the same error to apear in the logs since it is usually thrown.
-    // But that is OKAY b.c. errors need extra attention anyways.
-    m.error(msg, report, {callDepth:__callDepth || 2})
-    return report
-  };
-
   function createGoal(goalName, params, opts) {
-    m.log('Starting '+goalName, {params: params, options: opts}, {callDepth: 2})
-
-    var newGoalInstance = new Goal(goalName, params)
-
+    var newGoalInstance = new Goal(goalName, params, opts)
+    m.log('Starting '+goalName, {params: params}, {callDepth: 2, custom: {goalId: newGoalInstance.goalId}})
     var newGoal = m.context({
       goalInstance: newGoalInstance,
       name: goalName
@@ -32599,11 +31329,34 @@ module.exports = function(config, deps) {
     return newGoal
   }
 
+  m.errorReport = function(errorCode, details, err, __callDepth) {
+    details = details || {}
+    if (!_.isObject(details)) details = { details: details }
+
+    if (!details.err) {
+      if (err) details.err = err
+      else details.err = err = new Error(errorCode)
+    }
+    err = details.err
+
+    var goalReport = details.goalReport
+    delete details.goalReport
+    // this logs the error immediately and will likely cause multiple
+    // of the same error to apear in the logs since it is usually thrown.
+    // But that is OKAY b.c. errors need extra attention anyways.
+    m.error(errorCode, details, {callDepth:__callDepth || 2, custom: {goalReport: goalReport}})
+
+    err.errorCode = errorCode
+    err.what = errorCode
+
+    return err
+  }
+
   m.failSuppressed = function (error, __callDepth) {
     var result = {err: error}
 
     if (_context && _context.goalInstance) {
-      result.goalReport = _context.goalInstance.report("failed")
+      result.goalReport = _context.goalInstance.report("FAILED")
     }
 
     if (error instanceof ErrorReport) {
@@ -32615,7 +31368,8 @@ module.exports = function(config, deps) {
       result.message = error.message
     }
 
-    return m.errorReport(result.goalReport ? 'FAILED_'+result.goalReport.codeName : result.message, result, result.err, __callDepth)
+    return m.errorReport(result.goalReport ? 'FAILED_'+result.goalReport.codeName : result.message,
+      result, result.err, __callDepth)
   }
 
   m.fail = function(err) {
@@ -32636,9 +31390,12 @@ module.exports = function(config, deps) {
 
   m.pass = m.result = function(result) {
     if (_context && _context.goalInstance) {
-      m.log('Finished '+_context.goalInstance.name, {
-        goalReport: _context.goalInstance.report('succeeded', result)
-      }, {callDepth:2})
+      var goalReport = _context.goalInstance.report('SUCCEEDED', result)
+      m.log('GOAL_COMPLETED', {
+        goalId: goalReport.goalId,
+        name: goalReport.goalName,
+        codeName: goalReport.codeName
+      }, {callDepth:2, tags: 'GOAL', custom: {goalReport: goalReport, goalDuration: goalReport.duration}})
     } else {
       m.log('Result: ', _context, {callDepth:2})
     }
@@ -32788,7 +31545,7 @@ function Goal(name, goalDetails) {
  };
 
 Goal.prototype.report = function (status, result) {
-  var result = {
+  var report = {
     goalId: this.goalId,
     goalName: this.name,
     codeName: this.name.replace('()','').toUnderscore().toUpperCase(),
@@ -32797,12 +31554,12 @@ Goal.prototype.report = function (status, result) {
     result: result,
     status: status
   }
-  return result;
+  return report
 }
 
 // the fed is in a position where all of it's visible actions look good.  And all of it's bad actions are invisible.
 
-},{"bluebird":46,"debug":49,"json-stringify-safe":52,"lodash":53}],57:[function(require,module,exports){
+},{"bluebird":33,"debug":47,"json-stringify-safe":52,"lodash":53}],57:[function(require,module,exports){
 /**
 * @Author: Robustly.io <Auto>
 * @Date:   2016-03-17T00:23:08-04:00
@@ -32828,7 +31585,7 @@ Goal.prototype.report = function (status, result) {
    p = require('bluebird'),
    Promise = p,
    debug = require('debug')('robust-logs')
-   
+
 var FixedQueue = require('fixedqueue').FixedQueue
 
 module.exports = function(config, axios) {
@@ -32866,11 +31623,13 @@ module.exports = function(config, axios) {
 
   m.process = function(logEvent) {
     debug('Process:', logEvent)
-    logEvent.timestamp = logEvent.time
-    delete logEvent.time
+
+    if (_.isString(logEvent._tags) && _.includes(logEvent._tags.split(','), 'GOAL')) {
+      sendToLoggly(logEvent)
+    }
 
     // errors are sent with up to 5mb of previous events.
-    if(logEvent.level >= 50) {
+    else if(logEvent.level >= 50) {
       var errorLog = flushLogBuffer()
       // debug('ERROR LOG:', errorLog)
       errorLog.push(logEvent)
@@ -32888,12 +31647,16 @@ module.exports = function(config, axios) {
   }
 
   function sendToLoggly(logEvent) {
+    if (logEvent._tags) axiosConfig.headers['X-LOGGLY-TAG'] += ','+logEvent._tags
     var http = axios.create(axiosConfig)
 
-    debug('SENDING', logEvent)
+    if (logEvent.err) logEvent.err = JSON.stringify(logEvent.err, Object.getOwnPropertyNames(logEvent.err))
+
+    debug('Sending logEvent...', logEvent)
+
     return http.post('/', logEvent)
       .then(function(res) {
-        debug('BOOYEAH', res)
+        debug('Loggly responds...', res)
       })
       .catch(function(err) {
         debug('Failed to send logs:', err)
@@ -32945,7 +31708,7 @@ module.exports = function(config, axios) {
 
 function LogglyPlugin() {  }
 
-},{"bluebird":46,"debug":49,"fixedqueue":51,"lodash":53}],58:[function(require,module,exports){
+},{"bluebird":33,"debug":47,"fixedqueue":51,"lodash":53}],58:[function(require,module,exports){
 /**
  * @module final-stream
  * @summary: This stream runs after all other streams to resolve promises etc...
@@ -33004,7 +31767,7 @@ module.exports = function construct(config, streamPromises) {
   return new FinalStream();
 };
 
-},{"bluebird":46,"fs":1,"path":15,"stream":32,"util":43}],59:[function(require,module,exports){
+},{"bluebird":33,"fs":1,"path":14,"stream":27,"util":31}],59:[function(require,module,exports){
 (function (Buffer){
 /**
  * @module myModule
@@ -33046,7 +31809,7 @@ module.exports = function construct(config, plugins) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"bluebird":46,"buffer":6,"lodash":53,"stream":32,"util":43}],60:[function(require,module,exports){
+},{"bluebird":33,"buffer":6,"lodash":53,"stream":27,"util":31}],60:[function(require,module,exports){
 (function (Buffer){
 /**
  * @module rotating-file-max
@@ -33161,8 +31924,7 @@ module.exports = function construct(config, streamPromises) {
 };
 
 }).call(this,require("buffer").Buffer)
-},{"bluebird":46,"buffer":6,"fs":1,"lodash":53,"path":15,"stream":32,"util":43}],61:[function(require,module,exports){
-(function (process){
+},{"bluebird":33,"buffer":6,"fs":1,"lodash":53,"path":14,"stream":27,"util":31}],61:[function(require,module,exports){
 /**
 * @Author: Robustly.io <Auto>
 * @Date:   2016-03-24T04:30:48-04:00
@@ -33205,6 +31967,7 @@ module.exports = function(config, axios) {
 
   var logStreamCompletionPromises = {}
   var _plugins = {}
+
   /**
    * Initializes the logger based on the configuration
    * provided.
@@ -33232,23 +31995,31 @@ module.exports = function(config, axios) {
 
     // prettystream internally has issues running on the browser.
     if (!config.silent && isNotBrowser) {
-      var PrettyStream = require('bunyan-prettystream')
-      var prettyStdOut = new PrettyStream({mode:config.logMode || 'short'})
-      prettyStdOut.pipe(config.logStream == 'stdout' ? process.stdout : config.logStream)
+      debug('Enabling prettystream logging...')
+      var bunyanDebugStream = require('bunyan-debug-stream')
+      var bdStream = bunyanDebugStream({
+        forceColor: true
+      })
+      // logStream is needed for integration testing the output of the logger.
+      // if (config.logStream)
+      //   bdStream.pipe(config.logStream)
+
       if (config.debug) {
         bunyanConf.streams.push(
           {
             level: 'debug',
             type: 'raw',
-            stream: prettyStdOut
-          });
+            stream: bdStream
+          })
         console.warn('Debug Logging Is Enabled.  This is OK if it is not production.');
       } else {
         bunyanConf.streams.push({
           level: 'info',
-          stream: prettyStdOut           // log INFO and above to stdout
-        });
+          type: 'raw',
+          stream: bdStream
+        })
       }
+      bunyanConf.serializers = bunyanDebugStream.serializers
     } else {
       console.log('Robust-logs: detected browser runtime.')
       // function MyRawStream() {}
@@ -33314,6 +32085,5 @@ module.exports = function(config, axios) {
 
 function WinWithLogs() {}
 
-}).call(this,require('_process'))
-},{"./logger":56,"./plugins/loggly-plugin":57,"./streams/final-stream":58,"./streams/plugin-stream":59,"./streams/rotating-file-max":60,"_process":17,"bluebird":46,"bunyan":48,"bunyan-prettystream":47,"debug":49,"lodash":53}]},{},[45])(45)
+},{"./logger":56,"./plugins/loggly-plugin":57,"./streams/final-stream":58,"./streams/plugin-stream":59,"./streams/rotating-file-max":60,"bluebird":33,"bunyan":36,"bunyan-debug-stream":34,"debug":47,"lodash":53}]},{},[32])(32)
 });
