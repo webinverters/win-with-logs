@@ -232,7 +232,7 @@ module.exports = function(config, deps) {
     var result = {err: error}
 
     if (_context && _context.goalInstance) {
-      result.goalReport = _context.goalInstance.report("FAILED")
+      var goalReport = result.goalReport = _context.goalInstance.report("FAILED")
       m.error('GOAL_FAILED', {
         goalId: goalReport.goalId,
         name: goalReport.goalName,
@@ -291,7 +291,7 @@ module.exports = function(config, deps) {
     var event = {
       eventName: eventLabel,
       handled: false
-    };
+    }
 
     if (_context.observers[eventLabel]) {
       return p.map(_context.observers[eventLabel], function(cb) {
@@ -304,6 +304,7 @@ module.exports = function(config, deps) {
         if (!event.handled) return cb(event, details);
       }, {concurrency: 1})
     }
+
     return p.resolve()
   }
 
@@ -315,6 +316,14 @@ module.exports = function(config, deps) {
   }
 
   m.on = m.addEventHandler
+  m.removeEventHandler = function(eventLabel, handler) {
+    if (_observers[eventLabel]) {
+      _.pull(_observers[eventLabel], handler)
+    }
+    if (_context.observers[eventLabel]) {
+      _.pull(_context.observers[eventLabel], handler)
+    }
+  }
 
   m.timestamp = function (kind) {
     if (config.timestampFunc) return config.timestampFunc()
