@@ -31452,7 +31452,7 @@ module.exports = function(config, deps) {
 
   m.on = m.addEventHandler
   m.removeEventHandler = function(eventLabel, handler) {
-    console.log(_observers[eventLabel].length, _context.observers[eventLabel].length)
+    //console.log(_observers[eventLabel].length, _context.observers[eventLabel].length)
 
     if (_observers[eventLabel]) {
       _.pull(_observers[eventLabel], handler)
@@ -31461,7 +31461,7 @@ module.exports = function(config, deps) {
       _.pull(_context.observers[eventLabel], handler)
     }
 
-    console.log('Removed event handlers', _observers[eventLabel].length, _context.observers[eventLabel].length)
+    //console.log('Removed event handlers', _observers[eventLabel].length, _context.observers[eventLabel].length)
   }
 
   m.timestamp = function (kind) {
