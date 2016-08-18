@@ -105,7 +105,7 @@ module.exports = function(config, deps) {
       delete logObject.callDepth
     }
 
-    if (config.debug || level == 'error') {
+    if (config.debug && (level == 'error' || level == 'fatal')) {
       logObject.src = getCaller3Info(options.callDepth)
     }
 
@@ -232,7 +232,7 @@ module.exports = function(config, deps) {
     var result = {err: error}
 
     if (_context && _context.goalInstance) {
-      var goalReport = result.goalReport = _context.goalInstance.report("FAILED")
+      result.goalReport = _context.goalInstance.report("FAILED")
       m.error('GOAL_FAILED', {
         goalId: goalReport.goalId,
         name: goalReport.goalName,
@@ -267,11 +267,11 @@ module.exports = function(config, deps) {
   m.pass = m.result = function(result) {
     if (_context && _context.goalInstance) {
       var goalReport = _context.goalInstance.report('SUCCEEDED', result)
-      m.log('GOAL_SUCCEEDED', {
+      m.log('GOAL_SUCCEEED', {
         goalId: goalReport.goalId,
         name: goalReport.goalName,
         codeName: goalReport.codeName
-      }, {callDepth:2, tags: 'GOAL-COMPLETE', custom: {goalReport: goalReport, goalDuration: goalReport.duration}})
+      }, {tags: 'GOAL-COMPLETE', custom: {goalReport: goalReport, goalDuration: goalReport.duration}})
     } else {
       m.log('Result: ', _context, {callDepth:2})
     }
