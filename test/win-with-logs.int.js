@@ -25,7 +25,7 @@ describe('win-with-logs', function() {
     captured = ""
   })
 
-  describe('@Console Logging', function() {
+  describe('Console Logging', function() {
     describe('debug level', function() {
       it('outputs correctly', function() {
         log.debug('something happened')
@@ -494,6 +494,28 @@ describe('win-with-logs', function() {
               })
           })
         })
+      })
+    })
+
+    describe('@log.removeEventHandler()', function() {
+      var handler
+      beforeEach(function() {
+        handler = sinon.spy()
+        log.addEventHandler("Le Event", handler);
+      })
+      it('unregisters the handler.', function() {
+        log('Le Event')
+          .then(function() {
+            expect(handler).to.have.been.called
+          })
+          .then(function() {
+            log.removeEventHandler('Le Event', handler)
+            handler.reset()
+            return log('Le Event')
+          })
+          .then(function() {
+            expect(handler).to.not.have.been.called
+          })
       })
     })
   })

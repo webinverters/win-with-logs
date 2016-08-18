@@ -309,20 +309,25 @@ module.exports = function(config, deps) {
   }
 
   m.addEventHandler = function(eventLabel, handler) {
-    _context.observers[eventLabel] = _context.observers[eventLabel] || [];
-    _context.observers[eventLabel].push(handler);
+    _context.observers[eventLabel] = _context.observers[eventLabel] || []
+    _context.observers[eventLabel].push(handler)
+
     _observers[eventLabel] = _observers[eventLabel] || []
     _observers[eventLabel].push(handler)
   }
 
   m.on = m.addEventHandler
   m.removeEventHandler = function(eventLabel, handler) {
+    console.log(_observers[eventLabel].length, _context.observers[eventLabel].length)
+
     if (_observers[eventLabel]) {
       _.pull(_observers[eventLabel], handler)
     }
     if (_context.observers[eventLabel]) {
       _.pull(_context.observers[eventLabel], handler)
     }
+
+    console.log('Removed event handlers', _observers[eventLabel].length, _context.observers[eventLabel].length)
   }
 
   m.timestamp = function (kind) {
