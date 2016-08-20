@@ -6,7 +6,7 @@ var log = require('../index')({
   env: 'example',
   app: 'example',
   component: 'example',
-  debug: true
+  debug: false
 });
 
 log('Log object can be a function')

@@ -1,15 +1,4 @@
 /**
-* @Author: Robustly.io <Auto>
-* @Date:   2016-03-24T04:30:48-04:00
-* @Email:  m0ser@robustly.io
-* @Last modified by:   Auto
-* @Last modified time: 2016-03-24T04:30:51-04:00
-* @License: Apache-2.0
-*/
-
-
-
-/**
  * @module win-with-logs
  * @summary: Provides logging client support, with a twist.
  *
@@ -29,22 +18,22 @@
    FinalStream = require('./streams/final-stream'),
 	 PluginStream = require('./streams/plugin-stream')
 
+ // TODO: come up with something better than this...
 var logStreams = {
   "rotating-file-max": RotatingFileMaxStream
 }
 
+function WinWithLogs() {}
 module.exports = function(config, axios, ringBuffer) {
   config.isNotBrowser = config.isNotBrowser || (typeof module !== 'undefined' && this.module !== module && typeof window === 'undefined')
-  var m = new WinWithLogs()
-
-  var logStreamCompletionPromises = {}
-  var _plugins = {}
+  var m = new WinWithLogs(), logStreamCompletionPromises = {},
+  	_plugins = {}
 
   /**
    * Initializes the logger based on the configuration
    * provided.
-   * @param  {[type]} config [description]
-   * @return {[type]}        [description]
+   * @param  {object} config 
+   * @return {BunyanLogInstance}
    */
   m.setup = function(config) {
     var bunyanConf = {
@@ -80,7 +69,16 @@ module.exports = function(config, axios, ringBuffer) {
             stream: bdStream
           })
         console.warn('Logger: Debug logging enabled.')
-      }
+      } else {
+				bunyanConf.streams.push({
+					level: 'info',
+					stream: process.stdout
+				})
+			}
+			bunyanConf.streams.push({
+				level: 'error',
+				stream: process.stderr
+			})
     } else {
       console.log('Logger: detected browser runtime.')
     }
@@ -98,6 +96,7 @@ module.exports = function(config, axios, ringBuffer) {
         stream: PluginStream(config, _plugins)
       })
     }
+		
 
 		// NOTE: the FinalStream must be pushed last.  
 		// It is responsible for resolving promises after all other streams have run.
@@ -132,5 +131,3 @@ module.exports = function(config, axios, ringBuffer) {
 
   return logger
 }
-
-function WinWithLogs() {}

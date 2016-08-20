@@ -24,8 +24,6 @@
    Promise = p,
    debug = require('debug')('robust-logs')
 
-var FixedQueue = require('fixedqueue').FixedQueue
-
 module.exports = function(config, axios) {
   var m = new LogglyPlugin()
 
@@ -50,42 +48,11 @@ module.exports = function(config, axios) {
     }
   }
   var http = axios.create(axiosConfig)
-  var queue = FixedQueue(config.plugins.loggly.bufferSize || 50)
-
-  function flushLogBuffer() {
-    // debug('QUEUE', queue)
-    var events = []
-    while(queue.length) {
-      events.push(queue.shift())
-    }
-    return events
-  }
 
   m.process = function(logEvent) {
     debug('Process:', logEvent)
 
-    if (_.isString(logEvent._tags) &&
-      _.size(_.intersection(logEvent._tags.split(','), config.plugins.loggly.important.split(',')))) {
-      return sendToLoggly(logEvent)
-    }
-
-    // errors are sent with up to 5mb of previous events.
-    else if(logEvent.level >= 50) {
-      var errorLog = flushLogBuffer()
-      // debug('ERROR LOG:', errorLog)
-      errorLog.push(logEvent)
-      return p.map(errorLog, function(logEvent) {
-        return sendToLoggly(logEvent)
-      }, {concurrency: 6})
-    }
-    // warnings are sent as individual events.
-    else if (logEvent.level == 40) {
-      return sendToLoggly(logEvent)
-    }
-    else {
-      queue.enqueue(logEvent)
-    }
-    return p.resolve()
+    return sendToLoggly(logEvent)
   }
 
   function sendToLoggly(logEvent) {
