@@ -22,20 +22,19 @@
  var _ = require('lodash'),
    p = require('bluebird'),
    Promise = p,
-   debug = require('debug')('robust-logs')
-
-var bunyan = require('bunyan')
-var Logger = require('./logger')
-var RotatingFileMaxStream = require('./streams/rotating-file-max')
-var FinalStream = require('./streams/final-stream')
-var PluginStream = require('./streams/plugin-stream')
+   debug = require('debug')('robust-logs'),
+	 bunyan = require('bunyan'),
+ 	 Logger = require('./logger'),
+   RotatingFileMaxStream = require('./streams/rotating-file-max'),
+   FinalStream = require('./streams/final-stream'),
+	 PluginStream = require('./streams/plugin-stream')
 
 var logStreams = {
   "rotating-file-max": RotatingFileMaxStream
 }
 
-module.exports = function(config, axios) {
-  var isNotBrowser = config.isNotBrowser || (typeof module !== 'undefined' && this.module !== module && typeof window === 'undefined')
+module.exports = function(config, axios, ringBuffer) {
+  config.isNotBrowser = config.isNotBrowser || (typeof module !== 'undefined' && this.module !== module && typeof window === 'undefined')
   var m = new WinWithLogs()
 
   var logStreamCompletionPromises = {}
@@ -53,6 +52,7 @@ module.exports = function(config, axios) {
       name: config.component,
       streams: config.streams || []
     }
+		delete config.streams
 
     _.each(config.logStreams, function(stream) {
       if (!logStreams[stream.type]) {
@@ -66,65 +66,41 @@ module.exports = function(config, axios) {
       })
     })
 
-    // prettystream internally has issues running on the browser.
-    if (!config.silent && isNotBrowser) {
-      debug('Enabling prettystream logging...')
+    if (config.isNotBrowser) {
       var bunyanDebugStream = require('bunyan-debug-stream')
       var bdStream = bunyanDebugStream({
         forceColor: true
       })
-      // logStream is needed for integration testing the output of the logger.
-      // if (config.logStream)
-      //   bdStream.pipe(config.logStream)
-
       if (config.debug) {
+				bunyanConf.serializers = bunyanDebugStream.serializers
         bunyanConf.streams.push(
           {
-            level: 'debug',
+            level: config.trace ? 'trace' : 'debug',
             type: 'raw',
             stream: bdStream
           })
-        console.warn('Debug Logging Is Enabled.  This is OK if it is not production.');
-      } else {
-        bunyanConf.streams.push({
-          level: 'info',
-          type: 'raw',
-          stream: bdStream
-        })
+        console.warn('Logger: Debug logging enabled.')
       }
-      bunyanConf.serializers = bunyanDebugStream.serializers
     } else {
-      console.log('Robust-logs: detected browser runtime.')
-      // function MyRawStream() {}
-      // MyRawStream.prototype.write = function (rec) {
-      //     console.log('[%s] %s: %s',
-      //         bunyan.nameFromLevel[rec.level],
-      //         rec.msg, rec.details);
-      // }
-      //
-      // bunyanConf.streams.push(
-      //   {
-      //       name: 'browser-stream',
-      //       level: 'info',
-      //       stream: new MyRawStream(),
-      //       type: 'raw'
-      //   })
+      console.log('Logger: detected browser runtime.')
     }
 
     if (config.plugins) {
       if (config.plugins.loggly) {
-        console.log('Adding the loggly plugin.')
+        console.log('Logger: adding the loggly plugin.')
         _plugins['loggly'] = require('./plugins/loggly-plugin')(config, axios)
       }
 
       bunyanConf.streams.push({
         name: 'plugin',
-        level: 'info',
+        level: 'trace',
         type: 'raw',
         stream: PluginStream(config, _plugins)
       })
     }
 
+		// NOTE: the FinalStream must be pushed last.  
+		// It is responsible for resolving promises after all other streams have run.
     bunyanConf.streams.push({
       name: 'final',
       level: 'debug',
@@ -134,7 +110,7 @@ module.exports = function(config, axios) {
 
     var log = bunyan.createLogger(bunyanConf)
     log.on('error', function (err, stream) {
-      console.error('Log Stream Error:', err, stream);
+      console.error('Logger: Unhandled LogStream Error.', err, stream);
     })
 
     return log.child({
@@ -147,10 +123,11 @@ module.exports = function(config, axios) {
   var log = m.setup(config)
 
   var logger = Logger(
-    {debug: config.debug, isNotBrowser: isNotBrowser}, {
+    config, {
     log: log,
     logStreamCompletionPromises: logStreamCompletionPromises,
-    plugins: _plugins
+    plugins: _plugins,
+		ringBuff: ringBuffer
   })
 
   return logger

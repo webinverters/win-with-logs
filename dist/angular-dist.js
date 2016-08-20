@@ -31133,33 +31133,15 @@ module.exports.ensureProperties = ensureProperties;
 
 },{}],56:[function(require,module,exports){
 /**
-* @Author: Robustly.io <Auto>
-* @Date:   2016-03-24T04:39:49-04:00
-* @Email:  m0ser@robustly.io
-* @Last modified by:   Auto
-* @Last modified time: 2016-05-06T10:41:37-04:00
-* @License: Apache-2.0
-*/
-
-
-
-/**
  * @module logger
  * @summary: Provides a logger instance.
  *
  * @description:
  *
- * Author: Justin Mooser
+ * Author: m0ser
  * Created On: 2015-10-28.
  * @license Apache-2.0
  */
-
- try {
-     /* Use `+ ''` to hide this import from browserify. */
-     var sourceMapSupport = require('source-map-support' + '');
- } catch (_) {
-     sourceMapSupport = null;
- }
 
  var _ = require('lodash'),
    p = require('bluebird'),
@@ -31168,121 +31150,31 @@ module.exports.ensureProperties = ensureProperties;
 
 var _plugins, _observers = {}
 module.exports = function(config, deps) {
-  var m = post.bind(null,'info'), _context = deps.context || {},
-    log = deps.log
+  var m = post.bind(null,'info'), 
+		_context = deps.context || {},
+    log = deps.log,
+		_ringBuff = deps.ringBuff,
+		_plugins = deps.plugins || _plugins
 
+	// TODO: figure why this is here.
   _context = _.defaults(_context, {
     observers: {},
     chain: config.module || ''
   })
 
-  _plugins = deps.plugins || _plugins
-
-  // bluebird deprecated the defer() method, and I'm not sure how to
-  // refactor the code to use the new method so I"ll jsut add my own
-  // version of defer() for now.
-  function defer() {
-    var resolve, reject;
-    var promise = new Promise(function() {
-      resolve = arguments[0]
-      reject = arguments[1]
-    });
-    return {
-      resolve: resolve,
-      reject: reject,
-      promise: promise
-    }
-  }
-
-  function post(level, msg, details, options) {
-    options = options || {}
-    if (!_.isObject(options)) {
-      details.options = options
-      options = {}
-    }
-
-    if (!log[level]) {
-      log.trace({msg:'Invalid log level',arg: level})
-      level = 'info'
-    }
-
-    var goal = (_context && _context.goalInstance) || {}
-    var logObject = {
-        _id: parseInt(_.uniqueId()),
-        _tags: goal.tags ? options.tags + ',' + goal.tags : options.tags,
-        _goalId: goal.goalId
-      },
-      streamProcessingResolver = defer()
-
-    deps.logStreamCompletionPromises[logObject._id] = {
-      finalDef: streamProcessingResolver,
-      eventHandlingCompleted: m.processEventHandlers(msg, details, options),
-      promises: []
-    }
-
-    if (details instanceof Error && !(details instanceof ErrorReport)) {
-      logObject.err = details
-    } else if (_.isObject(details) && details.err) {
-      logObject.err = details.err
-      //details.err = undefined
-      logObject.details = details
-    } else if (_.isObject(details)) {
-      logObject.details = details
-    } else if (details) {
-      logObject.details = {details: details}
-    }
-
-    if (logObject.details) delete logObject.details.err
-
-    if (_.isObject(options.custom)) {
-      logObject = _.merge(logObject,options.custom)
-      delete logObject.callDepth
-    }
-
-    if (config.debug && (level == 'error' || level == 'fatal')) {
-      logObject.src = getCaller3Info(options.callDepth)
-    }
-
-    var sourceInfo
-    if (options.source) {
-      function getErrorObject(){
-        try { throw Error('') } catch(err) { return err; }
-      }
-      var err = getErrorObject();
-      var caller_line = err.stack.split("\n")[4];
-      var index = caller_line.indexOf("at ");
-      var clean = caller_line.slice(index+2, caller_line.length);
-      sourceInfo = clean
-    }
-    if (!config.isNotBrowser && console) {
-      if (!console[level]) console[level] = console.log
-      if (sourceInfo) console[level]('[%s] %s:', _context.chain, logObject.msg || msg, logObject.details, sourceInfo)
-      else console[level]('[%s] %s:', _context.chain, logObject.msg || msg, logObject.details)
-      return
-    }
-
-    if (_.size(logObject) > 0) {
-      try {
-        log[level](logObject, msg)
-      }
-      catch (ex) {
-        debug('Logging exception occurred. Attempting to stringify safely...')
-        if (ex instanceof TypeError) {
-          var stringify = require('json-stringify-safe')
-          log[level](JSON.parse(stringify(logObject)), msg)
-        }
-        else throw ex
-      }
-    }
-    else
-      log[level](msg)
-
-    return streamProcessingResolver.promise
-  }
-
   m.context = function(contextInfo) {
+		if (!config.silent) console.log('Logger: Creating context...', contextInfo)
+		if (contextInfo.opts) {
+			if (contextInfo.opts.isModule) {
+				// must clone the config to avoid isModule flag from permeating.  
+				// Not sure a better way to handle this.  isModule is set by libraries
+				// when they are created with a logger instance.
+				config = _.cloneDeep(config)
+				config.isModule = true
+			}
+		}
+		
     contextInfo.chain = _context.chain
-
     if (contextInfo.module) {
       contextInfo.chain = contextInfo.module.name
     } else {
@@ -31292,17 +31184,19 @@ module.exports = function(config, deps) {
     var newLogger = module.exports(config, {
          log: log.child({chain: contextInfo.chain}),
          logStreamCompletionPromises: deps.logStreamCompletionPromises,
-         context: _.extend(new Context(_context), contextInfo)
+         context: _.extend(new Context(_context), contextInfo),
+				 ringBuff: deps.ringBuff
        })
 
     newLogger.parent = m
     return newLogger
   }
 
-  m.module = function(moduleName, params) {
+  m.module = function(moduleName, args, opts) {
     return m.context({module: {
       name: moduleName,
-      params: params
+      args: args,
+			opts: opts
     }})
   }
 
@@ -31316,13 +31210,15 @@ module.exports = function(config, deps) {
   m.trace = post.bind(m,'trace')
   m.method = createGoal.bind(m)
   m.goal = createGoal.bind(m)
-  m.query = _plugins['loggly'] ? _plugins['loggly'].query : function() {
-    throw new Error('log.query() not available.  Load a plugin that supports it.')
-  }
+	// TODO: coming soon...  The ability to query the log.
+  m.query = function() { throw new Error('log.query() unsupported')}
+	//	m.query = _plugins['loggly'] ? _plugins['loggly'].query : function() {
+	//    throw new Error('log.query() not available.  Load a plugin that supports it.')
+	//  }
 
   function createGoal(goalName, params, opts) {
     var newGoalInstance = new Goal(goalName, params, opts)
-    m.log('Starting '+goalName, {params: params}, {callDepth: 2, custom: {goalId: newGoalInstance.goalId}})
+    m.log('Starting '+goalName, {params: params}, {custom: {goalId: newGoalInstance.goalId}})
     var newGoal = m.context({
       goalInstance: newGoalInstance,
       name: goalName
@@ -31331,38 +31227,27 @@ module.exports = function(config, deps) {
     return newGoal
   }
 
-  m.errorReport = function(errorCode, details, err, __callDepth) {
-    details = details || {}
-    if (!_.isObject(details)) details = { details: details }
+	m.report = function(err, details, opts) {
+		if (!(err instanceof Error)) throw new Error('Logger:InvalidParam err should be an instance of Error.')
+		
+		
+		if (details) {
+			if (details instanceof Error) {
+				err.prev = details
+				err.rootCause = details.rootCause || details.message
+			} else {
+				_.merge(err, details)
+			}
+		}
+		err.code = err.message
+		err.what = err.message
+		err.rootCause = err.rootCause || err.message
+		
+		m.error(err.message, err)
+		return err
+	}
 
-    if (!details.err) {
-      if (err) details.err = err
-      else details.err = err = new Error(errorCode)
-    }
-    err = details.err
-
-    var goalReport = details.goalReport
-    delete details.goalReport // avoid duplicating log report in output.
-    if (goalReport) {
-      m.error(errorCode, details, {
-        callDepth: __callDepth || 2,
-        custom: {goalReport: goalReport, goalDuration: goalReport.duration}
-      })
-    } else {
-      m.error(errorCode, details, {callDepth:__callDepth || 2})
-    }
-
-    // this logs the error immediately and will likely cause multiple
-    // of the same error to apear in the logs since it is usually thrown.
-    // But that is OKAY b.c. errors need extra attention anyways.
-
-    err.errorCode = errorCode
-    err.what = errorCode
-
-    return err
-  }
-
-  m.failSuppressed = function (error, __callDepth) {
+  m.failSuppressed = function (error) {
     var result = {err: error}
 
     if (_context && _context.goalInstance) {
@@ -31370,21 +31255,20 @@ module.exports = function(config, deps) {
       m.error('GOAL_FAILED', {
         goalId: goalReport.goalId,
         name: goalReport.goalName,
-        codeName: goalReport.codeName
-      }, {callDepth:2, tags: 'GOAL-COMPLETE', custom: {goalReport: goalReport, goalDuration: goalReport.duration}})
+        codeName: goalReport.codeName,
+				err: error
+      }, {tags: 'GOAL-COMPLETE', custom: {goalReport: goalReport, goalDuration: goalReport.duration}})
     }
 
-    if (error instanceof ErrorReport) {
-      result.message = error.message
-    } else if (_.isString(error)) {
+    if (_.isString(error)) {
       result.message = error
       result.err = new Error(error)
     } else if (error instanceof Error) {
       result.message = error.message
     }
 
-    return m.errorReport(result.goalReport ? 'FAILED_'+result.goalReport.codeName : result.message,
-      result, result.err, __callDepth)
+    return m.report(
+			new Error(result.goalReport ? 'FAILED_'+result.goalReport.codeName : result.message), result.err)
   }
 
   m.fail = function(err) {
@@ -31394,7 +31278,7 @@ module.exports = function(config, deps) {
   m.rejectWithCode = function(code) {
     return function(err) {
       var err = m.failSuppressed(err)
-      throw m.errorReport(code, _context, err)
+      throw m.report(new Error(code), err)
     }
   }
 
@@ -31404,11 +31288,12 @@ module.exports = function(config, deps) {
       m.log('GOAL_SUCCEEED', {
         goalId: goalReport.goalId,
         name: goalReport.goalName,
-        codeName: goalReport.codeName
-      }, {tags: 'GOAL-COMPLETE', custom: {goalReport: goalReport, goalDuration: goalReport.duration}})
+        goalName: goalReport.codeName
+      }, {tags: 'GOAL-COMPLETE', custom: {goalReport: goalReport, goalDuration: goalReport.duration}, priority: 10})
     } else {
-      m.log('Result: ', _context, {callDepth:2})
+      m.log('Result: ', _context)
     }
+
     return result
   }
 
@@ -31416,7 +31301,7 @@ module.exports = function(config, deps) {
    * Checks for any event handlers that match this event label and runs them
    * all.
    *
-   * @param  {type} eventLabel description
+   * @param  {string} eventLabel The label for the event.
    * @param  {type} details    description
    * @param  {type} options    description
    * @return {type}            description
@@ -31448,9 +31333,12 @@ module.exports = function(config, deps) {
 
     _observers[eventLabel] = _observers[eventLabel] || []
     _observers[eventLabel].push(handler)
+		
+		return function() {
+			m.removeEventHandler(eventLabel, handler)
+		}
   }
 
-  m.on = m.addEventHandler
   m.removeEventHandler = function(eventLabel, handler) {
     //console.log(_observers[eventLabel].length, _context.observers[eventLabel].length)
 
@@ -31461,94 +31349,144 @@ module.exports = function(config, deps) {
       _.pull(_context.observers[eventLabel], handler)
     }
 
-    //console.log('Removed event handlers', _observers[eventLabel].length, _context.observers[eventLabel].length)
+    //console.log('Removed event handlers', _observers[eventLabel].length, 		_context.observers[eventLabel].length)
   }
 
   m.timestamp = function (kind) {
-    if (config.timestampFunc) return config.timestampFunc()
-    if (!kind || kind == 'iso') return new Date().toISOString()
-    if (kind=='epoch') return Math.floor(Date.now()/1000)
-    if (kind=='epochmill') return Date.now()
+		if (!kind) return Date.now()
+    else if (kind=='epoch') return Date.now()/1000
+    else if (kind=='epochmill') return Date.now()
+		else if (kind=='iso') return new Date().toISOString()
+		throw new Error('log.timestamp(kind) says "kind" is invalid.')
   }
 
+	// create aliases
+  m.on = m.addEventHandler
+	m.errorReport = m.report
+	
+	function flushLogBuffer() {
+		var count = _ringBuff.length
+		if (count == 0) return
+    while(count--) {
+			var args = _ringBuff.shift()
+			args[3] = args[3] || {}
+			args[3].priority = 11
+			post.apply(m, args)
+    }
+  }
+
+  function post(level, msg, details, options) {
+    options = options || {}
+    if (!_.isObject(options)) {
+      details.options = options
+      options = {}
+    }
+
+    if (!log[level]) {
+      log.trace({msg:'Invalid log level',
+								 arg: level, 
+								 err: new Error('Invalid log level.')})
+      level = 'info'
+    }
+		
+		if (config.ringBuffer && (!options.priority || options.priority < 10)) {
+			if (level == 'warn') {} // continue logging as normal.
+			else if (level == 'error' || level == 'fatal') flushLogBuffer()
+			else {
+				// preserve the original time that the event was logged.
+				options.time = new Date()
+				
+				_ringBuff.enqueue([level,msg,details,options])
+				return p.resolve(false)
+			}
+		}
+		
+		// make library logs always trace.  priority < 11 allows ringbuffer output 
+		// to retain its original level output since the dump should contain 
+		// trace level details anyways.
+		if (config.isModule && (!options.priority || options.priority < 11)) {
+			if (level != 'error' && level != 'fatal') level = 'trace'
+		}
+	
+		
+    var goal = (_context && _context.goalInstance) || {}
+    var logObject = {
+        _id: parseInt(_.uniqueId()),
+        _tags: goal.tags ? options.tags + ',' + goal.tags : options.tags,
+        _goalId: goal.goalId
+      },
+      streamProcessingResolver = defer()
+
+    deps.logStreamCompletionPromises[logObject._id] = {
+      finalDef: streamProcessingResolver,
+      eventHandlingCompleted: m.processEventHandlers(msg, details, options),
+      promises: []
+    }
+
+    if (details instanceof Error) {
+      logObject.err = details
+    } else if (_.isObject(details) && details.err) {
+      logObject.err = details.err
+      //details.err = undefined
+      logObject.details = details
+    } else if (_.isObject(details)) {
+      logObject.details = details
+    } else if (details) {
+      logObject.details = {details: details}
+    }
+
+    if (logObject.details) delete logObject.details.err
+		if (options.timestamp) logObject.timestamp = options.timestamp
+		if (options.time) logObject.time = options.time
+    if (_.isObject(options.custom)) {
+      logObject = _.merge(logObject,options.custom)
+    }
+
+    var sourceInfo
+    if (options.source) {
+      function getErrorObject(){
+        try { throw Error('') } catch(err) { return err; }
+      }
+      var err = getErrorObject();
+      var caller_line = err.stack.split("\n")[4];
+      var index = caller_line.indexOf("at ");
+      var clean = caller_line.slice(index+2, caller_line.length);
+      sourceInfo = clean
+    }
+		
+    if (!config.isNotBrowser && console) {
+      if (!console[level]) console[level] = console.log
+      if (sourceInfo) console[level]('[%s] %s:', _context.chain, logObject.msg || msg, logObject.details, sourceInfo)
+      else console[level]('[%s] %s:', _context.chain, logObject.msg || msg, logObject.details)
+      return
+    }
+
+
+    if (_.size(logObject) > 0) {
+      try {
+        log[level](logObject, msg)
+      }
+      catch (ex) {
+				console.log(ex)
+        console.log('Logger: exception occurred.  Attempting again using safe stringify...')
+        if (ex instanceof TypeError) {
+          var stringify = require('json-stringify-safe')
+          log[level](JSON.parse(stringify(logObject)), msg)
+        }
+        else throw ex
+      }
+    }
+    else
+      log[level](msg)
+
+    return streamProcessingResolver.promise
+  }
+	
   return m
 }
 
-function ErrorReport(err, errorCode, details) {
-  this.message = errorCode;
-  this.code = err.code || errorCode
-
-  this.what = errorCode;
-  if (err && err.details && _.isObject(err.details))
-    this.details = err.details
-
-  if (_.isObject(details)) {
-    this.details = _.merge(this.details || {},details || {})
-  }
-
-  this.prevError = err
-
-  if ((err instanceof Error) && !(err instanceof ErrorReport)) {
-    this.rootCause = err.message || err.toString()
-    this.err = err
-  } else if (err) {
-    this.rootCause = err.what
-  } else {
-    this.rootCause = errorCode
-  }
-
-  if (err instanceof ErrorReport) {
-    this.details = _.merge(this.details, err.details)
-    delete this.details.observers
-    delete this.details.goalInstance
-
-    if (!err.err) {
-      this.rootCause = err.rootCause || err.what
-      this.err = err
-    } else {
-      this.rootCause = err.rootCause
-    }
-  }
-
-  // enable root errors to bubble up to the top level error
-  if (err && err.err) this.err = err.err
-}
-
-ErrorReport.prototype = Object.create(Error.prototype)
-ErrorReport.prototype.name = "ErrorReport";
-
 function Context(ctx) {
   this.__parentContext = ctx
-}
-
-function getCaller3Info(level) {
-  level = level || 1
-    if (this === undefined) {
-      console.log('Cannot access caller info in strict mode.')
-      // Cannot access caller info in 'strict' mode.
-      return;
-    }
-    var obj = {};
-    var saveLimit = Error.stackTraceLimit;
-    var savePrepare = Error.prepareStackTrace;
-    Error.stackTraceLimit = 3;
-    Error.captureStackTrace(this, getCaller3Info);
-
-    Error.prepareStackTrace = function (_, stack) {
-        var caller = stack[level];
-        if (sourceMapSupport) {
-            caller = sourceMapSupport.wrapCallSite(caller);
-        }
-        obj.file = caller.getFileName();
-        obj.line = caller.getLineNumber();
-        var func = caller.getFunctionName();
-        if (func)
-            obj.func = func;
-    };
-    this.stack;
-    Error.stackTraceLimit = saveLimit;
-    Error.prepareStackTrace = savePrepare;
-    return obj;
 }
 
 function Goal(name, goalDetails, opts) {
@@ -31565,10 +31503,9 @@ function Goal(name, goalDetails, opts) {
   this.tags = opts.tags
 }
 
-
- String.prototype.toUnderscore = function(){
- 	return this.replace(/([A-Z])/g, function($1){return "_"+$1.toLowerCase();});
- };
+String.prototype.toUnderscore = function(){
+	return this.replace(/([A-Z])/g, function($1){return "_"+$1.toLowerCase();});
+}
 
 Goal.prototype.report = function (status, result) {
   var report = {
@@ -31583,8 +31520,23 @@ Goal.prototype.report = function (status, result) {
   return report
 }
 
-// the fed is in a position where all of it's visible actions look good.  And all of it's bad actions are invisible.
 
+
+  // bluebird deprecated the defer() method, and I'm not sure how to
+  // refactor the code to use the new method so I"ll jsut add my own
+  // version of defer() for now.
+  function defer() {
+    var resolve, reject;
+    var promise = new Promise(function() {
+      resolve = arguments[0]
+      reject = arguments[1]
+    });
+    return {
+      resolve: resolve,
+      reject: reject,
+      promise: promise
+    }
+  }
 },{"bluebird":33,"debug":47,"json-stringify-safe":52,"lodash":53}],57:[function(require,module,exports){
 /**
 * @Author: Robustly.io <Auto>
@@ -31975,20 +31927,19 @@ module.exports = function construct(config, streamPromises) {
  var _ = require('lodash'),
    p = require('bluebird'),
    Promise = p,
-   debug = require('debug')('robust-logs')
-
-var bunyan = require('bunyan')
-var Logger = require('./logger')
-var RotatingFileMaxStream = require('./streams/rotating-file-max')
-var FinalStream = require('./streams/final-stream')
-var PluginStream = require('./streams/plugin-stream')
+   debug = require('debug')('robust-logs'),
+	 bunyan = require('bunyan'),
+ 	 Logger = require('./logger'),
+   RotatingFileMaxStream = require('./streams/rotating-file-max'),
+   FinalStream = require('./streams/final-stream'),
+	 PluginStream = require('./streams/plugin-stream')
 
 var logStreams = {
   "rotating-file-max": RotatingFileMaxStream
 }
 
-module.exports = function(config, axios) {
-  var isNotBrowser = config.isNotBrowser || (typeof module !== 'undefined' && this.module !== module && typeof window === 'undefined')
+module.exports = function(config, axios, ringBuffer) {
+  config.isNotBrowser = config.isNotBrowser || (typeof module !== 'undefined' && this.module !== module && typeof window === 'undefined')
   var m = new WinWithLogs()
 
   var logStreamCompletionPromises = {}
@@ -32006,6 +31957,7 @@ module.exports = function(config, axios) {
       name: config.component,
       streams: config.streams || []
     }
+		delete config.streams
 
     _.each(config.logStreams, function(stream) {
       if (!logStreams[stream.type]) {
@@ -32019,65 +31971,41 @@ module.exports = function(config, axios) {
       })
     })
 
-    // prettystream internally has issues running on the browser.
-    if (!config.silent && isNotBrowser) {
-      debug('Enabling prettystream logging...')
+    if (config.isNotBrowser) {
       var bunyanDebugStream = require('bunyan-debug-stream')
       var bdStream = bunyanDebugStream({
         forceColor: true
       })
-      // logStream is needed for integration testing the output of the logger.
-      // if (config.logStream)
-      //   bdStream.pipe(config.logStream)
-
       if (config.debug) {
+				bunyanConf.serializers = bunyanDebugStream.serializers
         bunyanConf.streams.push(
           {
-            level: 'debug',
+            level: config.trace ? 'trace' : 'debug',
             type: 'raw',
             stream: bdStream
           })
-        console.warn('Debug Logging Is Enabled.  This is OK if it is not production.');
-      } else {
-        bunyanConf.streams.push({
-          level: 'info',
-          type: 'raw',
-          stream: bdStream
-        })
+        console.warn('Logger: Debug logging enabled.')
       }
-      bunyanConf.serializers = bunyanDebugStream.serializers
     } else {
-      console.log('Robust-logs: detected browser runtime.')
-      // function MyRawStream() {}
-      // MyRawStream.prototype.write = function (rec) {
-      //     console.log('[%s] %s: %s',
-      //         bunyan.nameFromLevel[rec.level],
-      //         rec.msg, rec.details);
-      // }
-      //
-      // bunyanConf.streams.push(
-      //   {
-      //       name: 'browser-stream',
-      //       level: 'info',
-      //       stream: new MyRawStream(),
-      //       type: 'raw'
-      //   })
+      console.log('Logger: detected browser runtime.')
     }
 
     if (config.plugins) {
       if (config.plugins.loggly) {
-        console.log('Adding the loggly plugin.')
+        console.log('Logger: adding the loggly plugin.')
         _plugins['loggly'] = require('./plugins/loggly-plugin')(config, axios)
       }
 
       bunyanConf.streams.push({
         name: 'plugin',
-        level: 'info',
+        level: 'trace',
         type: 'raw',
         stream: PluginStream(config, _plugins)
       })
     }
 
+		// NOTE: the FinalStream must be pushed last.  
+		// It is responsible for resolving promises after all other streams have run.
     bunyanConf.streams.push({
       name: 'final',
       level: 'debug',
@@ -32087,7 +32015,7 @@ module.exports = function(config, axios) {
 
     var log = bunyan.createLogger(bunyanConf)
     log.on('error', function (err, stream) {
-      console.error('Log Stream Error:', err, stream);
+      console.error('Logger: Unhandled LogStream Error.', err, stream);
     })
 
     return log.child({
@@ -32100,10 +32028,11 @@ module.exports = function(config, axios) {
   var log = m.setup(config)
 
   var logger = Logger(
-    {debug: config.debug, isNotBrowser: isNotBrowser}, {
+    config, {
     log: log,
     logStreamCompletionPromises: logStreamCompletionPromises,
-    plugins: _plugins
+    plugins: _plugins,
+		ringBuff: ringBuffer
   })
 
   return logger

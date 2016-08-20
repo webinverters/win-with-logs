@@ -12,29 +12,41 @@
 'use strict';
 
 
-  var _ = require('lodash'),
-    p = require('bluebird'),
-    debug = require('debug')('robust-logs')
+var _ = require('lodash'),
+	p = require('bluebird'),
+	debug = require('debug')('robust-logs')
+	
 
-  module.exports = function construct(config) {
-    if (config && config.logging) config = config.logging
-    config = _.defaults(config || {}, {
-      env: 'dev',
-      silent: false, // if true, disables console logging
-      debug: false,
-      logStream: 'stdout',  // CURRENTLY NOT SUPPORTED
-      logStreams: [],
-      streams: []  // advanced: custom streams can be subscribed for plugin support.
-    });
+module.exports = function construct(config) {
+	if (config && config.logging) config = config.logging
 
-    debug('Initializing robust-logs', config)
-    // alias config.component -> config.name
-    config.component = config.component || config.name || ''
-    if (!config.component) throw new Error('robust-logs: missing config.name')
-    if (!config.app) throw new Error('robust-logs: missing config.app')
+	config = config || {}
+	config = _.defaults(config, {
+		app: 'n/a',
+		component: 'n/a',
+		silent: true, // disable if you want extra trace logging from this library.
+		env: 'n/a',
+		debug: false,
+		isModule: false,  // enable if you are logging in a library (not an app) to make logs TRACE level so as not to pollute the application logs.
+		ringBuffer: false,
+		ringBufferSize: 150,
+		plugins: null,
+		logStreams: [],
+		streams: []  // advanced: custom streams can be subscribed for plugin support.
+	})
+	
+	// alias config.component -> config.name
+	if (config.name) config.component = config.name
+	
+	var ringBuffer
+	if (config.ringBuffer) ringBuffer = require('fixedqueue').FixedQueue(config.ringBufferSize)
 
-    var log = require('./src/win-with-logs')(config, require('axios'))
+	var log = require('./src/win-with-logs')(config, require('axios'), ringBuffer)
 
-    debug('logging initialized.')
-    return log;
-  };
+	if (!config.disableSplashScreen) {
+		console.log('===== You are winning with robustly.io logs =====')
+		console.log(config)
+	}
+		
+	return log
+}

@@ -497,14 +497,14 @@ describe('win-with-logs', function() {
       })
     })
 
-    describe('@log.removeEventHandler()', function() {
-      var handler
+    describe('log.removeEventHandler()', function() {
+      var handler, unregister
       beforeEach(function() {
         handler = sinon.spy()
-        log.addEventHandler("Le Event", handler);
+        unregister = log.addEventHandler("Le Event", handler);
       })
       it('unregisters the handler.', function() {
-        log('Le Event')
+        return log('Le Event')
           .then(function() {
             expect(handler).to.have.been.called
           })
@@ -517,8 +517,77 @@ describe('win-with-logs', function() {
             expect(handler).to.not.have.been.called
           })
       })
+			it('can be unregistered using returned function.', function() {
+        return log('Le Event')
+          .then(function() {
+            expect(handler).to.have.been.called
+          })
+          .then(function() {
+            unregister()
+            handler.reset()
+            return log('Le Event')
+          })
+          .then(function() {
+            expect(handler).to.not.have.been.called
+          })
+			})
     })
   })
 
+	describe('Using RingBuffer', function() {
+		beforeEach(function() {
+			mConfig.ringBuffer = true
+			log = ModuleUnderTest(mConfig)
+			captured = ""
+  	})
+		it('doesnt log info and below', function() {
+			log('Invisible.')
+			log.debug('Debug Invisible.')
+			log.trace('Trace Invisible')
+			expect(captured).to.equal('')
+		})
+		it('logs warns', function() {
+			log.warn('BoogyBoo')
+			expect(captured).to.contain('BoogyBoo')
+		})
+		it('flushes logBuffer on errors', function() {
+			log('One Fried Chicken.')
+			expect(captured).to.equal('')
+// you can enable this delay to ensure the timestamp is set correctly for each event.
+// because it shouldn't be the same number after this delay.
+			var delay = 100000
+			while(delay--) {process.stdout.write('')}
+			console.log()
+			log('Two Fried Chicken.')
+			log.error('Burnt to a crisp.')
+			expect(captured).to.contain('One Fried Chicken.')
+			expect(captured).to.contain('Two Fried Chicken.')
+			expect(captured).to.contain('Burnt to a crisp.')
+		})
+		it('logs goal completions', function() {
+			var goal = log.goal('logcompletions')
+			expect(captured).to.equal('')
+			goal.pass()
+			expect(captured).to.contain('logcompletions')
+		})
+	})
+	
+	describe('Using Module mode', function() {
+		beforeEach(function() {
+			mConfig.isModule = true
+			mConfig.trace = true
+			log = ModuleUnderTest(mConfig)
+			captured = ""
+  	})
+		it('Sets all log messages to trace.', function() {
+			log('Some log line')
+			expect(captured).to.contain('TRACE')
+		})
+		it('Logs errors.', function() {
+			log.error('BadThing')
+			expect(captured).to.contain('ERROR')
+		})
+	})
+	
   xdescribe('Log Querying', function() {})
 })
