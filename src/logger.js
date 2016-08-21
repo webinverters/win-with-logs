@@ -249,7 +249,7 @@ module.exports = function(config, deps) {
     }
 
     if (!log[level]) {
-      log.trace({msg:'Invalid log level',
+      log.error({msg:'Invalid log level',
 								 arg: level, 
 								 err: new Error('Invalid log level.')})
       level = 'info'
