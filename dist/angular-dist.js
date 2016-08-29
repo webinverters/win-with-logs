@@ -31186,11 +31186,11 @@ module.exports = function(config, deps) {
   }
 
 	m.report = function(err, details, opts) {
-		if (!(err instanceof Error)) throw new Error('Logger:InvalidParam err should be an instance of Error.')
-		
+		if (!(err instanceof Error)) throw new Error('ASSERT:report:InvalidParam "err"')
 		
 		if (details) {
 			if (details instanceof Error) {
+				m.error(details.message, details)
 				err.prev = details
 				err.rootCause = details.rootCause || details.message
 			} else {
@@ -31225,6 +31225,7 @@ module.exports = function(config, deps) {
       result.message = error.message
     }
 
+		m.error(result.message, result.err)
     return m.report(
 			new Error(result.goalReport ? 'FAILED_'+result.goalReport.codeName : result.message), result.err)
   }
@@ -31341,7 +31342,7 @@ module.exports = function(config, deps) {
     }
 
     if (!log[level]) {
-      log.trace({msg:'Invalid log level',
+      log.error({msg:'Invalid log level',
 								 arg: level, 
 								 err: new Error('Invalid log level.')})
       level = 'info'
