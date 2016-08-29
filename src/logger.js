@@ -93,27 +93,51 @@ module.exports = function(config, deps) {
     return newGoal
   }
 
-	m.report = function(err, details, opts) {
+	m.report = function(err, prev, details) {
 		if (!(err instanceof Error)) throw new Error('ASSERT:report:InvalidParam "err"')
-		
-		if (details) {
-			if (details instanceof Error) {
-				m.error(details.message, details)
-				err.prev = details
-				err.rootCause = details.rootCause || details.message
-			} else {
-				_.merge(err, details)
+		if (prev && !(prev instanceof Error)) {
+			if (!_.isObject(prev)) prev = {details: prev}
+			if (details) {
+				details = _.merge({}, prev, details)
 			}
 		}
-		err.code = err.message
-		err.what = err.message
-		err.rootCause = err.rootCause || err.message
 		
-		m.error(err.message, err)
+		var errorDetails = err.message.split(':')
+		if (errorDetails.length == 3) {
+			err.category = errorDetails[0]
+			err.activity = errorDetails[1]
+			err.what = errorDetails[2]
+		}
+		
+		if (prev && (prev instanceof Error)) {
+			var errorDetails = prev.message.split(':')
+			if (errorDetails.length == 3) {
+				prev.category = errorDetails[0]
+				prev.activity = errorDetails[1]
+				prev.what = errorDetails[2]
+			}
+			err.prev = prev
+			err.root = prev.root || prev
+			err.rootCause = prev.rootCause || prev.message
+		} else {
+			err.root = err
+		}
+		
+		var custom = _.isObject(details) ? details : {}
+		err.code = err.message + ':' + Date.now()
+		custom.code = err.code
+		err.what = err.what || custom.what
+		
+		if (err.root) {
+			if (err.category == 'USER') m.warn(err.message, err, {custom: custom})
+			else m.error(err.message, err, {custom: custom})
+		}
+		
 		return err
 	}
 
   m.failSuppressed = function (error) {
+		m.report(error)
     var result = {err: error}
 
     if (_context && _context.goalInstance) {
@@ -125,17 +149,8 @@ module.exports = function(config, deps) {
 				err: error
       }, {tags: 'GOAL-COMPLETE', custom: {goalReport: goalReport, goalDuration: goalReport.duration}})
     }
-
-    if (_.isString(error)) {
-      result.message = error
-      result.err = new Error(error)
-    } else if (error instanceof Error) {
-      result.message = error.message
-    }
-
-		m.error(result.message, result.err)
-    return m.report(
-			new Error(result.goalReport ? 'FAILED_'+result.goalReport.codeName : result.message), result.err)
+		
+		return error
   }
 
   m.fail = function(err) {
@@ -144,8 +159,7 @@ module.exports = function(config, deps) {
 
   m.rejectWithCode = function(code) {
     return function(err) {
-      var err = m.failSuppressed(err)
-      throw m.report(new Error(code), err)
+      throw m.report(err, null, {what: code})
     }
   }
 
