@@ -56,29 +56,14 @@ module.exports = function(config, axios, ringBuffer) {
     })
 
     if (config.isNotBrowser) {
-      var bunyanDebugStream = require('bunyan-debug-stream')
-      var bdStream = bunyanDebugStream({
-        forceColor: true
-      })
-      if (config.debug) {
-				bunyanConf.serializers = bunyanDebugStream.serializers
-        bunyanConf.streams.push(
-          {
-            level: config.trace ? 'trace' : 'debug',
-            type: 'raw',
-            stream: bdStream
-          })
-        console.warn('Logger: Debug logging enabled.')
-      } else {
-				bunyanConf.streams.push({
-					level: 'info',
+      if (config.debug) { 
+        
+      }
+      
+		  bunyanConf.streams.push({
+					level: 'trace',
 					stream: process.stdout
-				})
-			}
-			bunyanConf.streams.push({
-				level: 'error',
-				stream: process.stderr
-			})
+		  })
     } else {
       console.log('Logger: detected browser runtime.')
     }

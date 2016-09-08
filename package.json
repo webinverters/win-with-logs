@@ -55,7 +55,6 @@
     "bluebird": "3.3.3",
     "bunyan": "~1.8.1",
     "bunyan-slack": "0.0.9",
-    "bunyan-debug-stream": "1.0.7",
     "debug": "2.2.0",
     "fixedqueue": "0.0.1",
     "json-stringify-safe": "5.0.1",
