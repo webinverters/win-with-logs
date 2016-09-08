@@ -21,12 +21,17 @@
  */
  var _ = require('lodash'),
    p = require('bluebird'),
-   Promise = p,
-   debug = require('debug')('robust-logs')
+   Promise = p
 
+ 
+ 
 module.exports = function(config, axios) {
   var m = new LogglyPlugin()
 
+  var debug = function() {
+    if (config.debug) console.log.apply(console.log, arguments)
+  }
+  
   config.plugins.loggly.baseURL = config.plugins.loggly.baseURL || 'https://logs-01.loggly.com/inputs/'
 
   config.plugins.loggly.important = 'GOAL-COMPLETE,'+(config.plugins.loggly.important||'')

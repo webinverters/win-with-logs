@@ -56,3 +56,5 @@ log.addEventHandler("test",function(){
 });
 
 log.info("test",{})
+
+log.error('There was an error.', new Error('System is fucked.'))

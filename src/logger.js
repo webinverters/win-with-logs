@@ -11,8 +11,7 @@
 
  var _ = require('lodash'),
    p = require('bluebird'),
-   Promise = p,
-   debug = require('debug')('robust-logs')
+   Promise = p
 
 var _plugins, _observers = {}
 module.exports = function(config, deps) {
@@ -29,7 +28,7 @@ module.exports = function(config, deps) {
   })
 
   m.context = function(contextInfo) {
-		if (!config.silent) console.log('Logger: Creating context...', contextInfo)
+		if (config.debug) console.log('Logger: Creating context...', contextInfo)
 		if (contextInfo.opts) {
 			if (contextInfo.opts.isModule) {
 				// must clone the config to avoid isModule flag from permeating.  
@@ -170,7 +169,11 @@ module.exports = function(config, deps) {
         goalId: goalReport.goalId,
         name: goalReport.goalName,
         goalName: goalReport.codeName
-      }, {tags: 'GOAL-COMPLETE', custom: {goalReport: goalReport, goalDuration: goalReport.duration}, priority: 10})
+      }, {
+        tags: 'GOAL-COMPLETE', 
+        custom: {goalReport: goalReport, goalDuration: goalReport.duration}, 
+        priority: _context.goalInstance.priority || 1
+      })
     } else {
       m.log('Result: ', _context)
     }
@@ -257,6 +260,8 @@ module.exports = function(config, deps) {
   }
 
   function post(level, msg, details, options) {
+    if (config.silent) return p.resolve()
+    
     options = options || {}
     if (!_.isObject(options)) {
       details.options = options
@@ -270,7 +275,7 @@ module.exports = function(config, deps) {
       level = 'info'
     }
 		
-		if (config.ringBuffer && (!options.priority || options.priority < 10)) {
+		if (config.ringBufferSize && (!options.priority || options.priority < 10)) {
 			if (level == 'warn') {} // continue logging as normal.
 			else if (level == 'error' || level == 'fatal') flushLogBuffer()
 			else {
@@ -288,7 +293,6 @@ module.exports = function(config, deps) {
 		if (config.isModule && (!options.priority || options.priority < 11)) {
 			if (level != 'error' && level != 'fatal') level = 'trace'
 		}
-	
 		
     var goal = (_context && _context.goalInstance) || {}
     var logObject = {
@@ -382,6 +386,7 @@ function Goal(name, goalDetails, opts) {
   this.name = name;
   this.creationTimeMS = Date.now()
   this.tags = opts.tags
+  this.priority = opts.priority || 1
 }
 
 String.prototype.toUnderscore = function(){

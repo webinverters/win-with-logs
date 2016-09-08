@@ -42,7 +42,7 @@ describe("win-with-logs", function () {
       return p.delay(20000).then(function() {
           return _log.query(logString, {})
             .then(function(result) {
-              debug('RESULT=', result)
+              console.log('RESULT=', result)
               expect(result.length).to.equal(1)
               expect(result[0].event.json.details.somethingId).to.equal(1)
             })
