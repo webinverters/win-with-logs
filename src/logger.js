@@ -28,7 +28,7 @@ module.exports = function(config, deps) {
   })
 
   m.context = function(contextInfo) {
-		if (config.debug) console.log('Logger: Creating context...', contextInfo)
+		if (config.debug && !config.silent) console.log('Logger: Creating context...', contextInfo)
 		if (contextInfo.opts) {
 			if (contextInfo.opts.isModule) {
 				// must clone the config to avoid isModule flag from permeating.  
@@ -141,12 +141,12 @@ module.exports = function(config, deps) {
 
     if (_context && _context.goalInstance) {
       var goalReport = result.goalReport = _context.goalInstance.report("FAILED")
-      m.error('GOAL_FAILED', {
+      m.error('Failed '+goalReport.goalName+'.', {
         goalId: goalReport.goalId,
         name: goalReport.goalName,
         codeName: goalReport.codeName,
 				err: error
-      }, {tags: 'GOAL-COMPLETE', custom: {goalReport: goalReport, goalDuration: goalReport.duration}})
+      }, {tags: 'GOAL-COMPLETE,GOAL-FAILED', custom: {goalReport: goalReport, goalDuration: goalReport.duration}})
     }
 		
 		return error
@@ -165,7 +165,7 @@ module.exports = function(config, deps) {
   m.pass = m.result = function(result) {
     if (_context && _context.goalInstance) {
       var goalReport = _context.goalInstance.report('SUCCEEDED', result)
-      m.log('GOAL_SUCCEEED', {
+      m.log('Finished '+goalReport.goalName+'.', {
         goalId: goalReport.goalId,
         name: goalReport.goalName,
         goalName: goalReport.codeName
@@ -345,7 +345,6 @@ module.exports = function(config, deps) {
       else console[level]('[%s] %s:', _context.chain, logObject.msg || msg, logObject.details)
       return
     }
-
 
     if (_.size(logObject) > 0) {
       try {

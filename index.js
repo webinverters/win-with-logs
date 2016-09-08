@@ -30,7 +30,7 @@ module.exports = function construct(config) {
 		silent: false, // enable if you want to disable all logging.
 		debug: false,
 		isModule: false,  // enable if you are logging in a library (not an app) to make logs TRACE level so as not to pollute the application logs.
-    disableSplashScreen: false,
+    disableSplashScreen: true,
 		ringBufferSize: 0,  
 		plugins: null,
 		streams: []  // advanced: custom streams can be subscribed for plugin support.
