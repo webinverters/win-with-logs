@@ -73,15 +73,23 @@ module.exports = function(config, deps) {
   m.warn = post.bind(m, 'warn')
   m.log = post.bind(m, 'info')
   m.trace = post.bind(m,'trace')
-  m.method = createGoal.bind(m)
-  m.goal = createGoal.bind(m)
+  
+  // difference between method and goal: a method can fail and be recovered from.  
+  // a goal is something that is not recovered from and should never fail.  You 
+  // always want to be alerted if a goal fails, because if a goal fails, your 
+  // application is not doing its job.
+  m.method = createGoal.bind(m, 'method')
+  m.goal = createGoal.bind(m, 'goal')
+  
 	// TODO: coming soon...  The ability to query the log.
   m.query = function() { throw new Error('log.query() unsupported')}
 	//	m.query = _plugins['loggly'] ? _plugins['loggly'].query : function() {
 	//    throw new Error('log.query() not available.  Load a plugin that supports it.')
 	//  }
 
-  function createGoal(goalName, params, opts) {
+  function createGoal(type, goalName, params, opts) {
+    opts = opts || {}
+    opts.type = type 
     var newGoalInstance = new Goal(goalName, params, opts)
     m.log('Starting '+goalName, {params: params}, {custom: {goalId: newGoalInstance.goalId}})
     var newGoal = m.context({
@@ -377,6 +385,9 @@ function Goal(name, goalDetails, opts) {
   opts = opts || {}
   this.goalContext = goalDetails || {};
   this.goalId = this.goalContext.goalId
+  this.type = opts.type
+  
+  // TODO: if this is in the context of another goal, set the parentGoalId to track subgoals.
 
   if (!this.goalContext.goalId) {
     this.goalId = _.uniqueId()
@@ -400,6 +411,7 @@ Goal.prototype.report = function (status, result) {
     context: this.goalContext,
     duration: Date.now() - this.creationTimeMS,
     result: result,
+    type: this.type,
     status: status
   }
   return report
