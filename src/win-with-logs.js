@@ -14,8 +14,7 @@
 	 bunyan = require('bunyan'),
  	 Logger = require('./logger'),
    FinalStream = require('./streams/final-stream'),
-	 PluginStream = require('./streams/plugin-stream'),
-   axios = require('axios')
+	 PluginStream = require('./streams/plugin-stream')
 
 function WinWithLogs() {}
 module.exports = function(config) {
@@ -59,7 +58,12 @@ module.exports = function(config) {
     if (config.plugins) {
       if (config.plugins.loggly) {
         console.log('Logger: adding the loggly plugin.')
-        _plugins['loggly'] = require('./plugins/loggly-plugin')(config, axios)
+        _plugins['loggly'] = require('./plugins/loggly-plugin')(config, require('axios'))
+      }
+      
+      if (config.plugins.goalTracking) {
+        console.log('Logger: goal tracking plugin enabled.')
+        _plugins['loggly'] = require('./plugins/goal-tracking')(config)
       }
 
       bunyanConf.streams.push({
