@@ -283,7 +283,7 @@ module.exports = function(config, deps) {
       level = 'info'
     }
 		
-		if (config.ringBufferSize && (!options.priority || options.priority < 10)) {
+		if (!config.debug && config.ringBufferSize && (!options.priority || options.priority < 10)) {
 			if (level == 'warn') {} // continue logging as normal.
 			else if (level == 'error' || level == 'fatal') flushLogBuffer()
 			else {

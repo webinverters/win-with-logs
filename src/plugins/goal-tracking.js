@@ -39,9 +39,9 @@ module.exports = function(config) {
   }, conf.intervalInSeconds*1000)
 
   m.process = function(logEvent) {
-    console.log('GoalTracking:processing...', logEvent)
-    
     if (logEvent._tags && logEvent._tags.indexOf('GOAL-COMPLETE') >=0) {
+      console.log('GoalTracking:processing...', logEvent)
+      
       if (!logEvent.goalReport) throw new Error('ASSERT: event tagged with GOAL-COMPLETE should have a goal report.')
       
       var stat = stats[logEvent.goalReport.goalName] = stats[logEvent.goalReport.goalName] || {
