@@ -43,9 +43,10 @@ module.exports = function(config) {
       console.log('GoalTracking:processing...', logEvent)
       
       if (!logEvent.goalReport) throw new Error('ASSERT: event tagged with GOAL-COMPLETE should have a goal report.')
+      if (!logEvent.chain) throw new Error('ASSERT:logger: event tagged with GOAL-COMPLETE should have a chain.')
       
-      var stat = stats[logEvent.goalReport.goalName] = stats[logEvent.goalReport.goalName] || {
-           id: logEvent.goalReport.goalName,
+      var stat = stats[logEvent.chain] = stats[logEvent.chain] || {
+           name: logEvent.goalReport.goalName,
            module: logEvent.chain,
            type: logEvent.goalReport.type,
            count: 0,

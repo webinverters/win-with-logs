@@ -407,6 +407,7 @@ describe('win-with-logs', function() {
 	describe('Using RingBuffer', function() {
 		beforeEach(function() {
 			mConfig.ringBufferSize = 10
+      mConfig.debug = false
 			log = ModuleUnderTest(mConfig)
 			captured = ""
   	})
