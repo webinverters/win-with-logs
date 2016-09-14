@@ -180,7 +180,7 @@ module.exports = function(config, deps) {
       }, {
         tags: 'GOAL-COMPLETE', 
         custom: {goalReport: goalReport, goalDuration: goalReport.duration}, 
-        priority: _context.goalInstance.priority || 1
+        priority: _context.goalInstance.priority || 10
       })
     } else {
       m.log('Result: ', _context)
