@@ -294,6 +294,11 @@ module.exports = function(config, deps) {
 				return p.resolve(false)
 			}
 		}
+    
+    // hide goal complete messages if not in debug mode and ringBuffer is enabled.
+    if (config.plugins && config.ringBufferSize && options.priority && options.priority>=10) {
+      if (level != 'error' && level != 'fatal' && level != 'warn') level = 'debug'
+    }
 		
 		// make library logs always trace.  priority < 11 allows ringbuffer output 
 		// to retain its original level output since the dump should contain 
