@@ -131,7 +131,9 @@ module.exports = function(config, deps) {
 		}
 		
 		var custom = _.isObject(details) ? details : {}
-		err.code = err.message + ':' + Date.now()
+		err.code = err.message
+    err.timestamp = Date.now()
+    err.goalId = if(_context.goalInstance) _context.goalInstance.goalId
 		custom.code = err.code
 		err.what = err.what || custom.what
 		
