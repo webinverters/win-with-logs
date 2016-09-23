@@ -103,44 +103,40 @@ module.exports = function(config, deps) {
 	m.report = function(err, prev, details) {
 		if (!(err instanceof Error)) throw new Error('ASSERT:report:InvalidParam "err"')
 		if (prev && !(prev instanceof Error)) {
-			if (!_.isObject(prev)) prev = {details: prev}
-			if (details) {
-				details = _.merge({}, prev, details)
-			}
+			details = prev
 		}
-		
+    details = details || {}
+    
+    err.prev = prev
+		err.details = details
+    var type = typeof err
+    if (type != 'Error' || type != 'error' || type != 'object') err.type
+    
 		var errorDetails = err.message.split(':')
 		if (errorDetails.length == 3) {
 			err.category = errorDetails[0]
 			err.activity = errorDetails[1]
-			err.what = errorDetails[2]
+			err.message = errorDetails[2]
 		}
-		
-		if (prev && (prev instanceof Error)) {
-			var errorDetails = prev.message.split(':')
-			if (errorDetails.length == 3) {
-				prev.category = errorDetails[0]
-				prev.activity = errorDetails[1]
-				prev.what = errorDetails[2]
-			}
-			err.prev = prev
-			err.root = prev.root || prev
-			err.rootCause = prev.rootCause || prev.message
-		} else {
-			err.root = err
+    // depending on how many colons are used in the error message, 
+    // we can remain backward compatible with previous error formats by
+    // checking how many colons there are.
+		if (errorDetails.length == 4) {
+			err.category = errorDetails[0]
+			err.activity = errorDetails[1]
+			err.code = errorDetails[2]
+      err.message = errorDetails[3]
 		}
-		
-		var custom = _.isObject(details) ? details : {}
-		err.code = err.message
+		if (!err.code)
+		  err.code = details.code || err.type || err.message
+      
     err.timestamp = Date.now()
     err.goalId = _context.goalInstance && _context.goalInstance.goalId
-		custom.code = err.code
-		err.what = err.what || custom.what
-		
-		if (err.root) {
-			if (err.category == 'USER') m.warn(err.message, err, {custom: custom})
-			else m.error(err.message, err, {custom: custom})
-		}
+    err.goalName = _context.goalInstance && _context.goalInstance.name
+
+
+		if (err.category == 'USER') m.warn(err.message, err, {custom: details.custom})
+		else m.error(err.message, err, {custom: details.custom})
 		
 		return err
 	}
@@ -168,7 +164,7 @@ module.exports = function(config, deps) {
 
   m.rejectWithCode = function(code) {
     return function(err) {
-      throw m.report(err, null, {what: code})
+      throw m.report(err, {code: code})
     }
   }
 

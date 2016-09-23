@@ -257,7 +257,7 @@ describe('win-with-logs', function() {
           .then(throwEx)
           .catch(goal.rejectWithCode('FAILED_CODE'))
           .catch(function(err) {
-            expect(err.what).to.equal('FAILED_CODE')
+            expect(err.code).to.equal('FAILED_CODE')
           })
         })
       })
