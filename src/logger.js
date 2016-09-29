@@ -101,7 +101,11 @@ module.exports = function(config, deps) {
   }
 
 	m.report = function(err, prev, details) {
-		if (!(err instanceof Error)) throw new Error('ASSERT:report:InvalidParam "err"')
+		if (!(err instanceof Error)) {
+      log('The err object:', {theError: err})
+      if (config.env != 'prod' && config.env != 'production')
+        throw new Error('ASSERT:report:InvalidParam "err"')
+    }
 		if (prev && !(prev instanceof Error)) {
 			details = prev
 		}
