@@ -102,7 +102,7 @@ module.exports = function(config, deps) {
 
 	m.report = function(err, prev, details) {
 		if (!(err instanceof Error)) {
-      log('The err object:', {theError: err})
+      console.log('The err object:', err)
       if (config.env != 'prod' && config.env != 'production')
         throw new Error('ASSERT:report:InvalidParam "err"')
     }
