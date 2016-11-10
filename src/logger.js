@@ -48,7 +48,6 @@ module.exports = function(config, deps) {
 
     var newLogger = module.exports(config, {
          log: log.child({chain: contextInfo.chain}),
-         logStreamCompletionPromises: deps.logStreamCompletionPromises,
          context: _.extend(new Context(_context), contextInfo),
 				 ringBuff: deps.ringBuff
        })
@@ -314,14 +313,8 @@ module.exports = function(config, deps) {
         _id: parseInt(_.uniqueId()),
         _tags: goal.tags ? options.tags + ',' + goal.tags : options.tags,
         _goalId: goal.goalId
-      },
-      streamProcessingResolver = defer()
+      }
 
-    deps.logStreamCompletionPromises[logObject._id] = {
-      finalDef: streamProcessingResolver,
-      eventHandlingCompleted: m.processEventHandlers(msg, details, options),
-      promises: []
-    }
 
     if (details instanceof Error) {
       logObject.err = details
@@ -378,7 +371,7 @@ module.exports = function(config, deps) {
     else
       log[level](msg)
 
-    return streamProcessingResolver.promise
+    return m.processEventHandlers(msg, details, options)
   }
 	
   return m

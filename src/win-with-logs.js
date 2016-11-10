@@ -13,13 +13,12 @@
    Promise = p,
 	 bunyan = require('bunyan'),
  	 Logger = require('./logger'),
-   FinalStream = require('./streams/final-stream'),
 	 PluginStream = require('./streams/plugin-stream')
 
 function WinWithLogs() {}
 module.exports = function(config) {
   config.isNotBrowser = config.isNotBrowser || (typeof module !== 'undefined' && this.module !== module && typeof window === 'undefined')
-  var m = new WinWithLogs(), logStreamCompletionPromises = {},
+  var m = new WinWithLogs(),
   	_plugins = {}, ringBuffer = []
   
   if (config.ringBufferSize) ringBuffer = require('fixedqueue').FixedQueue(config.ringBufferSize)
@@ -73,16 +72,6 @@ module.exports = function(config) {
         stream: PluginStream(config, _plugins)
       })
     }
-		
-
-		// NOTE: the FinalStream must be pushed last.  
-		// It is responsible for resolving promises after all other streams have run.
-    bunyanConf.streams.push({
-      name: 'final',
-      level: 'debug',
-      type: 'raw',
-      stream: FinalStream(config, logStreamCompletionPromises)
-    })
 
     var log = bunyan.createLogger(bunyanConf)
     log.on('error', function (err, stream) {
@@ -101,7 +90,6 @@ module.exports = function(config) {
   var logger = Logger(
     config, {
     log: log,
-    logStreamCompletionPromises: logStreamCompletionPromises,
     plugins: _plugins,
 		ringBuff: ringBuffer
   })
