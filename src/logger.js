@@ -15,7 +15,7 @@
 
 var _plugins, _observers = {}
 module.exports = function(config, deps) {
-  var m = post.bind(null,'info'), 
+  var m = post.bind(null,'info'),
 		_context = deps.context || {},
     log = deps.log,
 		_ringBuff = deps.ringBuff,
@@ -31,14 +31,14 @@ module.exports = function(config, deps) {
 		if (config.debug && !config.silent) console.log('Logger: Creating context...', contextInfo)
 		if (contextInfo.opts) {
 			if (contextInfo.opts.isModule) {
-				// must clone the config to avoid isModule flag from permeating.  
+				// must clone the config to avoid isModule flag from permeating.
 				// Not sure a better way to handle this.  isModule is set by libraries
 				// when they are created with a logger instance.
 				config = _.cloneDeep(config)
 				config.isModule = true
 			}
 		}
-		
+
     contextInfo.chain = _context.chain
     if (contextInfo.module) {
       contextInfo.chain = contextInfo.module.name
@@ -72,14 +72,14 @@ module.exports = function(config, deps) {
   m.warn = post.bind(m, 'warn')
   m.log = post.bind(m, 'info')
   m.trace = post.bind(m,'trace')
-  
-  // difference between method and goal: a method can fail and be recovered from.  
-  // a goal is something that is not recovered from and should never fail.  You 
-  // always want to be alerted if a goal fails, because if a goal fails, your 
+
+  // difference between method and goal: a method can fail and be recovered from.
+  // a goal is something that is not recovered from and should never fail.  You
+  // always want to be alerted if a goal fails, because if a goal fails, your
   // application is not doing its job.
   m.method = createGoal.bind(m, 'method')
   m.goal = createGoal.bind(m, 'goal')
-  
+
 	// TODO: coming soon...  The ability to query the log.
   m.query = function() { throw new Error('log.query() unsupported')}
 	//	m.query = _plugins['loggly'] ? _plugins['loggly'].query : function() {
@@ -88,7 +88,7 @@ module.exports = function(config, deps) {
 
   function createGoal(type, goalName, params, opts) {
     opts = opts || {}
-    opts.type = type 
+    opts.type = type
     var newGoalInstance = new Goal(goalName, params, opts)
     m.log('Starting '+goalName, {params: params}, {custom: {goalId: newGoalInstance.goalId}})
     var newGoal = m.context({
@@ -101,7 +101,7 @@ module.exports = function(config, deps) {
 
 	m.report = function(err, prev, details) {
 		if (!(err instanceof Error)) {
-      console.log('The err object:', err)
+      console.log('ErrorReport:', err)
       if (config.env != 'prod' && config.env != 'production')
         throw new Error('ASSERT:report:InvalidParam "err"')
     }
@@ -109,19 +109,19 @@ module.exports = function(config, deps) {
 			details = prev
 		}
     details = details || {}
-    
+
     err.prev = prev
 		err.details = details
     var type = typeof err
     if (type != 'Error' || type != 'error' || type != 'object') err.type
-    
+
 		var errorDetails = err.message.split(':')
 		if (errorDetails.length == 3) {
 			err.category = errorDetails[0]
 			err.activity = errorDetails[1]
 			err.message = errorDetails[2]
 		}
-    // depending on how many colons are used in the error message, 
+    // depending on how many colons are used in the error message,
     // we can remain backward compatible with previous error formats by
     // checking how many colons there are.
 		if (errorDetails.length == 4) {
@@ -132,7 +132,7 @@ module.exports = function(config, deps) {
 		}
 		if (!err.code)
 		  err.code = details.code || err.type || err.message
-      
+
     err.timestamp = Date.now()
     err.goalId = _context.goalInstance && _context.goalInstance.goalId
     err.goalName = _context.goalInstance && _context.goalInstance.name
@@ -140,7 +140,7 @@ module.exports = function(config, deps) {
 
 		if (err.category == 'USER') m.warn(err.message, err, {custom: details.custom})
 		else m.error(err.message, err, {custom: details.custom})
-		
+
 		return err
 	}
 
@@ -157,7 +157,7 @@ module.exports = function(config, deps) {
 				err: error
       }, {tags: 'GOAL-COMPLETE,GOAL-FAILED', custom: {goalReport: goalReport, goalDuration: goalReport.duration}})
     }
-		
+
 		return error
   }
 
@@ -179,8 +179,8 @@ module.exports = function(config, deps) {
         name: goalReport.goalName,
         goalName: goalReport.codeName
       }, {
-        tags: 'GOAL-COMPLETE', 
-        custom: {goalReport: goalReport, goalDuration: goalReport.duration}, 
+        tags: 'GOAL-COMPLETE',
+        custom: {goalReport: goalReport, goalDuration: goalReport.duration},
         priority: _context.goalInstance.priority || 10
       })
     } else {
@@ -226,7 +226,7 @@ module.exports = function(config, deps) {
 
     _observers[eventLabel] = _observers[eventLabel] || []
     _observers[eventLabel].push(handler)
-		
+
 		return function() {
 			m.removeEventHandler(eventLabel, handler)
 		}
@@ -256,7 +256,7 @@ module.exports = function(config, deps) {
 	// create aliases
   m.on = m.addEventHandler
 	m.errorReport = m.report
-	
+
 	function flushLogBuffer() {
 		var count = _ringBuff.length
 		if (count == 0) return
@@ -270,7 +270,7 @@ module.exports = function(config, deps) {
 
   function post(level, msg, details, options) {
     if (config.silent) return p.resolve()
-    
+
     options = options || {}
     if (!_.isObject(options)) {
       details.options = options
@@ -279,35 +279,35 @@ module.exports = function(config, deps) {
 
     if (!log[level]) {
       log.error({msg:'Invalid log level',
-								 arg: level, 
+								 arg: level,
 								 err: new Error('Invalid log level.')})
       level = 'info'
     }
-		
+
 		if (!config.debug && config.ringBufferSize && (!options.priority || options.priority < 10)) {
 			if (level == 'warn') {} // continue logging as normal.
 			else if (level == 'error' || level == 'fatal') flushLogBuffer()
 			else {
 				// preserve the original time that the event was logged.
 				options.time = new Date()
-				
+
 				_ringBuff.enqueue([level,msg,details,options])
 				return p.resolve(false)
 			}
 		}
-    
+
     // hide goal complete messages if not in debug mode and ringBuffer is enabled.
     if (config.plugins && config.ringBufferSize && options.priority && options.priority>=10) {
       if (level != 'error' && level != 'fatal' && level != 'warn') level = 'debug'
     }
-		
-		// make library logs always trace.  priority < 11 allows ringbuffer output 
-		// to retain its original level output since the dump should contain 
+
+		// make library logs always trace.  priority < 11 allows ringbuffer output
+		// to retain its original level output since the dump should contain
 		// trace level details anyways.
 		if (config.isModule && (!options.priority || options.priority < 11)) {
 			if (level != 'error' && level != 'fatal') level = 'trace'
 		}
-		
+
     var goal = (_context && _context.goalInstance) || {}
     var logObject = {
         _id: parseInt(_.uniqueId()),
@@ -346,7 +346,7 @@ module.exports = function(config, deps) {
       var clean = caller_line.slice(index+2, caller_line.length);
       sourceInfo = clean
     }
-		
+
     if (!config.isNotBrowser && console) {
       if (!console[level]) console[level] = console.log
       if (sourceInfo) console[level]('[%s] %s:', _context.chain, logObject.msg || msg, logObject.details, sourceInfo)
@@ -373,7 +373,7 @@ module.exports = function(config, deps) {
 
     return m.processEventHandlers(msg, details, options)
   }
-	
+
   return m
 }
 
@@ -386,7 +386,7 @@ function Goal(name, goalDetails, opts) {
   this.goalContext = goalDetails || {};
   this.goalId = this.goalContext.goalId
   this.type = opts.type
-  
+
   // TODO: if this is in the context of another goal, set the parentGoalId to track subgoals.
 
   if (!this.goalContext.goalId) {
