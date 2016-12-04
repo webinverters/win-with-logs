@@ -137,6 +137,8 @@ module.exports = function(config, deps) {
     err.goalId = _context.goalInstance && _context.goalInstance.goalId
     err.goalName = _context.goalInstance && _context.goalInstance.name
 
+    m.log('ErrorDetails', details)
+    m.log('ErrorReport', err)
 
 		if (err.category == 'USER') m.warn(err.message, err, {custom: details.custom})
 		else m.error(err.message, err, {custom: details.custom})
