@@ -108,7 +108,11 @@ module.exports = function(config, deps) {
 		if (prev && !(prev instanceof Error)) {
 			details = prev
 		}
+    if (details)
+      console.log('ErrDetails:', details)
+
     details = details || {}
+
 
     err.prev = prev
 		err.details = details
